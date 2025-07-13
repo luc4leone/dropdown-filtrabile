@@ -1,6 +1,6 @@
-# Specifiche Comportamentali - Dropdown Filtrabile
+# Dropdown Filtrabile
 
-## Comportamenti di Interazione
+## Descrizione dettagliata Interactions
 
 ### Apertura e Chiusura
 
