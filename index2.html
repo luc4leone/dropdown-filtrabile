@@ -109,14 +109,31 @@
         border: 2px solid #e0e0e0;
         border-top: none;
         border-radius: 0 0 8px 8px;
-        max-height: 200px;
-        overflow-y: auto;
+        max-height: 300px;
         z-index: 1000;
         opacity: 0;
         transform: translateY(-10px);
         visibility: hidden;
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dropdown-results {
+        flex: 1;
+        overflow-y: auto;
+        max-height: calc(
+          300px - 50px
+        ); /* Altezza totale meno altezza del pulsante create */
+      }
+
+      .dropdown-create-project {
+        flex-shrink: 0;
+        border-top: 2px solid #e0e0e0;
+        background: white;
+        position: sticky;
+        bottom: 0;
       }
 
       .dropdown-list.show {
@@ -181,6 +198,125 @@
         font-weight: normal;
       }
 
+      /* Dialog per creare nuovo progetto */
+      .dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      }
+
+      .dialog-overlay.show {
+        display: flex;
+      }
+
+      .dialog {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        max-width: 400px;
+        width: 90%;
+        position: relative;
+        animation: dialogSlideIn 0.3s ease;
+      }
+
+      @keyframes dialogSlideIn {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .dialog-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+        text-align: center;
+      }
+
+      .dialog-close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+        padding: 5px;
+        line-height: 1;
+      }
+
+      .dialog-close:hover {
+        color: #666;
+      }
+
+      .dialog-input-container {
+        margin-bottom: 20px;
+      }
+
+      .dialog-input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        outline: none;
+        transition: border-color 0.3s ease;
+        box-sizing: border-box;
+      }
+
+      .dialog-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+      }
+
+      .dialog-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .dialog-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: 500;
+      }
+
+      .dialog-btn-primary {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .dialog-btn-primary:hover {
+        background-color: #0056b3;
+      }
+
+      .dialog-btn-secondary {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .dialog-btn-secondary:hover {
+        background-color: #545b62;
+      }
+
       /* Responsive */
       @media (max-width: 480px) {
         .container {
@@ -190,6 +326,11 @@
 
         h1 {
           font-size: 20px;
+        }
+
+        .dialog {
+          margin: 20px;
+          padding: 20px;
         }
       }
     </style>
@@ -208,7 +349,34 @@
         />
         <div class="dropdown-arrow" id="dropdownArrow"></div>
         <div class="dropdown-clear" id="dropdownClear">×</div>
-        <div class="dropdown-list" id="dropdownList"></div>
+        <div class="dropdown-list" id="dropdownList">
+          <div class="dropdown-results" id="dropdownResults"></div>
+          <div class="dropdown-create-project" id="dropdownCreateProject"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dialog per creare nuovo progetto -->
+    <div class="dialog-overlay" id="dialogOverlay">
+      <div class="dialog">
+        <button class="dialog-close" id="dialogClose">×</button>
+        <div class="dialog-title">Crea Nuovo Progetto</div>
+        <div class="dialog-input-container">
+          <input
+            type="text"
+            class="dialog-input"
+            id="dialogInput"
+            placeholder="Inserisci il nome del progetto..."
+          />
+        </div>
+        <div class="dialog-buttons">
+          <button class="dialog-btn dialog-btn-secondary" id="dialogCancel">
+            Annulla
+          </button>
+          <button class="dialog-btn dialog-btn-primary" id="dialogOk">
+            OK
+          </button>
+        </div>
       </div>
     </div>
 
@@ -219,6 +387,15 @@
           this.arrow = document.getElementById("dropdownArrow");
           this.clear = document.getElementById("dropdownClear");
           this.list = document.getElementById("dropdownList");
+          this.results = document.getElementById("dropdownResults");
+          this.createProject = document.getElementById("dropdownCreateProject");
+
+          // Dialog elements
+          this.dialogOverlay = document.getElementById("dialogOverlay");
+          this.dialogInput = document.getElementById("dialogInput");
+          this.dialogClose = document.getElementById("dialogClose");
+          this.dialogCancel = document.getElementById("dialogCancel");
+          this.dialogOk = document.getElementById("dialogOk");
 
           this.originalOptions = options;
           this.filteredOptions = [...options];
@@ -270,9 +447,39 @@
             if (
               !this.input.contains(e.target) &&
               !this.list.contains(e.target) &&
-              !this.clear.contains(e.target)
+              !this.clear.contains(e.target) &&
+              !this.dialogOverlay.contains(e.target)
             ) {
               this.close();
+            }
+          });
+
+          // Dialog events
+          this.dialogClose.addEventListener("click", () => {
+            this.closeDialog();
+          });
+
+          this.dialogCancel.addEventListener("click", () => {
+            this.closeDialog();
+          });
+
+          this.dialogOk.addEventListener("click", () => {
+            this.handleDialogOk();
+          });
+
+          this.dialogInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              this.handleDialogOk();
+            } else if (e.key === "Escape") {
+              this.closeDialog();
+            }
+          });
+
+          // Chiudi dialog cliccando sull'overlay
+          this.dialogOverlay.addEventListener("click", (e) => {
+            if (e.target === this.dialogOverlay) {
+              this.closeDialog();
             }
           });
         }
@@ -299,37 +506,11 @@
         }
 
         renderList() {
-          this.list.innerHTML = "";
+          // Pulisci i contenitori
+          this.results.innerHTML = "";
+          this.createProject.innerHTML = "";
 
-          // Se c'è del testo nell'input, mostra sempre l'opzione per creare un nuovo progetto in cima
-          if (this.input.value.trim()) {
-            const saveNewProject = document.createElement("div");
-            saveNewProject.className = "dropdown-item save-new-project";
-            saveNewProject.innerHTML = `Crea nuovo progetto "${this.input.value}"`;
-            saveNewProject.style.color = "#007bff";
-            saveNewProject.style.cursor = "pointer";
-            saveNewProject.style.fontWeight = "bold";
-            saveNewProject.style.borderBottom = "2px solid #e0e0e0";
-
-            saveNewProject.addEventListener("click", () => {
-              this.saveNewProject(this.input.value.trim());
-            });
-
-            this.list.appendChild(saveNewProject);
-          }
-
-          // Se non ci sono risultati filtrati, mostra solo il messaggio di nessun risultato
-          if (this.filteredOptions.length === 0) {
-            if (!this.input.value.trim()) {
-              const noResults = document.createElement("div");
-              noResults.className = "no-results";
-              noResults.textContent = "Nessun risultato trovato";
-              this.list.appendChild(noResults);
-            }
-            return;
-          }
-
-          // Mostra i risultati filtrati
+          // Mostra i risultati filtrati nell'area scrollabile
           this.filteredOptions.forEach((option, index) => {
             const item = document.createElement("div");
             item.className = "dropdown-item";
@@ -352,8 +533,23 @@
               this.selectOption(option);
             });
 
-            this.list.appendChild(item);
+            this.results.appendChild(item);
           });
+
+          // Mostra sempre l'opzione per creare un nuovo progetto nell'area fissa in fondo
+          const createNewProject = document.createElement("div");
+          createNewProject.className = "dropdown-item save-new-project";
+          createNewProject.innerHTML = "Crea nuovo progetto";
+          createNewProject.style.color = "#007bff";
+          createNewProject.style.cursor = "pointer";
+          createNewProject.style.fontWeight = "bold";
+          createNewProject.style.padding = "12px 15px";
+
+          createNewProject.addEventListener("click", () => {
+            this.openDialog();
+          });
+
+          this.createProject.appendChild(createNewProject);
         }
 
         selectOption(option) {
@@ -394,9 +590,8 @@
 
           if (!this.isOpen) return;
 
-          const hasCreateOption = this.input.value.trim() !== "";
-          const totalItems =
-            this.filteredOptions.length + (hasCreateOption ? 1 : 0);
+          // Ora abbiamo sempre l'opzione "Crea nuovo progetto" come ultimo elemento
+          const totalItems = this.filteredOptions.length + 1;
 
           switch (e.key) {
             case "ArrowDown":
@@ -417,16 +612,13 @@
             case "Enter":
               e.preventDefault();
               if (this.selectedIndex >= 0) {
-                // Se ha selezionato l'opzione "Crea nuovo progetto" (indice 0 quando c'è del testo)
-                if (hasCreateOption && this.selectedIndex === 0) {
-                  this.saveNewProject(this.input.value.trim());
+                // Se ha selezionato l'opzione "Crea nuovo progetto" (ultimo elemento)
+                if (this.selectedIndex === this.filteredOptions.length) {
+                  this.openDialog();
                 } else {
-                  // Calcola l'indice corretto per le opzioni filtrate
-                  const optionIndex = hasCreateOption
-                    ? this.selectedIndex - 1
-                    : this.selectedIndex;
-                  if (this.filteredOptions[optionIndex]) {
-                    this.selectOption(this.filteredOptions[optionIndex]);
+                  // Seleziona una delle opzioni filtrate
+                  if (this.filteredOptions[this.selectedIndex]) {
+                    this.selectOption(this.filteredOptions[this.selectedIndex]);
                   }
                 }
               }
@@ -439,15 +631,33 @@
         }
 
         highlightItem() {
-          const items = this.list.querySelectorAll(".dropdown-item");
-          items.forEach((item, index) => {
-            item.style.backgroundColor =
-              index === this.selectedIndex ? "#f0f0f0" : "";
-          });
+          const resultsItems = this.results.querySelectorAll(".dropdown-item");
+          const createItem = this.createProject.querySelector(".dropdown-item");
 
-          // Scroll nell'elemento evidenziato
-          if (items[this.selectedIndex]) {
-            items[this.selectedIndex].scrollIntoView({ block: "nearest" });
+          // Resetta tutti gli stili
+          resultsItems.forEach((item, index) => {
+            item.style.backgroundColor = "";
+          });
+          if (createItem) {
+            createItem.style.backgroundColor = "";
+          }
+
+          // Evidenzia l'elemento selezionato
+          if (
+            this.selectedIndex >= 0 &&
+            this.selectedIndex < resultsItems.length
+          ) {
+            // Elemento nei risultati
+            resultsItems[this.selectedIndex].style.backgroundColor = "#f0f0f0";
+            resultsItems[this.selectedIndex].scrollIntoView({
+              block: "nearest",
+            });
+          } else if (
+            this.selectedIndex === this.filteredOptions.length &&
+            createItem
+          ) {
+            // Elemento "Crea nuovo progetto"
+            createItem.style.backgroundColor = "#f0f0f0";
           }
         }
 
@@ -485,6 +695,29 @@
             this.close();
           } else {
             this.open();
+          }
+        }
+
+        // Dialog methods
+        openDialog() {
+          this.dialogOverlay.classList.add("show");
+          this.dialogInput.value = "";
+          // Focus sull'input della dialog dopo un piccolo delay per l'animazione
+          setTimeout(() => {
+            this.dialogInput.focus();
+          }, 100);
+        }
+
+        closeDialog() {
+          this.dialogOverlay.classList.remove("show");
+          this.dialogInput.value = "";
+        }
+
+        handleDialogOk() {
+          const projectName = this.dialogInput.value.trim();
+          if (projectName) {
+            this.saveNewProject(projectName);
+            this.closeDialog();
           }
         }
 
