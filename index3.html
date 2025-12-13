@@ -308,6 +308,20 @@
         text-decoration: underline;
       }
 
+      .keycap {
+        margin-left: 8px;
+        padding: 2px 6px;
+        border-radius: 6px;
+        border: 1px solid #cfcfcf;
+        background: #f2f2f2;
+        color: #666;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.2;
+        box-shadow: 0 1px 0 #e6e6e6;
+        pointer-events: none; /* solo visuale */
+      }
+
       .dropdown-item {
         padding: 12px 15px;
         cursor: pointer;
@@ -545,8 +559,15 @@
               <div class="dropdown-results" id="dropdownResults"></div>
               <div class="dropdown-footer">
                 <a href="#" class="close-dropdown-link" id="closeDropdownLink"
-                  >chiudi tendina (tasto: ESC)</a
+                  >chiudi tendina</a
+                ><button
+                  type="button"
+                  class="keycap"
+                  aria-hidden="true"
+                  tabindex="-1"
                 >
+                  ESC
+                </button>
               </div>
             </div>
           </div>
