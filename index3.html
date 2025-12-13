@@ -21,8 +21,54 @@
         border-radius: 12px;
         padding: 30px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        max-width: 400px;
+        max-width: fit-content;
         width: 100%;
+      }
+
+      .layout {
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+      }
+
+      .left-col {
+        width: 420px;
+        max-width: 100%;
+        flex: 0 0 auto;
+      }
+
+      .right-col {
+        flex: 0 0 auto;
+        width: max-content;
+      }
+
+      .right-col-2 {
+        flex: 0 0 auto;
+        width: max-content;
+      }
+
+      .synonyms-panel {
+        border: 1px solid #e6e6e6;
+        border-radius: 10px;
+        padding: 14px;
+        background: #fafafa;
+        max-height: 520px;
+        overflow: auto;
+        width: max-content;
+      }
+
+      .synonyms-filter {
+        font-size: 14px;
+        font-weight: 700;
+        color: #333;
+        margin: 10px 0 4px 0;
+      }
+
+      .synonyms-term {
+        font-size: 13px;
+        color: #555;
+        margin: 2px 0;
+        padding-left: 18px; /* indent dei sinonimi */
       }
 
       h1 {
@@ -35,9 +81,33 @@
       .field-label {
         display: block;
         margin: 0 0 8px 2px;
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         color: #555;
+      }
+
+      .autocomplete-inline {
+        position: absolute;
+        pointer-events: none;
+        white-space: nowrap;
+        display: none;
+        transform: none;
+      }
+
+      .autocomplete-inline.show {
+        display: inline-flex;
+        align-items: baseline;
+      }
+
+      .autocomplete-suffix {
+        color: #aaa;
+        font-size: 16px;
+      }
+
+      .autocomplete-tip {
+        margin-left: 8px;
+        color: #777;
+        font-size: 12px;
       }
 
       .dropdown-container {
@@ -162,6 +232,7 @@
         border: 2px solid #e0e0e0;
         border-top: none;
         border-radius: 0 0 8px 8px;
+        overflow: hidden;
         max-height: 500px;
         z-index: 1000;
         opacity: 0;
@@ -175,8 +246,9 @@
 
       .dropdown-suggestions {
         flex-shrink: 0;
-        border-bottom: 3px solid #e0e0e0;
+        border-bottom: 1px solid #e0e0e0;
         padding-bottom: 6px;
+        background-color: #f9f9f9;
         max-height: 220px;
         overflow-y: auto;
         min-height: 0;
@@ -213,6 +285,27 @@
         opacity: 1;
         transform: translateY(0);
         visibility: visible;
+      }
+
+      .dropdown-footer {
+        flex-shrink: 0;
+        border-top: 1px solid #e0e0e0;
+        background: white;
+        padding: 8px 12px;
+        text-align: right;
+        border-radius: 0 0 8px 8px;
+      }
+
+      .close-dropdown-link {
+        font-size: 13px;
+        color: #007bff;
+        cursor: pointer;
+        user-select: none;
+        text-decoration: none;
+      }
+
+      .close-dropdown-link:hover {
+        text-decoration: underline;
       }
 
       .dropdown-item {
@@ -402,6 +495,10 @@
           padding: 20px;
         }
 
+        .layout {
+          flex-direction: column;
+        }
+
         h1 {
           font-size: 20px;
         }
@@ -415,26 +512,52 @@
   </head>
   <body>
     <div class="container">
-      <h1>Filtro</h1>
-
-      <div class="dropdown-container">
-        <label class="field-label" for="dropdownInput"
-          >Servizio giornalistico</label
-        >
-        <div class="dropdown-input" id="dropdownInputWrapper">
-          <div id="chipContainer"></div>
-          <input
-            type="text"
-            class="chip-text-input"
-            id="dropdownInput"
-            autocomplete="off"
-          />
-          <div class="dropdown-arrow" id="dropdownArrow"></div>
-          <div class="dropdown-clear" id="dropdownClear">×</div>
+      <div class="layout">
+        <div class="left-col">
+          <div class="dropdown-container">
+            <label class="field-label" for="dropdownInput"
+              >Servizio giornalistico</label
+            >
+            <div class="dropdown-input" id="dropdownInputWrapper">
+              <div id="chipContainer"></div>
+              <input
+                type="text"
+                class="chip-text-input"
+                id="dropdownInput"
+                autocomplete="off"
+              />
+              <div
+                class="autocomplete-inline"
+                id="autocompleteInline"
+                aria-hidden="true"
+              >
+                <span
+                  class="autocomplete-suffix"
+                  id="autocompleteSuffix"
+                ></span>
+                <span class="autocomplete-tip" id="autocompleteTip"></span>
+              </div>
+              <div class="dropdown-arrow" id="dropdownArrow"></div>
+              <div class="dropdown-clear" id="dropdownClear">×</div>
+            </div>
+            <div class="dropdown-list" id="dropdownList">
+              <div class="dropdown-suggestions" id="dropdownSuggestions"></div>
+              <div class="dropdown-results" id="dropdownResults"></div>
+              <div class="dropdown-footer">
+                <a href="#" class="close-dropdown-link" id="closeDropdownLink"
+                  >chiudi tendina (tasto: ESC)</a
+                >
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="dropdown-list" id="dropdownList">
-          <div class="dropdown-suggestions" id="dropdownSuggestions"></div>
-          <div class="dropdown-results" id="dropdownResults"></div>
+
+        <div class="right-col">
+          <div class="synonyms-panel" id="synonymsPanel"></div>
+        </div>
+
+        <div class="right-col-2">
+          <div class="synonyms-panel" id="relatedPanel"></div>
         </div>
       </div>
     </div>
@@ -469,9 +592,15 @@
           this.input = document.getElementById(inputId);
           this.inputWrapper = document.getElementById("dropdownInputWrapper");
           this.chipContainer = document.getElementById("chipContainer");
+          this.autocompleteInline =
+            document.getElementById("autocompleteInline");
+          this.autocompleteSuffix =
+            document.getElementById("autocompleteSuffix");
+          this.autocompleteTip = document.getElementById("autocompleteTip");
           this.arrow = document.getElementById("dropdownArrow");
           this.clear = document.getElementById("dropdownClear");
           this.list = document.getElementById("dropdownList");
+          this.closeLink = document.getElementById("closeDropdownLink");
           this.suggestions = document.getElementById("dropdownSuggestions");
           this.results = document.getElementById("dropdownResults");
 
@@ -525,6 +654,80 @@
             Elettronica: "HI-FI",
           };
 
+          // Autocomplete (esempio richiesto)
+          // - digiti "sol" → suggerisce completamento "di" → con TAB diventa "soldi"
+          this.autocompleteMap = {
+            sol: "soldi",
+          };
+
+          // Keyword → filtri suggeriti (anche se non matchano la query)
+          this.keywordToFiltersMap = {
+            soldi: ["Economia"],
+          };
+
+          // Sinonimi/termini correlati → filtro (stessa logica di "soldi")
+          const synonymsByFilter = {
+            Agricoltura: ["coltivazioni", "agronomia"],
+            Zootecnica: ["allevamento", "bestiame"],
+            Alimentari: ["industria alimentare", "trasformazione alimentare"],
+            Ambiente: ["sostenibilità", "tutela ambientale"],
+            Amministrazione: ["enti locali", "burocrazia"],
+            Architettura: ["progettazione edilizia", "urbanistica"],
+            Arredamento: ["interior design", "mobili"],
+            Arte: ["arti visive", "creatività"],
+            Attualità: ["cronaca", "notizie"],
+            Automazione: ["robotica", "controllo industriale"],
+            Bevande: ["drink", "industria delle bevande"],
+            Bellezza: ["estetica", "skincare"],
+            Chimica: ["chimica industriale", "laboratorio"],
+            Commercio: ["vendite", "retail"],
+            "Costruzione e materiali": [
+              "materiali da costruzione",
+              "cantieristica",
+            ],
+            Cosmesi: ["makeup", "profumeria"],
+            Cultura: ["patrimonio culturale", "eventi culturali"],
+            Design: ["progettazione prodotto", "stile"],
+            Ecologia: ["biodiversità", "impatto ambientale"],
+            Economia: ["mercato", "macroeconomia"],
+            Edilizia: ["costruzioni", "ristrutturazioni"],
+            Elettronica: ["circuiti", "componenti elettronici"],
+            Energia: ["produzione energetica", "consumi energetici"],
+            Farmaceutica: ["medicinali", "biotech"],
+            Finanza: ["investimenti", "mercati finanziari"],
+            Fotografia: ["fotografia digitale", "reportage"],
+            "Gestione materiali": ["supply chain", "gestione scorte"],
+            "Grande Distribuzione": ["gdo", "supermercati"],
+            "HI-FI": ["alta fedeltà", "impianto stereo"],
+            "Logistica materiali": ["movimentazione", "magazzino"],
+            Ottica: ["lenti", "oculistica"],
+            Progettazione: ["ingegneria", "pianificazione"],
+            "Risorse energetiche": ["fonti energetiche", "combustibili"],
+            "Servizi Pubblici": ["utilità pubbliche", "trasporto pubblico"],
+            Strumentazione: ["strumenti di misura", "sensoristica"],
+          };
+
+          // Lista termini autocompletabili (sinonimi) per completamento a prefisso
+          this.autocompleteTerms = new Set();
+
+          for (const [filter, syns] of Object.entries(synonymsByFilter)) {
+            for (const syn of syns) {
+              const key = (syn || "").trim().toLowerCase();
+              if (!key) continue;
+              if (!this.keywordToFiltersMap[key]) {
+                this.keywordToFiltersMap[key] = [filter];
+              } else if (!this.keywordToFiltersMap[key].includes(filter)) {
+                this.keywordToFiltersMap[key].push(filter);
+              }
+
+              // abilita anche l'autocomplete per i sinonimi
+              this.autocompleteTerms.add(key);
+            }
+          }
+
+          this.renderSynonymsPanel(synonymsByFilter);
+          this.renderRelatedPanel();
+
           this.init();
         }
 
@@ -544,6 +747,7 @@
           // Input per filtrare
           this.input.addEventListener("input", (e) => {
             this.filterOptions(e.target.value);
+            this.updateAutocompleteHint(e.target.value);
             if (!this.isOpen) {
               this.open();
             }
@@ -574,6 +778,15 @@
               this.close();
             }
           });
+
+          // Link "chiudi tendina"
+          if (this.closeLink) {
+            this.closeLink.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.close();
+            });
+          }
 
           // Dialog events
           this.dialogClose.addEventListener("click", () => {
@@ -613,6 +826,170 @@
           this.renderList();
         }
 
+        getAutocompleteSuggestion(query) {
+          const q = (query || "").trim().toLowerCase();
+          if (!q) return null;
+
+          // 1) mapping esplicito (es. sol -> soldi)
+          const mapped = this.autocompleteMap[q];
+          if (mapped) {
+            const suffix = mapped.slice(q.length);
+            if (!suffix) return null;
+            return { full: mapped, suffix };
+          }
+
+          // 2) completamento a prefisso sui termini (sinonimi)
+          // evita suggerimenti troppo aggressivi su query cortissime
+          if (q.length < 3) return null;
+
+          const candidates = [];
+          for (const term of this.autocompleteTerms || []) {
+            if (term.startsWith(q) && term.length > q.length) {
+              candidates.push(term);
+            }
+          }
+          if (candidates.length === 0) return null;
+
+          candidates.sort(
+            (a, b) => a.length - b.length || a.localeCompare(b, "it")
+          );
+          const full = candidates[0];
+          const suffix = full.slice(q.length);
+          if (!suffix) return null;
+          return { full, suffix };
+        }
+
+        measureTextWidth(text, element) {
+          const canvas =
+            this._measureCanvas ||
+            (this._measureCanvas = document.createElement("canvas"));
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return 0;
+
+          const cs = window.getComputedStyle(element);
+          ctx.font = `${cs.fontStyle} ${cs.fontVariant} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+          const metrics = ctx.measureText(text);
+          let width = metrics.width || 0;
+
+          const letterSpacing = parseFloat(cs.letterSpacing || "0");
+          if (
+            !Number.isNaN(letterSpacing) &&
+            letterSpacing !== 0 &&
+            text.length > 1
+          ) {
+            width += (text.length - 1) * letterSpacing;
+          }
+          return width;
+        }
+
+        updateAutocompleteHint(query) {
+          const suggestion = this.getAutocompleteSuggestion(query);
+          const caretAtEnd =
+            this.input.selectionStart === this.input.value.length &&
+            this.input.selectionEnd === this.input.value.length;
+
+          if (!this.isOpen || !suggestion || !caretAtEnd) {
+            this.autocompleteSuffix.textContent = "";
+            this.autocompleteTip.textContent = "";
+            this.autocompleteInline.classList.remove("show");
+            return;
+          }
+
+          // Contenuto
+          this.autocompleteSuffix.textContent = suggestion.suffix;
+          this.autocompleteTip.textContent = "TAB per completare";
+
+          // Posizionamento: subito dopo il testo digitato nell'input
+          const left =
+            this.input.offsetLeft +
+            this.measureTextWidth(this.input.value, this.input);
+          const cs = window.getComputedStyle(this.input);
+          const paddingTop = parseFloat(cs.paddingTop || "0") || 0;
+          const fontSize = parseFloat(cs.fontSize || "16") || 16;
+          const lineHeight =
+            cs.lineHeight === "normal"
+              ? fontSize * 1.2
+              : parseFloat(cs.lineHeight || `${fontSize * 1.2}`) ||
+                fontSize * 1.2;
+          const lineOffset = Math.max(0, (lineHeight - fontSize) / 2);
+          const top = this.input.offsetTop + paddingTop + lineOffset - 2.75;
+          this.autocompleteInline.style.left = `${left}px`;
+          this.autocompleteInline.style.top = `${top}px`;
+          this.autocompleteInline.classList.add("show");
+        }
+
+        renderSynonymsPanel(synonymsByFilter) {
+          const panel = document.getElementById("synonymsPanel");
+          if (!panel) return;
+
+          panel.innerHTML = "";
+
+          const filters = Object.keys(synonymsByFilter || {}).sort((a, b) =>
+            a.localeCompare(b, "it", { sensitivity: "base" })
+          );
+
+          for (const filter of filters) {
+            const filterEl = document.createElement("div");
+            filterEl.className = "synonyms-filter";
+            filterEl.textContent = filter;
+            panel.appendChild(filterEl);
+
+            const terms = synonymsByFilter[filter] || [];
+            for (const term of terms) {
+              const termEl = document.createElement("div");
+              termEl.className = "synonyms-term";
+              termEl.textContent = term;
+              panel.appendChild(termEl);
+            }
+          }
+        }
+
+        renderRelatedPanel() {
+          const panel = document.getElementById("relatedPanel");
+          if (!panel) return;
+
+          panel.innerHTML = "";
+
+          const keys = Object.keys(this.relatedMap || {}).sort((a, b) =>
+            a.localeCompare(b, "it", { sensitivity: "base" })
+          );
+
+          const seenPairs = new Set();
+          const pairs = [];
+
+          for (const k of keys) {
+            const v = this.relatedMap[k];
+            if (!v) continue;
+            const a = String(k);
+            const b = String(v);
+            const pairKey = [a, b]
+              .sort((x, y) => x.localeCompare(y, "it"))
+              .join("||");
+            if (seenPairs.has(pairKey)) continue;
+            seenPairs.add(pairKey);
+            pairs.push([a, b]);
+          }
+
+          // Ordina i pair per il primo elemento (poi secondo)
+          pairs.sort(
+            (p1, p2) =>
+              p1[0].localeCompare(p2[0], "it", { sensitivity: "base" }) ||
+              p1[1].localeCompare(p2[1], "it", { sensitivity: "base" })
+          );
+
+          for (const [filter, related] of pairs) {
+            const filterEl = document.createElement("div");
+            filterEl.className = "synonyms-filter";
+            filterEl.textContent = filter;
+            panel.appendChild(filterEl);
+
+            const termEl = document.createElement("div");
+            termEl.className = "synonyms-term";
+            termEl.textContent = related;
+            panel.appendChild(termEl);
+          }
+        }
+
         // Funzione per evidenziare il testo cercato
         highlightSearchText(text, searchTerm) {
           if (!searchTerm || searchTerm.trim() === "") {
@@ -631,13 +1008,23 @@
           this.results.innerHTML = "";
           this.suggestions.innerHTML = "";
 
-          // Sezione "Consigliati" (correlati) basata sulla query corrente
+          // Sezione "Correlati" basata sulla query corrente
           const query = this.input.value.trim();
           if (query.length >= 2) {
             const filteredSet = new Set(this.filteredOptions);
 
-            // Suggerisci i correlati di TUTTE le voci filtrate dalla query
             const suggestionsSet = new Set();
+
+            // 1) Suggerimenti "da keyword" (es. soldi → Economia) anche senza match
+            const kw = query.toLowerCase();
+            const kwSuggestions = this.keywordToFiltersMap[kw] || [];
+            for (const opt of kwSuggestions) {
+              if (opt && !filteredSet.has(opt)) {
+                suggestionsSet.add(opt);
+              }
+            }
+
+            // 2) Suggerisci i correlati di TUTTE le voci filtrate dalla query
             for (const opt of this.filteredOptions) {
               const related = this.relatedMap[opt];
               if (related && !filteredSet.has(related)) {
@@ -652,7 +1039,7 @@
             if (suggestions.length > 0) {
               const title = document.createElement("div");
               title.className = "dropdown-section-title";
-              title.textContent = "Correlati";
+              title.textContent = "Suggeriti";
               this.suggestions.appendChild(title);
 
               suggestions.forEach((option) => {
@@ -779,6 +1166,7 @@
           this.input.value = "";
           this.filteredOptions = [...this.originalOptions];
           this.renderChips();
+          this.updateAutocompleteHint("");
           this.close();
           this.renderList();
           this.updateClearVisibility();
@@ -795,6 +1183,22 @@
         }
 
         handleKeyboard(e) {
+          // TAB: accetta l'autocomplete (es. sol -> soldi)
+          if (e.key === "Tab") {
+            const suggestion = this.getAutocompleteSuggestion(this.input.value);
+            if (suggestion) {
+              e.preventDefault();
+              this.input.value = suggestion.full;
+              this.filterOptions(this.input.value);
+              this.updateAutocompleteHint(this.input.value);
+              if (!this.isOpen) {
+                this.open();
+              }
+              this.selectedIndex = -1;
+              return;
+            }
+          }
+
           // Backspace: se non c'è testo, rimuovi l'ultimo chip selezionato
           if (
             e.key === "Backspace" &&
@@ -877,6 +1281,7 @@
         open() {
           this.isOpen = true;
           this.filterOptions(this.input.value);
+          this.updateAutocompleteHint(this.input.value);
           this.selectedIndex = -1;
 
           this.list.classList.add("show");
@@ -890,6 +1295,7 @@
           this.arrow.classList.remove("rotated");
           this.inputWrapper.style.borderRadius = "8px";
           this.selectedIndex = -1;
+          this.updateAutocompleteHint("");
         }
 
         toggle() {
@@ -1018,6 +1424,7 @@
 
       // Inizializza la dropdown
       const dropdown = new FilterableDropdown("dropdownInput", sampleOptions);
+      dropdown.updateAutocompleteHint("");
 
       // Esempio di come aggiungere opzioni dinamicamente
       // dropdown.addOption('Nuova Opzione');
