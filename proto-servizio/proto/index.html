@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>proto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -54,7 +60,7 @@
 
             <div class="dropdown-container" style="margin-bottom: 18px">
               <label class="field-label" for="textFilterInput"
-                >Nome, Testata, Note</label
+                >Giornalista, Testata, Note</label
               >
               <div class="dropdown-input" id="textFilterInputWrapper">
                 <input
@@ -297,7 +303,7 @@
         </button>
       </div>
       <div class="notes-modal-body">
-        <label class="field-label" for="saveListNameInput">nome lista</label>
+        <label class="field-label" for="saveListNameInput">Nome lista</label>
         <div class="dropdown-input">
           <input
             type="text"
@@ -732,6 +738,7 @@
 
         bindEvents() {
           this.inputWrapper.addEventListener("click", () => {
+            if (this.input?.disabled) return;
             if (this.ignoreWrapperClick) {
               this.ignoreWrapperClick = false;
               return;
@@ -742,6 +749,7 @@
 
           if (this.label) {
             this.label.addEventListener("click", (e) => {
+              if (this.input?.disabled) return;
               e.preventDefault();
               e.stopPropagation();
               this.ignoreWrapperClick = true;
@@ -1993,6 +2001,189 @@
         j.ruolo = normalizeRole(j.ruolo);
       }
 
+      function normalizeTestataKey(value) {
+        return String(value || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, " ");
+      }
+
+      function inferTestataArgomento(nome) {
+        const n = String(nome || "")
+          .trim()
+          .toLowerCase();
+
+        if (n.includes("wired"))
+          return "specializzata — tecnologia e cultura digitale";
+        if (n.includes("sole 24")) return "specializzata — economia e diritto";
+        if (n.includes("domus")) return "specializzata — architettura e design";
+        if (n.includes("gambero")) return "specializzata — enogastronomia";
+        if (n.includes("tom")) return "specializzata — tecnologia";
+        if (n.includes("dday")) return "specializzata — tecnologia";
+        if (n.includes("national geographic"))
+          return "specializzata — scienza, natura e viaggi";
+        if (
+          n.includes("art ") ||
+          n.startsWith("art") ||
+          n.includes("arte") ||
+          n.includes("artribune") ||
+          n.includes("exibart") ||
+          n.includes("interni")
+        )
+          return "specializzata — arte, cultura e design";
+        if (n.includes("everyeye"))
+          return "specializzata — videogame e intrattenimento";
+        if (n.includes("cibo")) return "specializzata — food";
+        if (n.includes("sololibri")) return "specializzata — libri";
+
+        return "generalista";
+      }
+
+      function inferMediaType(nome) {
+        const n = String(nome || "")
+          .trim()
+          .toLowerCase();
+
+        const isNewspaper =
+          n.includes("corriere") ||
+          n.includes("repubblica") ||
+          n.includes("stampa") ||
+          n.includes("giornale") ||
+          n.includes("avvenire") ||
+          n.includes("manifesto") ||
+          n.includes("fatto") ||
+          n.includes("il giorno");
+
+        if (isNewspaper) {
+          return { parent: "Carta Stampata", child: "Quotidiani" };
+        }
+
+        const isMagazine =
+          n.includes("wired") ||
+          n.includes("gambero") ||
+          n.includes("national geographic") ||
+          n.includes("interni") ||
+          n.includes("domus") ||
+          n.includes("art news");
+
+        if (isMagazine) {
+          return { parent: "Carta Stampata", child: "Periodici" };
+        }
+
+        return { parent: "Web", child: "On-Line" };
+      }
+
+      function inferPublicationFrequency(mediaType) {
+        const parent = mediaType?.parent;
+        const child = mediaType?.child;
+        if (parent === "Carta Stampata" && child === "Quotidiani")
+          return "quotidiana";
+        if (parent === "Carta Stampata" && child === "Periodici")
+          return "mensile";
+        if (parent === "Web") return "aggiornamento continuo";
+        return "n/d";
+      }
+
+      function inferDiffusione(nome, mediaType) {
+        const n = String(nome || "")
+          .trim()
+          .toLowerCase();
+        if (n.includes("national geographic") || n.includes("wired")) {
+          return "internazionale";
+        }
+        if (mediaType?.parent === "Web") return "nazionale";
+        return "nazionale";
+      }
+
+      function inferTiratura(mediaType) {
+        if (
+          mediaType?.parent === "Carta Stampata" &&
+          mediaType?.child === "Quotidiani"
+        ) {
+          return "100k+";
+        }
+        if (
+          mediaType?.parent === "Carta Stampata" &&
+          mediaType?.child === "Periodici"
+        ) {
+          return "20k+";
+        }
+        return "n/d";
+      }
+
+      function inferCircolazione(mediaType) {
+        if (mediaType?.parent === "Web") return "online";
+        if (mediaType?.parent === "Carta Stampata")
+          return "edicola + abbonamenti";
+        return "n/d";
+      }
+
+      function inferRedazioneIndirizzo(nome) {
+        const n = String(nome || "")
+          .trim()
+          .toLowerCase();
+        if (n.includes("milano")) return "Milano";
+        if (n.includes("roma")) return "Roma";
+        if (n.includes("torino")) return "Torino";
+        return "Milano";
+      }
+
+      function buildTestateFromJournalists(list) {
+        const byKey = new Map();
+
+        for (const j of list || []) {
+          const raw = String(j?.testata || "").trim();
+          const key = normalizeTestataKey(raw);
+          if (!key) continue;
+
+          if (!byKey.has(key)) {
+            const nome = raw || key;
+            const mediaType = inferMediaType(nome);
+            const city = inferRedazioneIndirizzo(nome);
+            const journalistEmail = String(j?.email || "").trim();
+            const domain = journalistEmail.includes("@")
+              ? journalistEmail.split("@")[1]
+              : "example.it";
+
+            byKey.set(key, {
+              id: key,
+              nome,
+              argomento: inferTestataArgomento(nome),
+              direttore: "Direttore responsabile",
+              tipoMedia: mediaType,
+              frequenzaPubblicazione: inferPublicationFrequency(mediaType),
+              diffusione: inferDiffusione(nome, mediaType),
+              tiratura: inferTiratura(mediaType),
+              circolazione: inferCircolazione(mediaType),
+              redazione: {
+                giornalisti: [],
+                indirizzo: `${city} — sede redazione`,
+              },
+              email: `redazione@${domain}`,
+              telefono: String(j?.telefono || "").trim() || "+39 02 0000 0000",
+              note:
+                inferTestataArgomento(nome) === "generalista"
+                  ? "Testata generalista."
+                  : "Testata specializzata.",
+            });
+          }
+
+          const t = byKey.get(key);
+          const jid = String(j?.email || "").trim();
+          if (jid && !t.redazione.giornalisti.includes(jid)) {
+            t.redazione.giornalisti.push(jid);
+          }
+        }
+
+        return Array.from(byKey.values()).sort((a, b) =>
+          String(a.nome || "").localeCompare(String(b.nome || ""), "it", {
+            sensitivity: "base",
+          })
+        );
+      }
+
+      const testate = buildTestateFromJournalists(journalists);
+
       const selectedJournalistIds = new Set();
       const selectedJournalistOrder = [];
 
@@ -2548,6 +2739,66 @@
         return card;
       }
 
+      function createTestataCard(t, activeTerms) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.testataKey = String(t?.id || "");
+
+        const mediaLabel = (() => {
+          const p = String(t?.tipoMedia?.parent || "").trim();
+          const c = String(t?.tipoMedia?.child || "").trim();
+          if (p && c) return `${p} / ${c}`;
+          return p || c || "";
+        })();
+
+        const journalistNamesRaw = (t?.redazione?.giornalisti || [])
+          .map((jid) => getJournalistNameById(jid))
+          .join(" • ");
+
+        const highlightedName = highlightHtmlMulti(
+          String(t?.nome || ""),
+          activeTerms
+        );
+        const highlightedArgomento = highlightHtmlMulti(
+          String(t?.argomento || ""),
+          activeTerms
+        );
+        const highlightedTelefono = highlightHtmlMulti(
+          String(t?.telefono || ""),
+          activeTerms
+        );
+        const highlightedEmail = highlightHtmlMulti(
+          String(t?.email || ""),
+          activeTerms
+        );
+        const highlightedJournalists = journalistNamesRaw
+          ? highlightHtmlMulti(journalistNamesRaw, activeTerms)
+          : '<span class="muted">n/d</span>';
+
+        card.innerHTML = `
+          <div class="card-top">
+            <div class="card-name-row">
+              <h3 class="card-name">${highlightedName}</h3>
+              <a
+                href="#"
+                class="testata-link"
+                data-testata-key="${escapeHtml(String(t?.id || ""))}"
+                data-testata="${escapeHtml(String(t?.nome || ""))}"
+              >
+                scheda
+              </a>
+            </div>
+            <p class="card-role">${escapeHtml(mediaLabel)}</p>
+          </div>
+          <div class="card-row"><div class="card-label">Argomento testata</div><div class="card-value">${highlightedArgomento}</div></div>
+          <div class="card-row"><div class="card-label">Telefono</div><div class="card-value">${highlightedTelefono}</div></div>
+          <div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${highlightedEmail}</div></div>
+          <div class="card-row"><div class="card-label">Giornalisti</div><div class="card-value muted card-journalists">${highlightedJournalists}</div></div>
+        `;
+
+        return card;
+      }
+
       const testataOverlay = document.getElementById("testataOverlay");
       const testataPanel = document.getElementById("testataPanel");
       const testataPanelTitle = document.getElementById("testataPanelTitle");
@@ -2728,7 +2979,173 @@
 
       function openTestataPanel(testata) {
         testataPanelTitle.textContent = "Testata";
-        testataPanelBody.textContent = `testata: ${testata}`;
+        testataPanelBody.innerHTML = "";
+
+        const raw = String(testata || "").trim();
+        const key = normalizeTestataKey(raw);
+
+        const t = (testate || []).find((x) => {
+          if (!x) return false;
+          const idOk =
+            String(x?.id || "") === raw || String(x?.id || "") === key;
+          if (idOk) return true;
+          const nameOk =
+            normalizeTestataKey(String(x?.nome || "")) === key ||
+            String(x?.nome || "")
+              .trim()
+              .toLowerCase() === raw.toLowerCase();
+          return nameOk;
+        });
+
+        if (!t) {
+          testataPanelBody.textContent = `testata: ${testata}`;
+        } else {
+          testataPanelTitle.textContent = String(t?.nome || "Testata");
+
+          const addRow = (labelText, valueNode) => {
+            const row = document.createElement("div");
+            row.className = "card-row";
+
+            const label = document.createElement("div");
+            label.className = "card-label";
+            label.textContent = labelText;
+
+            const value = document.createElement("div");
+            value.className = "card-value";
+            if (valueNode) {
+              value.appendChild(valueNode);
+            }
+
+            row.appendChild(label);
+            row.appendChild(value);
+            testataPanelBody.appendChild(row);
+          };
+
+          const argomento = document.createElement("span");
+          argomento.textContent = String(t?.argomento || "");
+          addRow("Argomento testata", argomento);
+
+          const direttore = document.createElement("span");
+          direttore.textContent = String(t?.direttore || "");
+          addRow("Direttore", direttore);
+
+          const tipoMedia = document.createElement("span");
+          const p = String(t?.tipoMedia?.parent || "").trim();
+          const c = String(t?.tipoMedia?.child || "").trim();
+          tipoMedia.textContent = p && c ? `${p} / ${c}` : p || c;
+          addRow("Tipo di media", tipoMedia);
+
+          const freq = document.createElement("span");
+          freq.textContent = String(t?.frequenzaPubblicazione || "");
+          addRow("Frequenza pubblicazione", freq);
+
+          const diffusione = document.createElement("span");
+          diffusione.textContent = String(t?.diffusione || "");
+          addRow("Diffusione", diffusione);
+
+          const tiratura = document.createElement("span");
+          tiratura.textContent = String(t?.tiratura || "");
+          addRow("Tiratura", tiratura);
+
+          const circolazione = document.createElement("span");
+          circolazione.textContent = String(t?.circolazione || "");
+          addRow("Circolazione", circolazione);
+
+          const indirizzo = document.createElement("span");
+          indirizzo.textContent = String(t?.redazione?.indirizzo || "");
+          addRow("Redazione", indirizzo);
+
+          const email = document.createElement("span");
+          email.textContent = String(t?.email || "");
+          addRow("E-mail", email);
+
+          const telefono = document.createElement("span");
+          telefono.textContent = String(t?.telefono || "");
+          addRow("Telefono", telefono);
+
+          const note = document.createElement("div");
+          const noteText = String(t?.note || "").trim();
+          if (!noteText) {
+            const empty = document.createElement("div");
+            empty.className = "muted";
+            empty.textContent = "nessuna nota";
+            note.appendChild(empty);
+          } else {
+            note.textContent = noteText;
+          }
+          addRow("Note", note);
+
+          const listWrap = document.createElement("div");
+          const jids = [...(t?.redazione?.giornalisti || [])].filter(Boolean);
+          if (!jids.length) {
+            const empty = document.createElement("div");
+            empty.className = "muted";
+            empty.textContent = "nessun giornalista";
+            listWrap.appendChild(empty);
+          } else {
+            const ul = document.createElement("ul");
+            ul.className = "testata-panel-journalists";
+
+            const sorted = jids
+              .map((jid) => ({ jid, name: getJournalistNameById(jid) }))
+              .sort((a, b) =>
+                String(a.name || "").localeCompare(String(b.name || ""), "it", {
+                  sensitivity: "base",
+                })
+              );
+
+            for (const item of sorted) {
+              const jid = item.jid;
+              const li = document.createElement("li");
+
+              const checkboxId = `testata-panel-select-${jid.replace(
+                /[^a-zA-Z0-9_-]/g,
+                "_"
+              )}`;
+
+              const label = document.createElement("label");
+              label.setAttribute("for", checkboxId);
+              label.className = "testata-panel-journalist-row";
+
+              const cb = document.createElement("input");
+              cb.type = "checkbox";
+              cb.className = "testata-panel-select";
+              cb.id = checkboxId;
+              cb.checked = selectedJournalistIds.has(jid);
+              cb.addEventListener("change", (e) => {
+                e.stopPropagation();
+                if (cb.checked) {
+                  selectedJournalistIds.add(jid);
+                  ensureSelectedOrder(jid);
+                  openSelectedPanel();
+                } else {
+                  selectedJournalistIds.delete(jid);
+                  removeFromSelectedOrder(jid);
+                  if (selectedJournalistIds.size === 0) {
+                    closeSelectedPanel();
+                  } else {
+                    renderSelectedPanelList();
+                  }
+                }
+                updateCheckboxUI(jid);
+                updateCardSelectionUI(jid);
+              });
+
+              const name = document.createElement("span");
+              name.textContent = item.name;
+
+              label.appendChild(cb);
+              label.appendChild(name);
+              li.appendChild(label);
+              ul.appendChild(li);
+            }
+
+            listWrap.appendChild(ul);
+          }
+
+          addRow("Giornalisti", listWrap);
+        }
+
         testataOverlay.classList.add("show");
         testataPanel.classList.add("show");
         testataOverlay.setAttribute("aria-hidden", "false");
@@ -2986,6 +3403,39 @@
         });
       }
 
+      function getSidebarMode() {
+        const el = document.querySelector('input[name="sidebarMode"]:checked');
+        const v = String(el?.value || "giornalisti")
+          .trim()
+          .toLowerCase();
+        return v === "testate" ? "testate" : "giornalisti";
+      }
+
+      function setFilterDropdownEnabled(inst, enabled) {
+        if (!inst) return;
+        if (inst?.isOpen && !enabled) {
+          inst.close();
+        }
+        if (inst?.input) {
+          inst.input.disabled = !enabled;
+        }
+        const container = inst?.container;
+        if (container) {
+          container.classList.toggle("is-disabled", !enabled);
+          container.setAttribute("aria-disabled", enabled ? "false" : "true");
+        }
+      }
+
+      function applySidebarModeUI() {
+        const isMailingListView = appState.view === "mailing-list";
+        const effectiveMode = isMailingListView
+          ? "giornalisti"
+          : getSidebarMode();
+        const enableJournalistFilters = effectiveMode !== "testate";
+        setFilterDropdownEnabled(dropdown, enableJournalistFilters);
+        setFilterDropdownEnabled(roleDropdown, enableJournalistFilters);
+      }
+
       function getFilterState() {
         const selectedServices = Array.from(dropdown.selectedValues || []);
         const selectedRoles = Array.from(roleDropdown.selectedValues || []);
@@ -3031,6 +3481,11 @@
           ? getMailingListById(appState.activeMailingListId)
           : null;
 
+        applySidebarModeUI();
+
+        const mode = isMailingListView ? "giornalisti" : getSidebarMode();
+        const isTestateMode = mode === "testate";
+
         if (mainTitleEl) {
           if (isMailingListView && activeList) {
             mainTitleEl.textContent = activeList.name;
@@ -3046,8 +3501,115 @@
           return journalists.filter((j) => allowed.has(getJournalistId(j)));
         })();
 
+        const effectiveActive = isTestateMode ? textActive : active;
         if (clearFiltersLink) {
-          clearFiltersLink.style.display = active ? "inline-block" : "none";
+          clearFiltersLink.style.display = effectiveActive
+            ? "inline-block"
+            : "none";
+        }
+
+        if (isTestateMode) {
+          const filteredTestate = (testate || []).filter((t) => {
+            if (!textActive) return true;
+            const nome = String(t?.nome || "").toLowerCase();
+            const argomento = String(t?.argomento || "").toLowerCase();
+            const note = String(t?.note || "").toLowerCase();
+            const giornalisti = (t?.redazione?.giornalisti || [])
+              .map((jid) => getJournalistNameById(jid))
+              .join(" ")
+              .toLowerCase();
+
+            return activeTextTerms.every((term) => {
+              const q = String(term || "")
+                .trim()
+                .toLowerCase();
+              if (!q) return true;
+              return (
+                nome.includes(q) ||
+                argomento.includes(q) ||
+                note.includes(q) ||
+                giornalisti.includes(q)
+              );
+            });
+          });
+
+          grid.innerHTML = "";
+          for (const t of filteredTestate) {
+            grid.appendChild(createTestataCard(t, activeTextTerms));
+          }
+
+          countEl.textContent = `${filteredTestate.length} / ${
+            (testate || []).length
+          }`;
+
+          if (!textActive) {
+            subtitleEl.textContent = "";
+          } else {
+            subtitleEl.innerHTML = "";
+            const bar = document.createElement("div");
+            bar.className = "filters-bar";
+
+            const createChip = (value, onRemove) => {
+              const chip = document.createElement("span");
+              chip.className = "chip";
+
+              const text = document.createElement("span");
+              text.textContent = value;
+
+              const remove = document.createElement("button");
+              remove.type = "button";
+              remove.className = "chip-remove";
+              remove.textContent = "×";
+              remove.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onRemove();
+              });
+
+              chip.appendChild(text);
+              chip.appendChild(remove);
+              return chip;
+            };
+
+            const makeRow = (labelText) => {
+              const row = document.createElement("div");
+              row.className = "filters-row";
+
+              const label = document.createElement("span");
+              label.className = "filters-section-label";
+              label.textContent = labelText;
+              row.appendChild(label);
+              return row;
+            };
+
+            const row = makeRow("Termine:");
+
+            for (const t of committedTextTerms) {
+              row.appendChild(
+                createChip(t, () => {
+                  const idx = committedTextTerms.indexOf(t);
+                  if (idx !== -1) committedTextTerms.splice(idx, 1);
+                  updateTextFilterClearVisibility();
+                  scheduleRender();
+                })
+              );
+            }
+
+            if (currentTextQuery) {
+              row.appendChild(
+                createChip(currentTextQuery, () => {
+                  if (!textFilterInput) return;
+                  textFilterInput.value = "";
+                  updateTextFilterClearVisibility();
+                  scheduleRender();
+                })
+              );
+            }
+
+            bar.appendChild(row);
+            subtitleEl.appendChild(bar);
+          }
+          return;
         }
 
         const filtered = baseJournalists.filter((j) => {
@@ -3090,8 +3652,8 @@
         } else {
           subtitleEl.innerHTML = "";
 
-          const filtersBar = document.createElement("div");
-          filtersBar.className = "filters-bar";
+          const bar = document.createElement("div");
+          bar.className = "filters-bar";
 
           const createChip = (value, onRemove) => {
             const chip = document.createElement("span");
@@ -3220,6 +3782,13 @@
         });
       }
 
+      document.querySelectorAll('input[name="sidebarMode"]').forEach((el) => {
+        el.addEventListener("change", () => {
+          applySidebarModeUI();
+          scheduleRender();
+        });
+      });
+
       const cardsGrid = document.getElementById("cardsGrid");
       if (cardsGrid) {
         cardsGrid.addEventListener("click", (e) => {
@@ -3246,9 +3815,10 @@
             return;
           }
 
+          const key = testataLink.getAttribute("data-testata-key");
           const testata =
             testataLink.getAttribute("data-testata") || testataLink.textContent;
-          openTestataPanel(testata);
+          openTestataPanel(key || testata);
         });
 
         cardsGrid.addEventListener("change", (e) => {
