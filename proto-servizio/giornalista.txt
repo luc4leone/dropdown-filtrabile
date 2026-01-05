@@ -1,0 +1,9 @@
+GIORNALISTA
+- nome
+- cognome
+- ruolo in redazione
+- servizio giornalistico
+- telefono
+- e-mail
+- testata
+- note
