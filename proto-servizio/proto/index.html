@@ -16,20 +16,64 @@
     <div class="page">
       <aside class="nav-sidebar" aria-label="Navigazione">
         <nav>
-          <a href="#dashboard" data-view="dashboard">dashboard</a>
+          <a href="#dashboard" data-view="dashboard">
+            <span class="nav-icon" data-icon="M__" aria-hidden="true"></span>
+            <span>dashboard</span>
+          </a>
           <a
             href="#filtra"
             data-view="filtra"
             class="is-active"
             aria-current="page"
-            ><span>filtra</span><span>banca dati</span></a
           >
-          <a href="#"><span>nuovo</span><span>comunicato</span></a>
-          <a href="#"><span>nuova</span><span>spedizione</span></a>
-          <a href="#"><span>nuovo</span><span>progetto</span></a>
-          <a href="#"><span>nuovo</span><span>todo</span></a>
-          <a href="#">notifiche</a>
-          <a href="#">account</a>
+            <span class="nav-icon" data-icon="filter" aria-hidden="true"></span>
+            <span>filtra</span><span>banca dati</span></a
+          >
+
+          <div class="nav-separator" aria-hidden="true"></div>
+
+          <a href="#">
+            <span
+              class="nav-icon"
+              data-icon="campaign"
+              aria-hidden="true"
+            ></span>
+            <span>nuovo</span><span>comunicato</span>
+          </a>
+          <a href="#">
+            <span class="nav-icon" data-icon="send" aria-hidden="true"></span>
+            <span>nuova</span><span>spedizione</span>
+          </a>
+          <a href="#">
+            <span class="nav-icon" data-icon="folder" aria-hidden="true"></span>
+            <span>nuovo</span><span>progetto</span>
+          </a>
+          <a href="#">
+            <span class="nav-icon" data-icon="task" aria-hidden="true"></span>
+            <span>nuovo</span><span>todo</span>
+          </a>
+
+          <div
+            class="nav-separator nav-separator-bottom"
+            aria-hidden="true"
+          ></div>
+
+          <a href="#">
+            <span
+              class="nav-icon"
+              data-icon="notification"
+              aria-hidden="true"
+            ></span>
+            <span>notifiche</span>
+          </a>
+          <a href="#">
+            <span
+              class="nav-icon"
+              data-icon="account"
+              aria-hidden="true"
+            ></span>
+            <span>account</span>
+          </a>
         </nav>
       </aside>
       <div class="views" id="views">
@@ -46,6 +90,11 @@
               <label class="sidebar-mode-option" for="sidebarModeJournalists"
                 >giornalisti</label
               >
+              <span
+                class="pill"
+                id="sidebarCountJournalists"
+                style="display: inline-block"
+              ></span>
               <span class="sidebar-mode-separator">|</span>
               <input
                 type="radio"
@@ -56,146 +105,479 @@
               <label class="sidebar-mode-option" for="sidebarModeTestate"
                 >testate</label
               >
+              <span
+                class="pill"
+                id="sidebarCountTestate"
+                style="display: inline-block"
+              ></span>
             </div>
 
-            <div class="dropdown-container" style="margin-bottom: 18px">
-              <label class="field-label" for="textFilterInput"
-                >Giornalista, Testata, Note</label
-              >
-              <div class="dropdown-input" id="textFilterInputWrapper">
-                <input
-                  type="text"
-                  class="chip-text-input"
-                  id="textFilterInput"
-                  autocomplete="off"
-                />
-                <div class="dropdown-clear" id="textFilterClear">×</div>
-              </div>
-            </div>
-
-            <hr class="sidebar-separator" />
-            <div class="sidebar-section-title">Filtri giornalista</div>
-
-            <div class="dropdown-container">
-              <label class="field-label" for="dropdownInput"
-                >Servizio giornalistico</label
-              >
-              <div class="dropdown-input" id="dropdownInputWrapper">
-                <div id="chipContainer"></div>
-                <input
-                  type="text"
-                  class="chip-text-input"
-                  id="dropdownInput"
-                  autocomplete="off"
-                />
-                <div
-                  class="autocomplete-inline"
-                  id="autocompleteInline"
-                  aria-hidden="true"
-                >
-                  <span
-                    class="autocomplete-suffix"
-                    id="autocompleteSuffix"
-                  ></span>
-                  <span class="autocomplete-tip" id="autocompleteTip"></span>
-                </div>
-                <div class="dropdown-arrow" id="dropdownArrow"></div>
-                <div class="dropdown-clear" id="dropdownClear">×</div>
-              </div>
-              <div class="dropdown-list" id="dropdownList">
-                <div
-                  class="dropdown-suggestions"
-                  id="dropdownSuggestions"
-                ></div>
-                <div class="dropdown-results" id="dropdownResults"></div>
-                <div class="dropdown-footer">
-                  <a href="#" class="close-dropdown-link" id="closeDropdownLink"
-                    >chiudi tendina</a
+            <div class="sidebar-filters-scroll">
+              <div class="dropdown-container" style="margin-bottom: 18px">
+                <div class="filter-label-row">
+                  <label class="field-label" for="textFilterInput"
+                    >Giornalista, Testata, Note</label
                   >
-                  <button
-                    type="button"
-                    class="keycap"
-                    aria-hidden="true"
-                    tabindex="-1"
+                  <a href="#" class="filter-clear-link" id="textFilterClearLink"
+                    >rimuovi</a
                   >
-                    ESC
-                  </button>
+                </div>
+                <div class="dropdown-input" id="textFilterInputWrapper">
+                  <input
+                    type="text"
+                    class="chip-text-input"
+                    id="textFilterInput"
+                    autocomplete="off"
+                  />
                 </div>
               </div>
-            </div>
 
-            <div class="dropdown-container" style="margin-top: 18px">
-              <label class="field-label" for="roleDropdownInput"
-                >Ruolo in redazione</label
-              >
-              <div class="dropdown-input" id="roleDropdownInputWrapper">
-                <div id="roleChipContainer"></div>
-                <input
-                  type="text"
-                  class="chip-text-input"
-                  id="roleDropdownInput"
-                  autocomplete="off"
-                />
+              <hr class="sidebar-separator" />
+              <div class="sidebar-section-title">Filtri giornalista</div>
+
+              <div class="journalist-filters-slot" id="journalistFiltersSlot">
                 <div
-                  class="autocomplete-inline"
-                  id="roleAutocompleteInline"
-                  aria-hidden="true"
+                  class="journalist-filters-content"
+                  id="journalistFiltersContent"
                 >
-                  <span
-                    class="autocomplete-suffix"
-                    id="roleAutocompleteSuffix"
-                  ></span>
-                  <span
-                    class="autocomplete-tip"
-                    id="roleAutocompleteTip"
-                  ></span>
+                  <div class="dropdown-container">
+                    <div class="filter-label-row">
+                      <label class="field-label" for="dropdownInput"
+                        >Servizio giornalistico</label
+                      >
+                      <a
+                        href="#"
+                        class="filter-clear-link"
+                        id="dropdownClearLink"
+                        >rimuovi</a
+                      >
+                    </div>
+                    <div class="dropdown-input" id="dropdownInputWrapper">
+                      <div id="chipContainer"></div>
+                      <input
+                        type="text"
+                        class="chip-text-input"
+                        id="dropdownInput"
+                        autocomplete="off"
+                      />
+                      <div
+                        class="autocomplete-inline"
+                        id="autocompleteInline"
+                        aria-hidden="true"
+                      >
+                        <span
+                          class="autocomplete-suffix"
+                          id="autocompleteSuffix"
+                        ></span>
+                        <span
+                          class="autocomplete-tip"
+                          id="autocompleteTip"
+                        ></span>
+                      </div>
+                      <div class="dropdown-arrow" id="dropdownArrow"></div>
+                    </div>
+                    <div class="dropdown-list" id="dropdownList">
+                      <div
+                        class="dropdown-suggestions"
+                        id="dropdownSuggestions"
+                      ></div>
+                      <div class="dropdown-results" id="dropdownResults"></div>
+                      <div class="dropdown-footer">
+                        <a
+                          href="#"
+                          class="close-dropdown-link"
+                          id="closeDropdownLink"
+                          >chiudi tendina</a
+                        >
+                        <button
+                          type="button"
+                          class="keycap"
+                          aria-hidden="true"
+                          tabindex="-1"
+                        >
+                          ESC
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="dropdown-container" style="margin-top: 18px">
+                    <div class="filter-label-row">
+                      <label class="field-label" for="roleDropdownInput"
+                        >Ruolo in redazione</label
+                      >
+                      <a
+                        href="#"
+                        class="filter-clear-link"
+                        id="roleDropdownClearLink"
+                        >rimuovi</a
+                      >
+                    </div>
+                    <div class="dropdown-input" id="roleDropdownInputWrapper">
+                      <div id="roleChipContainer"></div>
+                      <input
+                        type="text"
+                        class="chip-text-input"
+                        id="roleDropdownInput"
+                        autocomplete="off"
+                      />
+                      <div
+                        class="autocomplete-inline"
+                        id="roleAutocompleteInline"
+                        aria-hidden="true"
+                      >
+                        <span
+                          class="autocomplete-suffix"
+                          id="roleAutocompleteSuffix"
+                        ></span>
+                        <span
+                          class="autocomplete-tip"
+                          id="roleAutocompleteTip"
+                        ></span>
+                      </div>
+                      <div class="dropdown-arrow" id="roleDropdownArrow"></div>
+                    </div>
+                    <div class="dropdown-list" id="roleDropdownList">
+                      <div
+                        class="dropdown-suggestions"
+                        id="roleDropdownSuggestions"
+                      ></div>
+                      <div
+                        class="dropdown-results"
+                        id="roleDropdownResults"
+                      ></div>
+                      <div class="dropdown-footer">
+                        <a
+                          href="#"
+                          class="close-dropdown-link"
+                          id="roleCloseDropdownLink"
+                          >chiudi tendina</a
+                        >
+                        <button
+                          type="button"
+                          class="keycap"
+                          aria-hidden="true"
+                          tabindex="-1"
+                        >
+                          ESC
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="dropdown-arrow" id="roleDropdownArrow"></div>
-                <div class="dropdown-clear" id="roleDropdownClear">×</div>
-              </div>
-              <div class="dropdown-list" id="roleDropdownList">
+
                 <div
-                  class="dropdown-suggestions"
-                  id="roleDropdownSuggestions"
-                ></div>
-                <div class="dropdown-results" id="roleDropdownResults"></div>
-                <div class="dropdown-footer">
+                  class="journalist-filters-placeholder"
+                  id="journalistFiltersPlaceholder"
+                >
+                  <em>Non si applicano alle testate.</em>
+                </div>
+              </div>
+
+              <hr class="sidebar-separator" />
+              <div class="sidebar-section-title">Filtri testata</div>
+
+              <div class="dropdown-container">
+                <div class="filter-label-row">
+                  <label class="field-label" for="testataArgomentoDropdownInput"
+                    >Argomento testata</label
+                  >
                   <a
                     href="#"
-                    class="close-dropdown-link"
-                    id="roleCloseDropdownLink"
-                    >chiudi tendina</a
+                    class="filter-clear-link"
+                    id="testataArgomentoDropdownClearLink"
+                    >rimuovi</a
                   >
-                  <button
-                    type="button"
-                    class="keycap"
+                </div>
+                <div
+                  class="dropdown-input"
+                  id="testataArgomentoDropdownInputWrapper"
+                >
+                  <div id="testataArgomentoChipContainer"></div>
+                  <input
+                    type="text"
+                    class="chip-text-input"
+                    id="testataArgomentoDropdownInput"
+                    autocomplete="off"
+                  />
+                  <div
+                    class="autocomplete-inline"
+                    id="testataArgomentoAutocompleteInline"
                     aria-hidden="true"
-                    tabindex="-1"
                   >
-                    ESC
-                  </button>
+                    <span
+                      class="autocomplete-suffix"
+                      id="testataArgomentoAutocompleteSuffix"
+                    ></span>
+                    <span
+                      class="autocomplete-tip"
+                      id="testataArgomentoAutocompleteTip"
+                    ></span>
+                  </div>
+                  <div
+                    class="dropdown-arrow"
+                    id="testataArgomentoDropdownArrow"
+                  ></div>
+                </div>
+                <div class="dropdown-list" id="testataArgomentoDropdownList">
+                  <div
+                    class="dropdown-suggestions"
+                    id="testataArgomentoDropdownSuggestions"
+                  ></div>
+                  <div
+                    class="dropdown-results"
+                    id="testataArgomentoDropdownResults"
+                  ></div>
+                  <div class="dropdown-footer">
+                    <a
+                      href="#"
+                      class="close-dropdown-link"
+                      id="testataArgomentoCloseDropdownLink"
+                      >chiudi tendina</a
+                    >
+                    <button
+                      type="button"
+                      class="keycap"
+                      aria-hidden="true"
+                      tabindex="-1"
+                    >
+                      ESC
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-container" style="margin-top: 18px">
+                <div class="filter-label-row">
+                  <label class="field-label" for="testataTipoMediaDropdownInput"
+                    >Tipo di media</label
+                  >
+                  <a
+                    href="#"
+                    class="filter-clear-link"
+                    id="testataTipoMediaDropdownClearLink"
+                    >rimuovi</a
+                  >
+                </div>
+                <div
+                  class="dropdown-input"
+                  id="testataTipoMediaDropdownInputWrapper"
+                >
+                  <div id="testataTipoMediaChipContainer"></div>
+                  <input
+                    type="text"
+                    class="chip-text-input"
+                    id="testataTipoMediaDropdownInput"
+                    autocomplete="off"
+                  />
+                  <div
+                    class="autocomplete-inline"
+                    id="testataTipoMediaAutocompleteInline"
+                    aria-hidden="true"
+                  >
+                    <span
+                      class="autocomplete-suffix"
+                      id="testataTipoMediaAutocompleteSuffix"
+                    ></span>
+                    <span
+                      class="autocomplete-tip"
+                      id="testataTipoMediaAutocompleteTip"
+                    ></span>
+                  </div>
+                  <div
+                    class="dropdown-arrow"
+                    id="testataTipoMediaDropdownArrow"
+                  ></div>
+                </div>
+                <div class="dropdown-list" id="testataTipoMediaDropdownList">
+                  <div
+                    class="dropdown-suggestions"
+                    id="testataTipoMediaDropdownSuggestions"
+                  ></div>
+                  <div
+                    class="dropdown-results"
+                    id="testataTipoMediaDropdownResults"
+                  ></div>
+                  <div class="dropdown-footer">
+                    <a
+                      href="#"
+                      class="close-dropdown-link"
+                      id="testataTipoMediaCloseDropdownLink"
+                      >chiudi tendina</a
+                    >
+                    <button
+                      type="button"
+                      class="keycap"
+                      aria-hidden="true"
+                      tabindex="-1"
+                    >
+                      ESC
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-container" style="margin-top: 18px">
+                <div class="filter-label-row">
+                  <label class="field-label" for="testataFrequenzaDropdownInput"
+                    >Frequenza di pubblicazione</label
+                  >
+                  <a
+                    href="#"
+                    class="filter-clear-link"
+                    id="testataFrequenzaDropdownClearLink"
+                    >rimuovi</a
+                  >
+                </div>
+                <div
+                  class="dropdown-input"
+                  id="testataFrequenzaDropdownInputWrapper"
+                >
+                  <div id="testataFrequenzaChipContainer"></div>
+                  <input
+                    type="text"
+                    class="chip-text-input"
+                    id="testataFrequenzaDropdownInput"
+                    autocomplete="off"
+                  />
+                  <div
+                    class="autocomplete-inline"
+                    id="testataFrequenzaAutocompleteInline"
+                    aria-hidden="true"
+                  >
+                    <span
+                      class="autocomplete-suffix"
+                      id="testataFrequenzaAutocompleteSuffix"
+                    ></span>
+                    <span
+                      class="autocomplete-tip"
+                      id="testataFrequenzaAutocompleteTip"
+                    ></span>
+                  </div>
+                  <div
+                    class="dropdown-arrow"
+                    id="testataFrequenzaDropdownArrow"
+                  ></div>
+                </div>
+                <div class="dropdown-list" id="testataFrequenzaDropdownList">
+                  <div
+                    class="dropdown-suggestions"
+                    id="testataFrequenzaDropdownSuggestions"
+                  ></div>
+                  <div
+                    class="dropdown-results"
+                    id="testataFrequenzaDropdownResults"
+                  ></div>
+                  <div class="dropdown-footer">
+                    <a
+                      href="#"
+                      class="close-dropdown-link"
+                      id="testataFrequenzaCloseDropdownLink"
+                      >chiudi tendina</a
+                    >
+                    <button
+                      type="button"
+                      class="keycap"
+                      aria-hidden="true"
+                      tabindex="-1"
+                    >
+                      ESC
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dropdown-container" style="margin-top: 18px">
+                <div class="filter-label-row">
+                  <label
+                    class="field-label"
+                    for="testataDiffusioneDropdownInput"
+                    >Diffusione</label
+                  >
+                  <a
+                    href="#"
+                    class="filter-clear-link"
+                    id="testataDiffusioneDropdownClearLink"
+                    >rimuovi</a
+                  >
+                </div>
+                <div
+                  class="dropdown-input"
+                  id="testataDiffusioneDropdownInputWrapper"
+                >
+                  <div id="testataDiffusioneChipContainer"></div>
+                  <input
+                    type="text"
+                    class="chip-text-input"
+                    id="testataDiffusioneDropdownInput"
+                    autocomplete="off"
+                  />
+                  <div
+                    class="autocomplete-inline"
+                    id="testataDiffusioneAutocompleteInline"
+                    aria-hidden="true"
+                  >
+                    <span
+                      class="autocomplete-suffix"
+                      id="testataDiffusioneAutocompleteSuffix"
+                    ></span>
+                    <span
+                      class="autocomplete-tip"
+                      id="testataDiffusioneAutocompleteTip"
+                    ></span>
+                  </div>
+                  <div
+                    class="dropdown-arrow"
+                    id="testataDiffusioneDropdownArrow"
+                  ></div>
+                </div>
+                <div class="dropdown-list" id="testataDiffusioneDropdownList">
+                  <div
+                    class="dropdown-suggestions"
+                    id="testataDiffusioneDropdownSuggestions"
+                  ></div>
+                  <div
+                    class="dropdown-results"
+                    id="testataDiffusioneDropdownResults"
+                  ></div>
+                  <div class="dropdown-footer">
+                    <a
+                      href="#"
+                      class="close-dropdown-link"
+                      id="testataDiffusioneCloseDropdownLink"
+                      >chiudi tendina</a
+                    >
+                    <button
+                      type="button"
+                      class="keycap"
+                      aria-hidden="true"
+                      tabindex="-1"
+                    >
+                      ESC
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <hr class="sidebar-separator" />
-            <div class="sidebar-section-title">Filtri testata</div>
           </aside>
 
           <main class="main">
             <div class="main-header">
               <div>
-                <h1 class="main-title" id="mainTitle">Filtra Banca Dati</h1>
+                <div style="display: flex; align-items: baseline; gap: 12px">
+                  <h1 class="main-title" id="mainTitle">Filtra Banca Dati</h1>
+                  <a href="#" class="testata-link" id="chooseDatabaseLink"
+                    >scegli Banca Dati</a
+                  >
+                </div>
                 <a
                   href="#"
                   class="close-dropdown-link main-clear-filters"
                   id="clearFiltersLink"
+                  >rimuovi filtri</a
                 >
-                  rimuovi filtri
-                </a>
                 <div class="main-subtitle" id="cardsSubtitle"></div>
               </div>
-              <span class="pill" id="cardsCount"></span>
             </div>
             <div class="cards-grid" id="cardsGrid"></div>
           </main>
@@ -203,7 +585,10 @@
           <aside class="selected-panel" id="selectedPanel" aria-hidden="true">
             <div class="selected-panel-header">
               <div class="selected-panel-header-left">
-                <p class="selected-panel-title">Selezionati</p>
+                <div class="selected-panel-title-row">
+                  <p class="selected-panel-title">Selezionati</p>
+                  <span class="pill" id="selectedCountPill"></span>
+                </div>
                 <a href="#" class="close-dropdown-link" id="selectedClearAll">
                   rimuovi selezionati
                 </a>
@@ -449,7 +834,7 @@
             autocompleteSuffixId = "autocompleteSuffix",
             autocompleteTipId = "autocompleteTip",
             arrowId = "dropdownArrow",
-            clearId = "dropdownClear",
+            clearId = "dropdownClearLink",
             listId = "dropdownList",
             closeLinkId = "closeDropdownLink",
             suggestionsId = "dropdownSuggestions",
@@ -779,10 +1164,13 @@
             this.handleKeyboard(e);
           });
 
-          this.clear.addEventListener("click", (e) => {
-            e.stopPropagation();
-            this.resetSelection();
-          });
+          if (this.clear) {
+            this.clear.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.resetSelection();
+            });
+          }
 
           this.onDocumentKeyDown = (e) => {
             if (e.key === "Escape" && this.isOpen) {
@@ -1066,6 +1454,59 @@
 
           this.visibleOptions = [];
 
+          if ((this.parents || []).length === 0) {
+            if (visible.length === 0) {
+              const empty = document.createElement("div");
+              empty.className = "no-results";
+              empty.textContent = "Nessun risultato";
+              this.results.appendChild(empty);
+              if (this.isOpen) {
+                this.updateReservedSpace();
+              }
+              return;
+            }
+
+            this.visibleOptions = visible;
+            this.visibleOptions.forEach((option, index) => {
+              const item = document.createElement("div");
+              item.className = "dropdown-item child-item";
+              item.dataset.index = String(index);
+
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.className = "dropdown-checkbox";
+              checkbox.checked = this.selectedValues.has(option);
+
+              const label = document.createElement("span");
+              label.textContent = option;
+
+              if (this.selectedValues.has(option)) {
+                item.classList.add("selected");
+              }
+
+              checkbox.addEventListener("click", (e) => {
+                e.stopPropagation();
+              });
+              checkbox.addEventListener("change", (e) => {
+                e.stopPropagation();
+                this.toggleOption(option);
+              });
+              item.addEventListener("click", (e) => {
+                e.stopPropagation();
+                this.toggleOption(option);
+              });
+
+              item.appendChild(checkbox);
+              item.appendChild(label);
+              this.results.appendChild(item);
+            });
+
+            if (this.isOpen) {
+              this.updateReservedSpace();
+            }
+            return;
+          }
+
           if (parentsWithChildren.length === 0) {
             const empty = document.createElement("div");
             empty.className = "no-results";
@@ -1085,7 +1526,16 @@
             groupLabel.textContent = p;
             group.appendChild(groupLabel);
 
-            if (isFiltered) {
+            const visibleChildrenForParent =
+              childrenByParentVisible.get(p) || [];
+            const allChildrenForParent = this.childrenByParent?.[p] || [];
+            const canExpand =
+              isFiltered &&
+              allChildrenForParent.length > visibleChildrenForParent.length;
+            const shouldShowExpandToggle =
+              isFiltered && (canExpand || this.expandedParents.has(p));
+
+            if (shouldShowExpandToggle) {
               const showAllLink = document.createElement("a");
               showAllLink.href = "#";
               showAllLink.className = "close-dropdown-link";
@@ -1352,24 +1802,12 @@
         }
 
         updateClearVisibility() {
-          const base = this.baseInputWrapperHeight || 0;
-          const current = this.inputWrapper?.offsetHeight || 0;
-          const isMultiLine = base > 0 && current > base + 6;
-
           if (this.selectedValues.size > 0) {
-            this.clear.classList.add("show");
-
-            // Se l'input va su più righe, mantieni la X centrata e mostra anche la chevron
-            // (spostata a sinistra) per non perdere l'indicatore di tendina.
-            if (isMultiLine) {
-              this.arrow.style.display = "block";
-              this.arrow.style.right = "12px";
-            } else {
-              this.arrow.style.display = "none";
-              this.arrow.style.right = "12px";
-            }
+            if (this.clear) this.clear.classList.add("show");
           } else {
-            this.clear.classList.remove("show");
+            if (this.clear) this.clear.classList.remove("show");
+          }
+          if (this.arrow) {
             this.arrow.style.display = "block";
             this.arrow.style.right = "12px";
           }
@@ -1489,6 +1927,17 @@
         .sort((a, b) => a.localeCompare(b, "it", { sensitivity: "base" }));
 
       const dropdown = new FilterableDropdown("dropdownInput", sampleOptions, {
+        inputWrapperId: "dropdownInputWrapper",
+        chipContainerId: "chipContainer",
+        autocompleteInlineId: "autocompleteInline",
+        autocompleteSuffixId: "autocompleteSuffix",
+        autocompleteTipId: "autocompleteTip",
+        arrowId: "dropdownArrow",
+        clearId: "dropdownClearLink",
+        listId: "dropdownList",
+        closeLinkId: "closeDropdownLink",
+        suggestionsId: "dropdownSuggestions",
+        resultsId: "dropdownResults",
         parents: [
           "ALIMENTARI E BEVANDE",
           "AGRICOLTURA",
@@ -1559,7 +2008,7 @@
           autocompleteSuffixId: "roleAutocompleteSuffix",
           autocompleteTipId: "roleAutocompleteTip",
           arrowId: "roleDropdownArrow",
-          clearId: "roleDropdownClear",
+          clearId: "roleDropdownClearLink",
           listId: "roleDropdownList",
           closeLinkId: "roleCloseDropdownLink",
           suggestionsId: "roleDropdownSuggestions",
@@ -1583,10 +2032,11 @@
         {
           nome: "Luca",
           cognome: "Rinaldi",
-          ruolo: "Caporedattore",
+          ruolo: "Capo redattore",
           servizio: "Politica agraria",
           telefono: "+39 333 120 4451",
           email: "l.rinaldi@ilgiorno.it",
+          testate: ["Il Giorno", "ANSA"],
           testata: "Il Giorno",
           note: "Segue ministeri e politiche del territorio. Tiene i contatti con associazioni e consorzi, copre dossier su PAC, fondi e misure di sostegno; monitora anche crisi di settore e tavoli tecnici con aggiornamenti frequenti.",
         },
@@ -1835,124 +2285,10 @@
           cognome: "Martini",
           ruolo: "Redattrice",
           servizio: "Sicurezza delle informazioni",
-          telefono: "+39 347 309 4401",
-          email: "b.martini@repubblica.it",
-          testata: "la Repubblica",
-          note: "Privacy e data protection.",
-        },
-        {
-          nome: "Tommaso",
-          cognome: "Colombo",
-          ruolo: "Redattore",
-          servizio: "Editoria elettronica",
-          telefono: "+39 333 640 7781",
-          email: "t.colombo@ilpost.it",
-          testata: "Il Post",
-          note: [
-            "Ebook e publishing digitale.",
-            "Segue anche l’evoluzione delle piattaforme editoriali: standard, DRM, formati, accessibilità e distribuzione, con focus su come cambiano i modelli di lettura e abbonamento.",
-            "Contatti con startup e operatori del settore.",
-          ],
-        },
-        {
-          nome: "Elisa",
-          cognome: "Barbieri",
-          ruolo: "Redattrice",
-          servizio: "Arti Grafiche",
-          telefono: "+39 345 901 2381",
-          email: "e.barbieri@interni.it",
-          testata: "Interni",
-          note: "Grafica e visivi.",
-        },
-        {
-          nome: "Simone",
-          cognome: "Ruggieri",
-          ruolo: "Redattore",
-          servizio: "App, smartphone, Android, iOS",
-          telefono: "+39 334 772 1812",
-          email: "s.ruggieri@dday.it",
-          testata: "DDay",
-          note: "Mobile e app economy.",
-        },
-        {
-          nome: "Arianna",
-          cognome: "Ricci",
-          ruolo: "Collaboratrice",
-          servizio: "Antiquariato",
-          telefono: "+39 320 667 1100",
-          email: "a.ricci@artribune.com",
-          testata: "Artribune",
-          note: "Mercati e fiere.",
-        },
-        {
-          nome: "Fabio",
-          cognome: "Gentile",
-          ruolo: "Redattore",
-          servizio: "Cucina e gastronomia",
-          telefono: "+39 333 222 4001",
-          email: "f.gentile@cibotoday.it",
-          testata: "CiboToday",
-          note: null,
-        },
-        {
-          nome: "Noemi",
-          cognome: "Palumbo",
-          ruolo: "Redattrice",
-          servizio: "Dolciumi",
-          telefono: "+39 347 100 2288",
-          email: "n.palumbo@gamberorosso.it",
-          testata: "Gambero Rosso",
-          note: "Rubrica pasticceria.",
-        },
-        {
-          nome: "Serena",
-          cognome: "Fabbri",
-          ruolo: "Redattrice",
-          servizio: "Geografia",
-          telefono: "+39 333 888 4021",
-          email: "s.fabbri@nationalgeographic.it",
-          testata: "National Geographic Italia",
-          note: "Territori e mappe.",
-        },
-        {
-          nome: "Alberto",
-          cognome: "Pace",
-          ruolo: "Redattore",
-          servizio: "Alimentazione",
-          telefono: "+39 345 711 1190",
-          email: "a.pace@cibotoday.it",
-          testata: "CiboToday",
-          note: "Educazione alimentare.",
-        },
-        {
-          nome: "Martina",
-          cognome: "Fumagalli",
-          ruolo: "Collaboratrice",
-          servizio: "Scultura",
-          telefono: "+39 331 992 7701",
-          email: "m.fumagalli@exibart.com",
-          testata: "Exibart",
-          note: "Atelier e installazioni.",
-        },
-        {
-          nome: "Giuseppe",
-          cognome: "Bruno",
-          ruolo: "Redattore",
-          servizio: "Igiene alimentare",
-          telefono: "+39 333 100 7702",
-          email: "g.bruno@ansa.it",
-          testata: "ANSA",
-          note: "Normative e controlli.",
-        },
-        {
-          nome: "Veronica",
-          cognome: "Caruso",
-          ruolo: "Redattrice",
-          servizio: "Filosofia",
-          telefono: "+39 347 661 8080",
-          email: "v.caruso@ilmanifesto.it",
-          testata: "il manifesto",
-          note: "Saggi e dibattiti.",
+          telefono: "+39 333 221 9876",
+          email: "b.martini@wired.it",
+          testata: "Wired Italia",
+          note: "Threat intel e sicurezza per il pubblico generalista.",
         },
         {
           nome: "Edoardo",
@@ -1962,6 +2298,14 @@
           telefono: "+39 334 410 9900",
           email: "e.sala@tomshw.it",
           testata: "Tom's Hardware",
+          testate: [
+            "Tom's Hardware",
+            "Il Sole 24 Ore — Tecnologia, Imprese e Innovazione",
+            "Corriere della Sera — Scienza, Tecnologia e Digitale",
+            "La Repubblica — Economia, Startup e Innovazione Digitale",
+            "Wired Italia — Cultura Digitale e Tecnologia",
+            "DDay — Audio, Video, Hi‑Fi e Home Theater",
+          ],
           note: "Multimedia e streaming.",
         },
         {
@@ -2039,10 +2383,64 @@
         return "generalista";
       }
 
+      function inferTestataArgomentoFromServiceCounts(counts) {
+        if (!counts || typeof counts !== "object") {
+          return { argomento: "Generalista", specializzata: false };
+        }
+
+        const entries = Object.entries(counts)
+          .map(([k, v]) => [String(k || "").trim(), Number(v || 0)])
+          .filter(([k, v]) => k && Number.isFinite(v) && v > 0);
+
+        if (entries.length === 0) {
+          return { argomento: "Generalista", specializzata: false };
+        }
+
+        entries.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "it"));
+
+        const total = entries.reduce((acc, x) => acc + x[1], 0);
+        const top = entries[0];
+        const topService = top[0];
+        const topCount = top[1];
+        const share = total > 0 ? topCount / total : 0;
+
+        const specializzata =
+          entries.length === 1 || (topCount >= 2 && share >= 0.6);
+
+        return {
+          argomento: specializzata ? topService : "Generalista",
+          specializzata,
+        };
+      }
+
       function inferMediaType(nome) {
         const n = String(nome || "")
           .trim()
           .toLowerCase();
+
+        const isRadio =
+          n.includes("radio") ||
+          n.includes("rds") ||
+          n.includes("rtl") ||
+          n.includes("radio 24") ||
+          n.includes("deejay") ||
+          n.includes("kiss kiss");
+
+        if (isRadio) {
+          return { parent: "Radio", child: "Trasmissioni Radio" };
+        }
+
+        const isTv =
+          n.includes("tv") ||
+          n.includes("rai") ||
+          n.includes("mediaset") ||
+          n.includes("sky") ||
+          n.includes("tg") ||
+          n.includes("canale");
+
+        if (isTv) {
+          return { parent: "TV", child: "Programmi TV" };
+        }
 
         const isNewspaper =
           n.includes("corriere") ||
@@ -2067,21 +2465,41 @@
           n.includes("art news");
 
         if (isMagazine) {
-          return { parent: "Carta Stampata", child: "Periodici" };
+          return { parent: "Carta Stampata", child: "Periodici al Pubblico" };
         }
 
-        return { parent: "Web", child: "On-Line" };
+        const isBlog = n.includes("blog");
+        if (isBlog) {
+          return { parent: "Web", child: "Blog" };
+        }
+
+        return { parent: "Web", child: "On-Line / News" };
       }
 
       function inferPublicationFrequency(mediaType) {
         const parent = mediaType?.parent;
         const child = mediaType?.child;
-        if (parent === "Carta Stampata" && child === "Quotidiani")
-          return "quotidiana";
-        if (parent === "Carta Stampata" && child === "Periodici")
-          return "mensile";
-        if (parent === "Web") return "aggiornamento continuo";
-        return "n/d";
+        if (parent === "Carta Stampata" && child === "Quotidiani") {
+          return "Quotidiano";
+        }
+        if (
+          parent === "Carta Stampata" &&
+          (child === "Periodici al Pubblico" ||
+            child === "Periodici di Categoria" ||
+            child === "Supplementi")
+        ) {
+          return "Mensile";
+        }
+        if (parent === "Radio") {
+          return "Quotidiano";
+        }
+        if (parent === "TV") {
+          return "Quotidiano";
+        }
+        if (parent === "Web") {
+          return "Quotidiano";
+        }
+        return "Aperiodico";
       }
 
       function inferDiffusione(nome, mediaType) {
@@ -2089,10 +2507,10 @@
           .trim()
           .toLowerCase();
         if (n.includes("national geographic") || n.includes("wired")) {
-          return "internazionale";
+          return "Internazionale";
         }
-        if (mediaType?.parent === "Web") return "nazionale";
-        return "nazionale";
+        if (mediaType?.parent === "Web") return "Nazionale";
+        return "Locale";
       }
 
       function inferTiratura(mediaType) {
@@ -2102,11 +2520,16 @@
         ) {
           return "100k+";
         }
-        if (
-          mediaType?.parent === "Carta Stampata" &&
-          mediaType?.child === "Periodici"
-        ) {
-          return "20k+";
+
+        if (mediaType?.parent === "Carta Stampata") {
+          const child = String(mediaType?.child || "");
+          if (
+            child === "Periodici al Pubblico" ||
+            child === "Periodici di Categoria" ||
+            child === "Supplementi"
+          ) {
+            return "20k+";
+          }
         }
         return "n/d";
       }
@@ -2115,6 +2538,8 @@
         if (mediaType?.parent === "Web") return "online";
         if (mediaType?.parent === "Carta Stampata")
           return "edicola + abbonamenti";
+        if (mediaType?.parent === "Radio") return "FM/DAB + streaming";
+        if (mediaType?.parent === "TV") return "digitale terrestre/satellite";
         return "n/d";
       }
 
@@ -2132,47 +2557,87 @@
         const byKey = new Map();
 
         for (const j of list || []) {
-          const raw = String(j?.testata || "").trim();
-          const key = normalizeTestataKey(raw);
-          if (!key) continue;
+          const testateList = getJournalistTestate(j);
+          if (!testateList.length) continue;
 
-          if (!byKey.has(key)) {
-            const nome = raw || key;
-            const mediaType = inferMediaType(nome);
-            const city = inferRedazioneIndirizzo(nome);
-            const journalistEmail = String(j?.email || "").trim();
-            const domain = journalistEmail.includes("@")
-              ? journalistEmail.split("@")[1]
-              : "example.it";
+          for (const raw of testateList) {
+            const key = normalizeTestataKey(raw);
+            if (!key) continue;
 
-            byKey.set(key, {
-              id: key,
-              nome,
-              argomento: inferTestataArgomento(nome),
-              direttore: "Direttore responsabile",
-              tipoMedia: mediaType,
-              frequenzaPubblicazione: inferPublicationFrequency(mediaType),
-              diffusione: inferDiffusione(nome, mediaType),
-              tiratura: inferTiratura(mediaType),
-              circolazione: inferCircolazione(mediaType),
-              redazione: {
-                giornalisti: [],
-                indirizzo: `${city} — sede redazione`,
-              },
-              email: `redazione@${domain}`,
-              telefono: String(j?.telefono || "").trim() || "+39 02 0000 0000",
-              note:
-                inferTestataArgomento(nome) === "generalista"
-                  ? "Testata generalista."
-                  : "Testata specializzata.",
-            });
+            if (!byKey.has(key)) {
+              const nome = raw || key;
+              const mediaType = inferMediaType(nome);
+              const city = inferRedazioneIndirizzo(nome);
+              const journalistEmail = String(j?.email || "").trim();
+              const domain = journalistEmail.includes("@")
+                ? journalistEmail.split("@")[1]
+                : "example.it";
+
+              byKey.set(key, {
+                id: key,
+                nome,
+                argomento: "Generalista",
+                direttore: "Direttore responsabile",
+                tipoMedia: mediaType,
+                frequenzaPubblicazione: inferPublicationFrequency(mediaType),
+                diffusione: inferDiffusione(nome, mediaType),
+                tiratura: inferTiratura(mediaType),
+                _serviceCounts: {},
+                redazione: {
+                  giornalisti: [],
+                  indirizzo: `${city} — sede redazione`,
+                },
+                email: `redazione@${domain}`,
+                telefono:
+                  String(j?.telefono || "").trim() || "+39 02 0000 0000",
+                note: "",
+              });
+            }
+
+            const t = byKey.get(key);
+            const jid = String(j?.email || "").trim();
+            if (jid && !t.redazione.giornalisti.includes(jid)) {
+              t.redazione.giornalisti.push(jid);
+            }
+
+            const servizio = String(j?.servizio || "").trim();
+            if (servizio) {
+              const sc = t._serviceCounts || (t._serviceCounts = {});
+              sc[servizio] = (Number(sc[servizio] || 0) || 0) + 1;
+            }
           }
+        }
 
-          const t = byKey.get(key);
-          const jid = String(j?.email || "").trim();
-          if (jid && !t.redazione.giornalisti.includes(jid)) {
-            t.redazione.giornalisti.push(jid);
-          }
+        const NOTES_BY_TESTATA_KEY = {
+          "il sole 24 ore": [
+            "Redazione con focus su economia, imprese e innovazione.",
+            "Disponibile per interviste su dossier PA, infrastrutture e transizione digitale.",
+          ],
+          "corriere della sera":
+            "Contatti preferiti via e-mail; segue speciali e inserti tematici su cultura e società.",
+          ansa: [
+            "Preferenza per comunicati sintetici e dati verificabili.",
+            "Copertura nazionale con desk dedicati (cronaca, politica, economia, esteri).",
+          ],
+          "wired italia":
+            "Taglio digitale: tecnologia, cultura, startup e impatto sociale.",
+          "gambero rosso": [
+            "Specializzata food & wine: degustazioni, guide e inchieste di filiera.",
+            "Per eventi: inviare invito con almeno 10 giorni di anticipo.",
+          ],
+          "il post":
+            "Predilige pitch brevi con contesto e link a fonti primarie.",
+          "la repubblica":
+            "Valuta proposte di approfondimento; attenzione a temi di attualità e territorio.",
+        };
+
+        for (const t of byKey.values()) {
+          const inferred = inferTestataArgomentoFromServiceCounts(
+            t._serviceCounts
+          );
+          t.argomento = inferred.argomento;
+          t.note = NOTES_BY_TESTATA_KEY[String(t?.id || "")] || "";
+          delete t._serviceCounts;
         }
 
         return Array.from(byKey.values()).sort((a, b) =>
@@ -2183,6 +2648,148 @@
       }
 
       const testate = buildTestateFromJournalists(journalists);
+
+      const testateByKey = new Map();
+      for (const t of testate || []) {
+        const key = String(t?.id || "").trim();
+        if (!key) continue;
+        testateByKey.set(key, t);
+      }
+
+      const testataArgomentoDropdown = new FilterableDropdown(
+        "testataArgomentoDropdownInput",
+        sampleOptions,
+        {
+          inputWrapperId: "testataArgomentoDropdownInputWrapper",
+          chipContainerId: "testataArgomentoChipContainer",
+          autocompleteInlineId: "testataArgomentoAutocompleteInline",
+          autocompleteSuffixId: "testataArgomentoAutocompleteSuffix",
+          autocompleteTipId: "testataArgomentoAutocompleteTip",
+          arrowId: "testataArgomentoDropdownArrow",
+          clearId: "testataArgomentoDropdownClearLink",
+          listId: "testataArgomentoDropdownList",
+          closeLinkId: "testataArgomentoCloseDropdownLink",
+          suggestionsId: "testataArgomentoDropdownSuggestions",
+          resultsId: "testataArgomentoDropdownResults",
+          parents: [
+            "ALIMENTARI E BEVANDE",
+            "AGRICOLTURA",
+            "INFORMATICA E WEB",
+            "ARTE E CULTURA",
+          ],
+          childrenByParent: SERVICES_BY_PARENT,
+          renderChipsInInput: false,
+          preserveParentOrder: false,
+        }
+      );
+      testataArgomentoDropdown.updateAutocompleteHint("");
+
+      const TESTATA_MEDIA_BY_PARENT = {
+        Radio: ["News / GR", "Trasmissioni Radio"],
+        TV: ["Canali Tematici", "News / TG", "Programmi TV"],
+        "Carta Stampata": [
+          "Quotidiani",
+          "Periodici al Pubblico",
+          "Periodici di Categoria",
+          "Supplementi",
+        ],
+        Web: ["On-Line / News", "Blog"],
+      };
+
+      const testataTipoMediaOptions = Object.values(TESTATA_MEDIA_BY_PARENT)
+        .flat()
+        .sort((a, b) => a.localeCompare(b, "it", { sensitivity: "base" }));
+
+      const testataTipoMediaDropdown = new FilterableDropdown(
+        "testataTipoMediaDropdownInput",
+        testataTipoMediaOptions,
+        {
+          inputWrapperId: "testataTipoMediaDropdownInputWrapper",
+          chipContainerId: "testataTipoMediaChipContainer",
+          autocompleteInlineId: "testataTipoMediaAutocompleteInline",
+          autocompleteSuffixId: "testataTipoMediaAutocompleteSuffix",
+          autocompleteTipId: "testataTipoMediaAutocompleteTip",
+          arrowId: "testataTipoMediaDropdownArrow",
+          clearId: "testataTipoMediaDropdownClearLink",
+          listId: "testataTipoMediaDropdownList",
+          closeLinkId: "testataTipoMediaCloseDropdownLink",
+          suggestionsId: "testataTipoMediaDropdownSuggestions",
+          resultsId: "testataTipoMediaDropdownResults",
+          parents: ["Radio", "TV", "Carta Stampata", "Web"],
+          childrenByParent: TESTATA_MEDIA_BY_PARENT,
+          synonymsByFilter: {},
+          renderChipsInInput: false,
+          preserveParentOrder: true,
+        }
+      );
+      testataTipoMediaDropdown.updateAutocompleteHint("");
+
+      const FREQUENZA_PUBBLICAZIONE_OPTIONS = [
+        "Annuale",
+        "Aperiodico",
+        "Bimestrale",
+        "Bisettimanale",
+        "Mensile",
+        "Quadrimestrale",
+        "Quattordicinale",
+        "Quindicinale",
+        "Quotidiano",
+        "Semestrale",
+        "Settimanale",
+        "Trimestrale",
+        "Trisettimanale",
+        "Quadriennale",
+        "Plurisettimanale",
+      ];
+
+      const testataFrequenzaDropdown = new FilterableDropdown(
+        "testataFrequenzaDropdownInput",
+        FREQUENZA_PUBBLICAZIONE_OPTIONS,
+        {
+          inputWrapperId: "testataFrequenzaDropdownInputWrapper",
+          chipContainerId: "testataFrequenzaChipContainer",
+          autocompleteInlineId: "testataFrequenzaAutocompleteInline",
+          autocompleteSuffixId: "testataFrequenzaAutocompleteSuffix",
+          autocompleteTipId: "testataFrequenzaAutocompleteTip",
+          arrowId: "testataFrequenzaDropdownArrow",
+          clearId: "testataFrequenzaDropdownClearLink",
+          listId: "testataFrequenzaDropdownList",
+          closeLinkId: "testataFrequenzaCloseDropdownLink",
+          suggestionsId: "testataFrequenzaDropdownSuggestions",
+          resultsId: "testataFrequenzaDropdownResults",
+          synonymsByFilter: {},
+          renderChipsInInput: false,
+        }
+      );
+      testataFrequenzaDropdown.updateAutocompleteHint("");
+
+      const DIFFUSIONE_OPTIONS = [
+        "Internazionale",
+        "Nazionale",
+        "Regionale",
+        "Locale",
+      ];
+
+      const testataDiffusioneDropdown = new FilterableDropdown(
+        "testataDiffusioneDropdownInput",
+        DIFFUSIONE_OPTIONS,
+        {
+          inputWrapperId: "testataDiffusioneDropdownInputWrapper",
+          chipContainerId: "testataDiffusioneChipContainer",
+          autocompleteInlineId: "testataDiffusioneAutocompleteInline",
+          autocompleteSuffixId: "testataDiffusioneAutocompleteSuffix",
+          autocompleteTipId: "testataDiffusioneAutocompleteTip",
+          arrowId: "testataDiffusioneDropdownArrow",
+          clearId: "testataDiffusioneDropdownClearLink",
+          listId: "testataDiffusioneDropdownList",
+          closeLinkId: "testataDiffusioneCloseDropdownLink",
+          suggestionsId: "testataDiffusioneDropdownSuggestions",
+          resultsId: "testataDiffusioneDropdownResults",
+          synonymsByFilter: {},
+          renderChipsInInput: false,
+        }
+      );
+      testataDiffusioneDropdown.updateAutocompleteHint("");
 
       const selectedJournalistIds = new Set();
       const selectedJournalistOrder = [];
@@ -2207,12 +2814,21 @@
       );
 
       const textFilterInput = document.getElementById("textFilterInput");
-      const textFilterClear = document.getElementById("textFilterClear");
+      const textFilterClear = document.getElementById("textFilterClearLink");
 
       const committedTextTerms = [];
 
       function getJournalistId(j) {
         return j.email;
+      }
+
+      function getJournalistTestate(j) {
+        if (!j) return [];
+        if (Array.isArray(j.testate)) {
+          return j.testate.map((x) => String(x ?? "").trim()).filter(Boolean);
+        }
+        const s = String(j.testata ?? "").trim();
+        return s ? [s] : [];
       }
 
       function getJournalistNameById(jid) {
@@ -2579,15 +3195,23 @@
       }
 
       function updateCheckboxUI(jid) {
-        const checkbox = document.querySelector(
-          `.card-select[data-jid="${CSS.escape(jid)}"]`
+        const checkboxes = document.querySelectorAll(
+          `.card-select[data-jid="${CSS.escape(
+            jid
+          )}"], .testata-panel-select[data-jid="${CSS.escape(jid)}"]`
         );
-        if (!checkbox) return;
-        checkbox.checked = selectedJournalistIds.has(jid);
+        if (!checkboxes.length) return;
+        for (const checkbox of checkboxes) {
+          checkbox.checked = selectedJournalistIds.has(jid);
+        }
       }
 
       function renderSelectedPanelList() {
         if (!selectedPanelBody) return;
+        const selectedCountEl = document.getElementById("selectedCountPill");
+        if (selectedCountEl) {
+          selectedCountEl.textContent = String(selectedJournalistIds.size || 0);
+        }
         selectedPanelBody.innerHTML = "";
 
         if (selectedJournalistOrder.length === 0) {
@@ -2652,7 +3276,17 @@
           `${j.nome} ${j.cognome}`,
           activeTerms
         );
-        const highlightedTestata = highlightHtmlMulti(j.testata, activeTerms);
+        const testate = getJournalistTestate(j);
+        const testatePreviewHtml = testate.length
+          ? testate
+              .map((tname) => {
+                const label = highlightHtmlMulti(tname, activeTerms);
+                return `<a href="#" class="testata-link" data-testata="${escapeHtml(
+                  tname
+                )}">${label}</a>`;
+              })
+              .join(" • ")
+          : '<span class="muted">n/d</span>';
         const notesArr = normalizeNotes(j.note);
 
         const notesCombined = combineNotes(notesArr);
@@ -2693,7 +3327,7 @@
 
         const highlightedNote = notesArr.length
           ? highlightHtmlMulti(noteDisplayRaw, activeTerms)
-          : escapeHtml(noteDisplayRaw);
+          : '<em class="muted">nessuna nota</em>';
 
         card.innerHTML = `
           <div class="card-top">
@@ -2727,9 +3361,7 @@
           <div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${
             j.email
           }</div></div>
-          <div class="card-row"><div class="card-label">Testata</div><div class="card-value"><a href="#" class="testata-link" data-testata="${
-            j.testata
-          }">${highlightedTestata}</a></div></div>
+          <div class="card-row"><div class="card-label"><span class="card-journalist-testate-label" data-jid="${jid}">Testate</span></div><div class="card-value card-testate">${testatePreviewHtml}</div></div>
           <div class="card-row"><div class="card-label">${
             noteShowsEllipsis
               ? `<a href="#" class="card-label-link card-notes-open" data-jid="${jid}">Note</a>`
@@ -2744,16 +3376,59 @@
         card.className = "card";
         card.dataset.testataKey = String(t?.id || "");
 
+        const notesArr = normalizeNotes(t?.note);
+        const notesCombined = combineNotes(notesArr);
+        const notePreviewBaseRaw = (() => {
+          if (!notesArr.length) return "nessuna nota";
+
+          const best = findBestMatchTerm(notesCombined, activeTerms);
+          if (best)
+            return makeSnippet(notesCombined, best, NOTE_MATCH_MAX_CHARS);
+
+          if (notesArr.length === 1) {
+            if (notesCombined.length > NOTE_MAX_CHARS) {
+              return makeSnippet(notesCombined, "", NOTE_MAX_CHARS);
+            }
+            return notesCombined;
+          }
+
+          return String(notesArr[0] || "");
+        })();
+
+        const hasHiddenNotesContent =
+          notesArr.length > 1 ||
+          (notesCombined &&
+            notePreviewBaseRaw &&
+            notesCombined.length > notePreviewBaseRaw.length);
+
+        const noteDisplayRaw =
+          notesArr.length &&
+          hasHiddenNotesContent &&
+          !notePreviewBaseRaw.endsWith("...")
+            ? `${notePreviewBaseRaw}...`
+            : notePreviewBaseRaw;
+
+        const noteShowsEllipsis =
+          notesArr.length &&
+          typeof noteDisplayRaw === "string" &&
+          noteDisplayRaw.includes("...");
+
+        const highlightedNote = notesArr.length
+          ? highlightHtmlMulti(noteDisplayRaw, activeTerms)
+          : '<em class="muted">nessuna nota</em>';
+
         const mediaLabel = (() => {
           const p = String(t?.tipoMedia?.parent || "").trim();
           const c = String(t?.tipoMedia?.child || "").trim();
-          if (p && c) return `${p} / ${c}`;
-          return p || c || "";
+          return c || p || "";
         })();
 
         const journalistNamesRaw = (t?.redazione?.giornalisti || [])
           .map((jid) => getJournalistNameById(jid))
           .join(" • ");
+        const testataJournalistsLabelHtml = `<a href="#" class="card-label-link card-testata-journalists-open" data-testata-key="${escapeHtml(
+          String(t?.id || "")
+        )}">Giornalisti</a>`;
 
         const highlightedName = highlightHtmlMulti(
           String(t?.nome || ""),
@@ -2793,7 +3468,14 @@
           <div class="card-row"><div class="card-label">Argomento testata</div><div class="card-value">${highlightedArgomento}</div></div>
           <div class="card-row"><div class="card-label">Telefono</div><div class="card-value">${highlightedTelefono}</div></div>
           <div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${highlightedEmail}</div></div>
-          <div class="card-row"><div class="card-label">Giornalisti</div><div class="card-value muted card-journalists">${highlightedJournalists}</div></div>
+          <div class="card-row"><div class="card-label">${testataJournalistsLabelHtml}</div><div class="card-value muted card-journalists">${highlightedJournalists}</div></div>
+          <div class="card-row"><div class="card-label">${
+            noteShowsEllipsis
+              ? `<a href="#" class="card-label-link card-notes-open" data-testata-key="${escapeHtml(
+                  String(t?.id || "")
+                )}">Note</a>`
+              : "Note"
+          }</div><div class="card-value muted card-note">${highlightedNote}</div></div>
         `;
 
         return card;
@@ -2804,6 +3486,8 @@
       const testataPanelTitle = document.getElementById("testataPanelTitle");
       const testataPanelBody = document.getElementById("testataPanelBody");
       const testataPanelClose = document.getElementById("testataPanelClose");
+
+      const chooseDatabaseLink = document.getElementById("chooseDatabaseLink");
 
       const notesModalOverlay = document.getElementById("notesModalOverlay");
       const notesModal = document.getElementById("notesModal");
@@ -3047,10 +3731,6 @@
           tiratura.textContent = String(t?.tiratura || "");
           addRow("Tiratura", tiratura);
 
-          const circolazione = document.createElement("span");
-          circolazione.textContent = String(t?.circolazione || "");
-          addRow("Circolazione", circolazione);
-
           const indirizzo = document.createElement("span");
           indirizzo.textContent = String(t?.redazione?.indirizzo || "");
           addRow("Redazione", indirizzo);
@@ -3066,7 +3746,7 @@
           const note = document.createElement("div");
           const noteText = String(t?.note || "").trim();
           if (!noteText) {
-            const empty = document.createElement("div");
+            const empty = document.createElement("em");
             empty.className = "muted";
             empty.textContent = "nessuna nota";
             note.appendChild(empty);
@@ -3083,34 +3763,62 @@
             empty.textContent = "nessun giornalista";
             listWrap.appendChild(empty);
           } else {
-            const ul = document.createElement("ul");
-            ul.className = "testata-panel-journalists";
+            const table = document.createElement("table");
+            table.className = "testata-panel-journalists-table";
 
-            const sorted = jids
-              .map((jid) => ({ jid, name: getJournalistNameById(jid) }))
+            const thead = document.createElement("thead");
+            const headRow = document.createElement("tr");
+            const headers = ["", "Nome", "Servizio", "Ruolo", "Tel", "Email"];
+            for (const h of headers) {
+              const th = document.createElement("th");
+              th.textContent = h;
+              headRow.appendChild(th);
+            }
+            thead.appendChild(headRow);
+
+            const tbody = document.createElement("tbody");
+
+            const rows = jids
+              .map((jid) => {
+                const j = (journalists || []).find(
+                  (x) => getJournalistId(x) === jid
+                );
+                const name = j
+                  ? `${String(j?.nome || "").trim()} ${String(
+                      j?.cognome || ""
+                    ).trim()}`.trim()
+                  : getJournalistNameById(jid);
+                return {
+                  jid,
+                  name,
+                  servizio: j ? String(j?.servizio || "") : "",
+                  ruolo: j ? String(j?.ruolo || "") : "",
+                  tel: j ? String(j?.telefono || "") : "",
+                  email: j ? String(j?.email || "") : "",
+                };
+              })
               .sort((a, b) =>
                 String(a.name || "").localeCompare(String(b.name || ""), "it", {
                   sensitivity: "base",
                 })
               );
 
-            for (const item of sorted) {
+            for (const item of rows) {
               const jid = item.jid;
-              const li = document.createElement("li");
+
+              const tr = document.createElement("tr");
 
               const checkboxId = `testata-panel-select-${jid.replace(
                 /[^a-zA-Z0-9_-]/g,
                 "_"
               )}`;
 
-              const label = document.createElement("label");
-              label.setAttribute("for", checkboxId);
-              label.className = "testata-panel-journalist-row";
-
+              const tdCb = document.createElement("td");
               const cb = document.createElement("input");
               cb.type = "checkbox";
               cb.className = "testata-panel-select";
               cb.id = checkboxId;
+              cb.setAttribute("data-jid", jid);
               cb.checked = selectedJournalistIds.has(jid);
               cb.addEventListener("change", (e) => {
                 e.stopPropagation();
@@ -3130,21 +3838,59 @@
                 updateCheckboxUI(jid);
                 updateCardSelectionUI(jid);
               });
+              tdCb.appendChild(cb);
 
-              const name = document.createElement("span");
-              name.textContent = item.name;
+              const tdName = document.createElement("td");
+              const nameLink = document.createElement("a");
+              nameLink.href = "#";
+              nameLink.className = "testata-link journalist-link";
+              nameLink.textContent = item.name;
+              nameLink.setAttribute("data-journalist", item.name);
+              tdName.appendChild(nameLink);
 
-              label.appendChild(cb);
-              label.appendChild(name);
-              li.appendChild(label);
-              ul.appendChild(li);
+              const tdServizio = document.createElement("td");
+              tdServizio.textContent = item.servizio;
+
+              const tdRuolo = document.createElement("td");
+              tdRuolo.textContent = item.ruolo;
+
+              const tdTel = document.createElement("td");
+              tdTel.textContent = item.tel;
+
+              const tdEmail = document.createElement("td");
+              tdEmail.textContent = item.email;
+
+              tr.appendChild(tdCb);
+              tr.appendChild(tdName);
+              tr.appendChild(tdServizio);
+              tr.appendChild(tdRuolo);
+              tr.appendChild(tdTel);
+              tr.appendChild(tdEmail);
+              tbody.appendChild(tr);
             }
 
-            listWrap.appendChild(ul);
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            listWrap.appendChild(table);
           }
 
           addRow("Giornalisti", listWrap);
         }
+
+        testataOverlay.classList.add("show");
+        testataPanel.classList.add("show");
+        testataOverlay.setAttribute("aria-hidden", "false");
+        testataPanel.setAttribute("aria-hidden", "false");
+      }
+
+      function openBancaDatiPanel() {
+        testataPanelTitle.textContent = "Banca dati";
+        testataPanelBody.innerHTML = "";
+
+        const empty = document.createElement("em");
+        empty.className = "muted";
+        empty.textContent = "elenco banche dati";
+        testataPanelBody.appendChild(empty);
 
         testataOverlay.classList.add("show");
         testataPanel.classList.add("show");
@@ -3255,9 +4001,28 @@
           email.textContent = String(j.email || "");
           addRow("E-mail", email);
 
-          const testata = document.createElement("span");
-          testata.textContent = String(j.testata || "");
-          addRow("Testata", testata);
+          const testateWrap = document.createElement("div");
+          const testate = getJournalistTestate(j);
+          if (!testate.length) {
+            const empty = document.createElement("span");
+            empty.className = "muted";
+            empty.textContent = "n/d";
+            testateWrap.appendChild(empty);
+          } else {
+            for (let i = 0; i < testate.length; i++) {
+              const tname = testate[i];
+              const a = document.createElement("a");
+              a.href = "#";
+              a.className = "testata-link";
+              a.textContent = tname;
+              a.setAttribute("data-testata", tname);
+              testateWrap.appendChild(a);
+              if (i < testate.length - 1) {
+                testateWrap.appendChild(document.createTextNode(" • "));
+              }
+            }
+          }
+          addRow("Testate", testateWrap);
 
           const notesArr = normalizeNotes(j.note);
           const notesWrap = document.createElement("div");
@@ -3331,12 +4096,330 @@
         notesModal.setAttribute("aria-hidden", "false");
       }
 
+      function openTestataJournalistsModal(testataKey) {
+        if (
+          !notesModal ||
+          !notesModalOverlay ||
+          !notesModalTitle ||
+          !notesModalBody
+        )
+          return;
+
+        const k = String(testataKey || "").trim();
+        const t = testateByKey.get(k);
+        const titleName = t ? String(t?.nome || "") : k;
+
+        notesModalTitle.textContent = `Giornalisti — ${titleName}`;
+        notesModalBody.innerHTML = "";
+
+        const jids = Array.isArray(t?.redazione?.giornalisti)
+          ? t.redazione.giornalisti
+          : [];
+        const cleanJids = [...jids].filter(Boolean);
+        if (!cleanJids.length) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.textContent = "nessun giornalista";
+          notesModalBody.appendChild(empty);
+        } else {
+          const table = document.createElement("table");
+          table.className = "testata-panel-journalists-table";
+
+          const thead = document.createElement("thead");
+          const headRow = document.createElement("tr");
+          const headers = ["", "Nome", "Servizio", "Ruolo", "Tel", "Email"];
+          for (const h of headers) {
+            const th = document.createElement("th");
+            th.textContent = h;
+            headRow.appendChild(th);
+          }
+          thead.appendChild(headRow);
+
+          const tbody = document.createElement("tbody");
+          const rows = cleanJids
+            .map((jid) => {
+              const j = (journalists || []).find(
+                (x) => getJournalistId(x) === jid
+              );
+              const name = j
+                ? `${String(j?.nome || "").trim()} ${String(
+                    j?.cognome || ""
+                  ).trim()}`.trim()
+                : getJournalistNameById(jid);
+              return {
+                jid,
+                name,
+                servizio: j ? String(j?.servizio || "") : "",
+                ruolo: j ? String(j?.ruolo || "") : "",
+                tel: j ? String(j?.telefono || "") : "",
+                email: j ? String(j?.email || "") : "",
+              };
+            })
+            .sort((a, b) =>
+              String(a.name || "").localeCompare(String(b.name || ""), "it", {
+                sensitivity: "base",
+              })
+            );
+
+          for (const item of rows) {
+            const jid = item.jid;
+            const tr = document.createElement("tr");
+
+            const checkboxId = `testata-modal-select-${jid.replace(
+              /[^a-zA-Z0-9_-]/g,
+              "_"
+            )}`;
+
+            const tdCb = document.createElement("td");
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.className = "testata-panel-select";
+            cb.id = checkboxId;
+            cb.setAttribute("data-jid", jid);
+            cb.checked = selectedJournalistIds.has(jid);
+            cb.addEventListener("change", (e) => {
+              e.stopPropagation();
+              if (cb.checked) {
+                selectedJournalistIds.add(jid);
+                ensureSelectedOrder(jid);
+                openSelectedPanel();
+              } else {
+                selectedJournalistIds.delete(jid);
+                removeFromSelectedOrder(jid);
+                if (selectedJournalistIds.size === 0) {
+                  closeSelectedPanel();
+                } else {
+                  renderSelectedPanelList();
+                }
+              }
+              updateCheckboxUI(jid);
+              updateCardSelectionUI(jid);
+            });
+            tdCb.appendChild(cb);
+
+            const tdName = document.createElement("td");
+            const nameLink = document.createElement("a");
+            nameLink.href = "#";
+            nameLink.className = "testata-link journalist-link";
+            nameLink.textContent = item.name;
+            nameLink.setAttribute("data-journalist", item.name);
+            tdName.appendChild(nameLink);
+
+            const tdServizio = document.createElement("td");
+            tdServizio.textContent = item.servizio;
+
+            const tdRuolo = document.createElement("td");
+            tdRuolo.textContent = item.ruolo;
+
+            const tdTel = document.createElement("td");
+            tdTel.textContent = item.tel;
+
+            const tdEmail = document.createElement("td");
+            tdEmail.textContent = item.email;
+
+            tr.appendChild(tdCb);
+            tr.appendChild(tdName);
+            tr.appendChild(tdServizio);
+            tr.appendChild(tdRuolo);
+            tr.appendChild(tdTel);
+            tr.appendChild(tdEmail);
+            tbody.appendChild(tr);
+          }
+
+          table.appendChild(thead);
+          table.appendChild(tbody);
+          notesModalBody.appendChild(table);
+        }
+
+        notesModalOverlay.classList.add("show");
+        notesModal.classList.add("show");
+        notesModalOverlay.setAttribute("aria-hidden", "false");
+        notesModal.setAttribute("aria-hidden", "false");
+      }
+
+      function openTestataNotesModal(testataKey) {
+        if (
+          !notesModal ||
+          !notesModalOverlay ||
+          !notesModalTitle ||
+          !notesModalBody
+        )
+          return;
+
+        const k = String(testataKey || "").trim();
+        const t = testateByKey.get(k);
+        const titleName = t ? String(t?.nome || "") : k;
+
+        notesModalTitle.textContent = `Note — ${titleName}`;
+        notesModalBody.innerHTML = "";
+
+        const notesArr = normalizeNotes(t?.note);
+        const list = document.createElement("ul");
+        list.className = "notes-modal-list";
+
+        if (!notesArr.length) {
+          const li = document.createElement("li");
+          li.textContent = "nessuna nota";
+          list.appendChild(li);
+        } else {
+          for (const n of notesArr) {
+            const li = document.createElement("li");
+            li.textContent = n;
+            list.appendChild(li);
+          }
+        }
+
+        notesModalBody.appendChild(list);
+
+        notesModalOverlay.classList.add("show");
+        notesModal.classList.add("show");
+        notesModalOverlay.setAttribute("aria-hidden", "false");
+        notesModal.setAttribute("aria-hidden", "false");
+      }
+
       function closeNotesModal() {
         if (!notesModal || !notesModalOverlay) return;
         notesModalOverlay.classList.remove("show");
         notesModal.classList.remove("show");
         notesModalOverlay.setAttribute("aria-hidden", "true");
         notesModal.setAttribute("aria-hidden", "true");
+      }
+
+      function openJournalistTestateModal(jid) {
+        if (
+          !notesModal ||
+          !notesModalOverlay ||
+          !notesModalTitle ||
+          !notesModalBody
+        )
+          return;
+
+        const j = (journalists || []).find((x) => getJournalistId(x) === jid);
+        const titleName = j ? `${j.nome} ${j.cognome}` : jid;
+
+        notesModalTitle.textContent = `Testate — ${titleName}`;
+        notesModalBody.innerHTML = "";
+
+        const testate = j ? getJournalistTestate(j) : [];
+        const list = document.createElement("ul");
+        list.className = "notes-modal-list";
+
+        if (!testate.length) {
+          const li = document.createElement("li");
+          li.textContent = "n/d";
+          list.appendChild(li);
+        } else {
+          for (const tname of testate) {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = "#";
+            a.className = "testata-link";
+            a.textContent = tname;
+            a.setAttribute("data-testata", tname);
+            li.appendChild(a);
+            list.appendChild(li);
+          }
+        }
+
+        notesModalBody.appendChild(list);
+
+        notesModalOverlay.classList.add("show");
+        notesModal.classList.add("show");
+        notesModalOverlay.setAttribute("aria-hidden", "false");
+        notesModal.setAttribute("aria-hidden", "false");
+      }
+
+      function updateJournalistTestateLabelLinks(root) {
+        const container = root || document;
+        const cards = container.querySelectorAll(".card[data-jid]");
+        for (const card of cards) {
+          const valueEl = card.querySelector(".card-testate");
+          const labelHost = card.querySelector(
+            ".card-journalist-testate-label"
+          );
+          if (!valueEl || !labelHost) continue;
+
+          const jid = String(labelHost.getAttribute("data-jid") || "").trim();
+          if (!jid) continue;
+
+          const j = (journalists || []).find((x) => getJournalistId(x) === jid);
+          const hasData = (j ? getJournalistTestate(j) : []).length > 0;
+          if (!hasData) {
+            labelHost.replaceWith(document.createTextNode("Testate"));
+            continue;
+          }
+
+          const isTruncated = (() => {
+            const clampedRect = valueEl.getBoundingClientRect();
+            if (!clampedRect.width || !clampedRect.height) return false;
+
+            const measureHost =
+              valueEl.closest(".card-row") || valueEl.parentElement || card;
+
+            const clone = valueEl.cloneNode(true);
+            clone.style.position = "absolute";
+            clone.style.visibility = "hidden";
+            clone.style.pointerEvents = "none";
+            clone.style.left = "-99999px";
+            clone.style.top = "-99999px";
+            clone.style.width = `${clampedRect.width}px`;
+            clone.style.maxHeight = "none";
+            clone.style.minHeight = "0";
+            clone.style.height = "auto";
+            clone.style.overflow = "visible";
+            clone.style.textOverflow = "clip";
+
+            clone.style.display = "-webkit-box";
+            clone.style.webkitBoxOrient = "vertical";
+            clone.style.webkitLineClamp = "unset";
+            clone.style.lineClamp = "unset";
+
+            measureHost.appendChild(clone);
+            const fullH = clone.getBoundingClientRect().height;
+            clone.remove();
+
+            return fullH > clampedRect.height + 1;
+          })();
+
+          if (isTruncated) {
+            const a = document.createElement("a");
+            a.href = "#";
+            a.className = "card-label-link card-journalist-testate-open";
+            a.setAttribute("data-jid", jid);
+            a.textContent = "Testate";
+            labelHost.replaceWith(a);
+          } else {
+            labelHost.replaceWith(document.createTextNode("Testate"));
+          }
+        }
+      }
+
+      if (notesModalBody) {
+        notesModalBody.addEventListener("click", (e) => {
+          const journalistLink = e.target?.closest?.(".journalist-link");
+          if (journalistLink) {
+            e.preventDefault();
+            e.stopPropagation();
+            const name =
+              journalistLink.getAttribute("data-journalist") ||
+              journalistLink.textContent;
+            closeNotesModal();
+            openJournalistPanel(name);
+            return;
+          }
+
+          const testataLink = e.target?.closest?.(".testata-link");
+          if (testataLink) {
+            e.preventDefault();
+            e.stopPropagation();
+            const key = testataLink.getAttribute("data-testata-key");
+            const testata =
+              testataLink.getAttribute("data-testata") ||
+              testataLink.textContent;
+            closeNotesModal();
+            openTestataPanel(key || testata);
+          }
+        });
       }
 
       if (notesModalClose) {
@@ -3366,6 +4449,38 @@
         testataOverlay.addEventListener("click", (e) => {
           e.preventDefault();
           closeTestataPanel();
+        });
+      }
+
+      if (chooseDatabaseLink) {
+        chooseDatabaseLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openBancaDatiPanel();
+        });
+      }
+
+      if (testataPanelBody) {
+        testataPanelBody.addEventListener("click", (e) => {
+          const journalistLink = e.target?.closest?.(".journalist-link");
+          if (journalistLink) {
+            e.preventDefault();
+            e.stopPropagation();
+            const name =
+              journalistLink.getAttribute("data-journalist") ||
+              journalistLink.textContent;
+            openJournalistPanel(name);
+            return;
+          }
+
+          const testataLink = e.target?.closest?.(".testata-link");
+          if (!testataLink) return;
+          e.preventDefault();
+          e.stopPropagation();
+          const key = testataLink.getAttribute("data-testata-key");
+          const testata =
+            testataLink.getAttribute("data-testata") || testataLink.textContent;
+          openTestataPanel(key || testata);
         });
       }
 
@@ -3431,7 +4546,39 @@
         const effectiveMode = isMailingListView
           ? "giornalisti"
           : getSidebarMode();
-        const enableJournalistFilters = effectiveMode !== "testate";
+        const enableJournalistFilters = true;
+
+        const journalistFiltersSlot = document.getElementById(
+          "journalistFiltersSlot"
+        );
+        const journalistFiltersContent = document.getElementById(
+          "journalistFiltersContent"
+        );
+        const journalistFiltersPlaceholder = document.getElementById(
+          "journalistFiltersPlaceholder"
+        );
+
+        if (journalistFiltersSlot && journalistFiltersContent) {
+          if (!journalistFiltersSlot.dataset.baseHeight) {
+            const h = journalistFiltersContent.offsetHeight || 0;
+            journalistFiltersSlot.dataset.baseHeight = String(h);
+            if (h) {
+              journalistFiltersSlot.style.minHeight = `${h}px`;
+            }
+          }
+        }
+
+        if (journalistFiltersContent) {
+          journalistFiltersContent.style.display = enableJournalistFilters
+            ? ""
+            : "none";
+        }
+        if (journalistFiltersPlaceholder) {
+          journalistFiltersPlaceholder.style.display = enableJournalistFilters
+            ? "none"
+            : "flex";
+        }
+
         setFilterDropdownEnabled(dropdown, enableJournalistFilters);
         setFilterDropdownEnabled(roleDropdown, enableJournalistFilters);
       }
@@ -3439,21 +4586,52 @@
       function getFilterState() {
         const selectedServices = Array.from(dropdown.selectedValues || []);
         const selectedRoles = Array.from(roleDropdown.selectedValues || []);
+        const selectedTestataArgomenti = Array.from(
+          testataArgomentoDropdown.selectedValues || []
+        );
+        const selectedTestataTipoMedia = Array.from(
+          testataTipoMediaDropdown.selectedValues || []
+        );
+        const selectedTestataFrequenze = Array.from(
+          testataFrequenzaDropdown.selectedValues || []
+        );
+        const selectedTestataDiffusioni = Array.from(
+          testataDiffusioneDropdown.selectedValues || []
+        );
         const activeTextTerms = getActiveTextTerms();
         const currentTextQuery = (textFilterInput?.value || "").trim();
 
         const servicesActive = selectedServices.length > 0;
         const rolesActive = selectedRoles.length > 0;
+        const testataArgomentoActive = selectedTestataArgomenti.length > 0;
+        const testataTipoMediaActive = selectedTestataTipoMedia.length > 0;
+        const testataFrequenzaActive = selectedTestataFrequenze.length > 0;
+        const testataDiffusioneActive = selectedTestataDiffusioni.length > 0;
         const textActive = activeTextTerms.length > 0;
-        const active = servicesActive || rolesActive || textActive;
+        const active =
+          servicesActive ||
+          rolesActive ||
+          testataArgomentoActive ||
+          testataTipoMediaActive ||
+          testataFrequenzaActive ||
+          testataDiffusioneActive ||
+          textActive;
 
         return {
           selectedServices,
           selectedRoles,
+          selectedTestataArgomenti,
+          selectedTestataTipoMedia,
+          selectedTestataFrequenze,
+          selectedTestataDiffusioni,
           activeTextTerms,
           currentTextQuery,
           servicesActive,
           rolesActive,
+          testataArgomentoActive,
+          testataTipoMediaActive,
+          testataFrequenzaActive,
+          testataDiffusioneActive,
           textActive,
           active,
         };
@@ -3461,17 +4639,32 @@
 
       function renderCards() {
         const grid = document.getElementById("cardsGrid");
-        const countEl = document.getElementById("cardsCount");
+        const countJournalistsEl = document.getElementById(
+          "sidebarCountJournalists"
+        );
+        const countTestateEl = document.getElementById("sidebarCountTestate");
         const subtitleEl = document.getElementById("cardsSubtitle");
         const clearFiltersLink = document.getElementById("clearFiltersLink");
+
+        const journalistById = new Map(
+          (journalists || []).map((j) => [getJournalistId(j), j])
+        );
 
         const {
           selectedServices,
           selectedRoles,
+          selectedTestataArgomenti,
+          selectedTestataTipoMedia,
+          selectedTestataFrequenze,
+          selectedTestataDiffusioni,
           activeTextTerms,
           currentTextQuery,
           servicesActive,
           rolesActive,
+          testataArgomentoActive,
+          testataTipoMediaActive,
+          testataFrequenzaActive,
+          testataDiffusioneActive,
           textActive,
           active,
         } = getFilterState();
@@ -3501,7 +4694,170 @@
           return journalists.filter((j) => allowed.has(getJournalistId(j)));
         })();
 
-        const effectiveActive = isTestateMode ? textActive : active;
+        const matchesJournalist = (j) => {
+          const serviceOk =
+            !servicesActive || selectedServices.includes(j.servizio);
+          const roleOk = !rolesActive || selectedRoles.includes(j.ruolo);
+
+          const tKeys = getJournalistTestate(j)
+            .map((x) => normalizeTestataKey(x))
+            .filter(Boolean);
+          const testateObjs = tKeys
+            .map((k) => testateByKey.get(k))
+            .filter(Boolean);
+          const testataArgomentoOk =
+            !testataArgomentoActive ||
+            testateObjs.some((t) =>
+              selectedTestataArgomenti.includes(String(t?.argomento || ""))
+            );
+          const testataTipoMediaOk =
+            !testataTipoMediaActive ||
+            testateObjs.some((t) =>
+              selectedTestataTipoMedia.includes(
+                String(t?.tipoMedia?.child || "")
+              )
+            );
+          const testataFrequenzaOk =
+            !testataFrequenzaActive ||
+            testateObjs.some((t) =>
+              selectedTestataFrequenze.includes(
+                String(t?.frequenzaPubblicazione || "")
+              )
+            );
+          const testataDiffusioneOk =
+            !testataDiffusioneActive ||
+            testateObjs.some((t) =>
+              selectedTestataDiffusioni.includes(String(t?.diffusione || ""))
+            );
+
+          const fullName = `${j.nome} ${j.cognome}`.toLowerCase();
+          const testata = getJournalistTestate(j).join(" ").toLowerCase();
+          const noteCombined = combineNotes(
+            normalizeNotes(j.note)
+          ).toLowerCase();
+
+          const textOk =
+            !textActive ||
+            activeTextTerms.every((term) => {
+              const q = String(term || "")
+                .trim()
+                .toLowerCase();
+              if (!q) return true;
+              return (
+                fullName.includes(q) ||
+                testata.includes(q) ||
+                noteCombined.includes(q)
+              );
+            });
+
+          return (
+            serviceOk &&
+            roleOk &&
+            testataArgomentoOk &&
+            testataTipoMediaOk &&
+            testataFrequenzaOk &&
+            testataDiffusioneOk &&
+            textOk
+          );
+        };
+
+        const matchesTestata = (t) => {
+          const jids = Array.isArray(t?.redazione?.giornalisti)
+            ? t.redazione.giornalisti
+            : [];
+
+          const servizioOk =
+            !servicesActive ||
+            jids.some((jid) => {
+              const j = journalistById.get(jid);
+              if (!j) return false;
+              return selectedServices.includes(String(j?.servizio || ""));
+            });
+
+          const ruoloOk =
+            !rolesActive ||
+            jids.some((jid) => {
+              const j = journalistById.get(jid);
+              if (!j) return false;
+              return selectedRoles.includes(String(j?.ruolo || ""));
+            });
+
+          const argomentoOk =
+            !testataArgomentoActive ||
+            selectedTestataArgomenti.includes(String(t?.argomento || ""));
+
+          const tipoMediaOk =
+            !testataTipoMediaActive ||
+            selectedTestataTipoMedia.includes(
+              String(t?.tipoMedia?.child || "")
+            );
+
+          const frequenzaOk =
+            !testataFrequenzaActive ||
+            selectedTestataFrequenze.includes(
+              String(t?.frequenzaPubblicazione || "")
+            );
+
+          const diffusioneOk =
+            !testataDiffusioneActive ||
+            selectedTestataDiffusioni.includes(String(t?.diffusione || ""));
+
+          const textOk =
+            !textActive ||
+            (() => {
+              const nome = String(t?.nome || "").toLowerCase();
+              const argomento = String(t?.argomento || "").toLowerCase();
+              const note = combineNotes(normalizeNotes(t?.note)).toLowerCase();
+              const giornalisti = (t?.redazione?.giornalisti || [])
+                .map((jid) => getJournalistNameById(jid))
+                .join(" ")
+                .toLowerCase();
+
+              return activeTextTerms.every((term) => {
+                const q = String(term || "")
+                  .trim()
+                  .toLowerCase();
+                if (!q) return true;
+                return (
+                  nome.includes(q) ||
+                  argomento.includes(q) ||
+                  note.includes(q) ||
+                  giornalisti.includes(q)
+                );
+              });
+            })();
+
+          return (
+            servizioOk &&
+            ruoloOk &&
+            argomentoOk &&
+            tipoMediaOk &&
+            frequenzaOk &&
+            diffusioneOk &&
+            textOk
+          );
+        };
+
+        if (countJournalistsEl) {
+          const filteredCount = (baseJournalists || []).filter(
+            matchesJournalist
+          ).length;
+          countJournalistsEl.textContent = String(filteredCount);
+        }
+        if (countTestateEl) {
+          const filteredCount = (testate || []).filter(matchesTestata).length;
+          countTestateEl.textContent = String(filteredCount);
+        }
+
+        const effectiveActive = isTestateMode
+          ? textActive ||
+            testataArgomentoActive ||
+            testataTipoMediaActive ||
+            testataFrequenzaActive ||
+            testataDiffusioneActive ||
+            servicesActive ||
+            rolesActive
+          : active;
         if (clearFiltersLink) {
           clearFiltersLink.style.display = effectiveActive
             ? "inline-block"
@@ -3509,40 +4865,14 @@
         }
 
         if (isTestateMode) {
-          const filteredTestate = (testate || []).filter((t) => {
-            if (!textActive) return true;
-            const nome = String(t?.nome || "").toLowerCase();
-            const argomento = String(t?.argomento || "").toLowerCase();
-            const note = String(t?.note || "").toLowerCase();
-            const giornalisti = (t?.redazione?.giornalisti || [])
-              .map((jid) => getJournalistNameById(jid))
-              .join(" ")
-              .toLowerCase();
-
-            return activeTextTerms.every((term) => {
-              const q = String(term || "")
-                .trim()
-                .toLowerCase();
-              if (!q) return true;
-              return (
-                nome.includes(q) ||
-                argomento.includes(q) ||
-                note.includes(q) ||
-                giornalisti.includes(q)
-              );
-            });
-          });
+          const filteredTestate = (testate || []).filter(matchesTestata);
 
           grid.innerHTML = "";
           for (const t of filteredTestate) {
             grid.appendChild(createTestataCard(t, activeTextTerms));
           }
 
-          countEl.textContent = `${filteredTestate.length} / ${
-            (testate || []).length
-          }`;
-
-          if (!textActive) {
+          if (!effectiveActive) {
             subtitleEl.textContent = "";
           } else {
             subtitleEl.innerHTML = "";
@@ -3582,70 +4912,120 @@
               return row;
             };
 
-            const row = makeRow("Termine:");
+            if (textActive) {
+              const row = makeRow("Termine:");
+              for (const term of committedTextTerms) {
+                row.appendChild(
+                  createChip(term, () => {
+                    const idx = committedTextTerms.indexOf(term);
+                    if (idx !== -1) committedTextTerms.splice(idx, 1);
+                    updateTextFilterClearVisibility();
+                    scheduleRender();
+                  })
+                );
+              }
 
-            for (const t of committedTextTerms) {
-              row.appendChild(
-                createChip(t, () => {
-                  const idx = committedTextTerms.indexOf(t);
-                  if (idx !== -1) committedTextTerms.splice(idx, 1);
-                  updateTextFilterClearVisibility();
-                  scheduleRender();
-                })
-              );
+              if (currentTextQuery) {
+                row.appendChild(
+                  createChip(currentTextQuery, () => {
+                    if (!textFilterInput) return;
+                    textFilterInput.value = "";
+                    updateTextFilterClearVisibility();
+                    scheduleRender();
+                  })
+                );
+              }
+
+              bar.appendChild(row);
             }
 
-            if (currentTextQuery) {
-              row.appendChild(
-                createChip(currentTextQuery, () => {
-                  if (!textFilterInput) return;
-                  textFilterInput.value = "";
-                  updateTextFilterClearVisibility();
-                  scheduleRender();
-                })
-              );
+            if (servicesActive) {
+              const row = makeRow("Servizio:");
+              for (const s of selectedServices) {
+                row.appendChild(
+                  createChip(s, () => {
+                    dropdown.removeOption(s);
+                  })
+                );
+              }
+              bar.appendChild(row);
             }
 
-            bar.appendChild(row);
+            if (rolesActive) {
+              const row = makeRow("Ruolo:");
+              for (const r of selectedRoles) {
+                row.appendChild(
+                  createChip(r, () => {
+                    roleDropdown.removeOption(r);
+                  })
+                );
+              }
+              bar.appendChild(row);
+            }
+
+            if (testataArgomentoActive) {
+              const row = makeRow("Argomento testata:");
+              for (const a of selectedTestataArgomenti) {
+                row.appendChild(
+                  createChip(a, () => {
+                    testataArgomentoDropdown.removeOption(a);
+                  })
+                );
+              }
+              bar.appendChild(row);
+            }
+
+            if (testataTipoMediaActive) {
+              const row = makeRow("Tipo media:");
+              for (const tm of selectedTestataTipoMedia) {
+                row.appendChild(
+                  createChip(tm, () => {
+                    testataTipoMediaDropdown.removeOption(tm);
+                  })
+                );
+              }
+              bar.appendChild(row);
+            }
+
+            if (testataFrequenzaActive) {
+              const row = makeRow("Frequenza di pubblicazione:");
+              for (const f of selectedTestataFrequenze) {
+                row.appendChild(
+                  createChip(f, () => {
+                    testataFrequenzaDropdown.removeOption(f);
+                  })
+                );
+              }
+              bar.appendChild(row);
+            }
+
+            if (testataDiffusioneActive) {
+              const row = makeRow("Diffusione:");
+              for (const d of selectedTestataDiffusioni) {
+                row.appendChild(
+                  createChip(d, () => {
+                    testataDiffusioneDropdown.removeOption(d);
+                  })
+                );
+              }
+              bar.appendChild(row);
+            }
+
             subtitleEl.appendChild(bar);
           }
           return;
         }
 
-        const filtered = baseJournalists.filter((j) => {
-          const serviceOk =
-            !servicesActive || selectedServices.includes(j.servizio);
-          const roleOk = !rolesActive || selectedRoles.includes(j.ruolo);
-
-          const fullName = `${j.nome} ${j.cognome}`.toLowerCase();
-          const testata = String(j.testata || "").toLowerCase();
-          const noteCombined = combineNotes(
-            normalizeNotes(j.note)
-          ).toLowerCase();
-
-          const textOk =
-            !textActive ||
-            activeTextTerms.every((term) => {
-              const t = String(term || "")
-                .trim()
-                .toLowerCase();
-              if (!t) return true;
-              return (
-                fullName.includes(t) ||
-                testata.includes(t) ||
-                noteCombined.includes(t)
-              );
-            });
-
-          return serviceOk && roleOk && textOk;
-        });
+        const filtered = (baseJournalists || []).filter(matchesJournalist);
 
         grid.innerHTML = "";
         for (const j of filtered) {
           grid.appendChild(createCard(j));
         }
 
-        countEl.textContent = `${filtered.length} / ${baseJournalists.length}`;
+        requestAnimationFrame(() => {
+          updateJournalistTestateLabelLinks(grid);
+        });
 
         if (!active) {
           subtitleEl.textContent = "";
@@ -3736,12 +5116,55 @@
                 })
               );
             }
+            bar.appendChild(row);
+          }
 
-            if (servicesActive) {
-              bar.appendChild(row);
-            } else {
-              bar.insertBefore(row, bar.firstChild);
+          if (testataArgomentoActive) {
+            const row = makeRow("Argomento testata:");
+            for (const a of selectedTestataArgomenti) {
+              row.appendChild(
+                createChip(a, () => {
+                  testataArgomentoDropdown.removeOption(a);
+                })
+              );
             }
+            bar.appendChild(row);
+          }
+
+          if (testataTipoMediaActive) {
+            const row = makeRow("Tipo media:");
+            for (const tm of selectedTestataTipoMedia) {
+              row.appendChild(
+                createChip(tm, () => {
+                  testataTipoMediaDropdown.removeOption(tm);
+                })
+              );
+            }
+            bar.appendChild(row);
+          }
+
+          if (testataFrequenzaActive) {
+            const row = makeRow("Frequenza di pubblicazione:");
+            for (const f of selectedTestataFrequenze) {
+              row.appendChild(
+                createChip(f, () => {
+                  testataFrequenzaDropdown.removeOption(f);
+                })
+              );
+            }
+            bar.appendChild(row);
+          }
+
+          if (testataDiffusioneActive) {
+            const row = makeRow("Diffusione:");
+            for (const d of selectedTestataDiffusioni) {
+              row.appendChild(
+                createChip(d, () => {
+                  testataDiffusioneDropdown.removeOption(d);
+                })
+              );
+            }
+            bar.appendChild(row);
           }
 
           subtitleEl.appendChild(bar);
@@ -3754,6 +5177,10 @@
         isBulkFilterReset = true;
         dropdown.resetSelection();
         roleDropdown.resetSelection();
+        testataArgomentoDropdown.resetSelection();
+        testataTipoMediaDropdown.resetSelection();
+        testataFrequenzaDropdown.resetSelection();
+        testataDiffusioneDropdown.resetSelection();
         committedTextTerms.splice(0, committedTextTerms.length);
         if (textFilterInput) {
           textFilterInput.value = "";
@@ -3769,6 +5196,26 @@
       };
 
       roleDropdown.onSelectionChange = () => {
+        if (isBulkFilterReset) return;
+        scheduleRender();
+      };
+
+      testataArgomentoDropdown.onSelectionChange = () => {
+        if (isBulkFilterReset) return;
+        scheduleRender();
+      };
+
+      testataTipoMediaDropdown.onSelectionChange = () => {
+        if (isBulkFilterReset) return;
+        scheduleRender();
+      };
+
+      testataFrequenzaDropdown.onSelectionChange = () => {
+        if (isBulkFilterReset) return;
+        scheduleRender();
+      };
+
+      testataDiffusioneDropdown.onSelectionChange = () => {
         if (isBulkFilterReset) return;
         scheduleRender();
       };
@@ -3793,17 +5240,51 @@
       if (cardsGrid) {
         cardsGrid.addEventListener("click", (e) => {
           const notesLink = e.target?.closest?.(".card-notes-open");
+          const journalistsLink = e.target?.closest?.(
+            ".card-testata-journalists-open"
+          );
+          const testateLabelLink = e.target?.closest?.(
+            ".card-journalist-testate-open"
+          );
           const testataLink = e.target?.closest?.(".testata-link");
           const journalistLink = e.target?.closest?.(".journalist-link");
-          if (!notesLink && !testataLink && !journalistLink) return;
+          if (
+            !notesLink &&
+            !journalistsLink &&
+            !testateLabelLink &&
+            !testataLink &&
+            !journalistLink
+          )
+            return;
 
           e.preventDefault();
           e.stopPropagation();
 
           if (notesLink) {
             const jid = notesLink.getAttribute("data-jid");
+            const testataKey = notesLink.getAttribute("data-testata-key");
+            if (jid) {
+              openNotesModal(jid);
+              return;
+            }
+            if (testataKey) {
+              openTestataNotesModal(testataKey);
+              return;
+            }
+            return;
+          }
+
+          if (journalistsLink) {
+            const testataKey = journalistsLink.getAttribute("data-testata-key");
+            if (!testataKey) return;
+            openTestataJournalistsModal(testataKey);
+            return;
+          }
+
+          if (testateLabelLink) {
+            const jid = testateLabelLink.getAttribute("data-jid");
             if (!jid) return;
-            openNotesModal(jid);
+            openJournalistTestateModal(jid);
             return;
           }
 
