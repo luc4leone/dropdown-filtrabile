@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
@@ -564,12 +564,70 @@
           <main class="main">
             <div class="main-header">
               <div>
-                <div style="display: flex; align-items: baseline; gap: 12px">
-                  <h1 class="main-title" id="mainTitle">Filtra Banca Dati</h1>
-                  <a href="#" class="testata-link" id="chooseDatabaseLink"
-                    >scegli Banca Dati</a
-                  >
+                <div class="main-header-row">
+                  <div class="main-header-left">
+                    <h1 class="main-title" id="mainTitle">Filtra Banca Dati</h1>
+                    <span
+                      class="pill"
+                      id="mailingListCountPill"
+                      style="display: none"
+                    ></span>
+                    <a href="#" class="testata-link" id="chooseDatabaseLink"
+                      >scegli Banca Dati</a
+                    >
+                    <div
+                      class="mailing-list-actions"
+                      id="mailingListActions"
+                      style="display: none"
+                    >
+                      <a
+                        href="#"
+                        class="testata-link"
+                        id="mailingListRenameLink"
+                        >rinomina</a
+                      >
+                      <a
+                        href="#"
+                        class="testata-link"
+                        id="mailingListDuplicateLink"
+                        >duplica</a
+                      >
+                      <a
+                        href="#"
+                        class="testata-link"
+                        id="mailingListExportLink"
+                        >esporta</a
+                      >
+                    </div>
+                  </div>
+                  <div class="main-header-right">
+                    <span class="bulk-select-controls" id="bulkSelectControls">
+                      <a href="#" class="bulk-select-link" id="selectAllLink"
+                        >seleziona tutti</a
+                      >
+                      <span class="sidebar-mode-separator" aria-hidden="true"
+                        >|</span
+                      >
+                      <a href="#" class="bulk-select-link" id="deselectAllLink"
+                        >deseleziona tutti</a
+                      >
+                      <span class="bulk-select-dot" aria-hidden="true">•</span>
+                    </span>
+                    <span class="main-subtitle">ordina:</span>
+                    <a href="#" class="sort-link" id="sortByNameLink"
+                      >nome (a-z)</a
+                    >
+                    <span class="sidebar-mode-separator" aria-hidden="true"
+                      >|</span
+                    >
+                    <a href="#" class="sort-link" id="sortByRoleLink">ruolo</a>
+                  </div>
                 </div>
+                <div
+                  class="main-subtitle"
+                  id="mailingListCreatedAtSubtitle"
+                  style="display: none"
+                ></div>
                 <a
                   href="#"
                   class="close-dropdown-link main-clear-filters"
@@ -677,7 +735,7 @@
     ></div>
     <div class="notes-modal" id="saveListModal" aria-hidden="true">
       <div class="notes-modal-header">
-        <p class="notes-modal-title">Salva lista</p>
+        <p class="notes-modal-title" id="saveListModalTitle">Salva lista</p>
         <button
           type="button"
           class="notes-modal-close"
@@ -765,6 +823,29 @@
         appState.activeMailingListId = "";
       }
 
+      if (typeof appState.sortMode !== "string") {
+        appState.sortMode = "name";
+      }
+
+      function getSortMode() {
+        const v = String(appState.sortMode || "")
+          .trim()
+          .toLowerCase();
+        return v === "role" ? "role" : "name";
+      }
+
+      function setSortMode(mode) {
+        const next =
+          String(mode || "")
+            .trim()
+            .toLowerCase() === "role"
+            ? "role"
+            : "name";
+        appState.sortMode = next;
+        saveAppState(appState);
+        scheduleRender();
+      }
+
       const ENABLED_VIEWS = new Set(["filtra", "mailing-list", "dashboard"]);
 
       function normalizeViewId(value) {
@@ -795,6 +876,10 @@
           sp.classList.remove("show");
           sp.setAttribute("aria-hidden", "true");
           document.body.classList.remove("selection-panel-open");
+        }
+
+        if (v === "mailing-list" && selectedJournalistIds.size > 0) {
+          openSelectedPanel();
         }
 
         document.querySelectorAll(".nav-sidebar a[data-view]").forEach((a) => {
@@ -843,6 +928,10 @@
 
           this.renderChipsInInput = config.renderChipsInInput !== false;
           this.preserveParentOrder = config.preserveParentOrder === true;
+          this.sortComparator =
+            typeof config.sortComparator === "function"
+              ? config.sortComparator
+              : (a, b) => a.localeCompare(b, "it", { sensitivity: "base" });
 
           this.input = document.getElementById(inputId);
           this.inputWrapper = document.getElementById(inputWrapperId);
@@ -1406,12 +1495,12 @@
               (opt) =>
                 this.originalOptions.includes(opt) && !filteredSet.has(opt)
             )
-            .sort((a, b) => a.localeCompare(b, "it", { sensitivity: "base" }));
+            .sort((a, b) => this.sortComparator(a, b));
 
           const matched = [...this.filteredOptions].sort((a, b) => {
             const ra = this.matchRank?.get(a) ?? 99;
             const rb = this.matchRank?.get(b) ?? 99;
-            return ra - rb || a.localeCompare(b, "it", { sensitivity: "base" });
+            return ra - rb || this.sortComparator(a, b);
           });
 
           const visible = [...matched, ...suggestions];
@@ -1559,13 +1648,13 @@
             this.results.appendChild(group);
 
             const visibleChildren = (childrenByParentVisible.get(p) || []).sort(
-              (a, b) => a.localeCompare(b, "it", { sensitivity: "base" })
+              (a, b) => this.sortComparator(a, b)
             );
 
             let childrenToRender = visibleChildren;
             if (isFiltered && this.expandedParents.has(p)) {
               const allChildren = [...(this.childrenByParent?.[p] || [])].sort(
-                (a, b) => a.localeCompare(b, "it", { sensitivity: "base" })
+                (a, b) => this.sortComparator(a, b)
               );
               const inVisible = new Set(visibleChildren);
               const extra = allChildren.filter((c) => !inVisible.has(c));
@@ -1993,6 +2082,49 @@
           "Praticante",
         ],
       };
+
+      const ROLE_RANK = (() => {
+        const rank = new Map();
+        let i = 0;
+        for (const parent of Object.keys(ROLES_BY_PARENT || {})) {
+          for (const role of ROLES_BY_PARENT[parent] || []) {
+            const k = String(role || "")
+              .trim()
+              .toLowerCase();
+            if (!k) continue;
+            if (!rank.has(k)) {
+              rank.set(k, i);
+              i++;
+            }
+          }
+        }
+        return rank;
+      })();
+
+      function getRoleRank(role) {
+        const k = String(role || "")
+          .trim()
+          .toLowerCase();
+        if (!k) return Number.POSITIVE_INFINITY;
+        return ROLE_RANK.has(k) ? ROLE_RANK.get(k) : Number.POSITIVE_INFINITY;
+      }
+
+      function compareJournalistsByName(a, b) {
+        const ca = String(a?.cognome || "").trim();
+        const cb = String(b?.cognome || "").trim();
+        const na = String(a?.nome || "").trim();
+        const nb = String(b?.nome || "").trim();
+        return (
+          ca.localeCompare(cb, "it", { sensitivity: "base" }) ||
+          na.localeCompare(nb, "it", { sensitivity: "base" })
+        );
+      }
+
+      function compareTestateByName(a, b) {
+        const na = String(a?.nome || "").trim();
+        const nb = String(b?.nome || "").trim();
+        return na.localeCompare(nb, "it", { sensitivity: "base" });
+      }
 
       const roleOptions = Object.values(ROLES_BY_PARENT)
         .flat()
@@ -2759,6 +2891,93 @@
           resultsId: "testataFrequenzaDropdownResults",
           synonymsByFilter: {},
           renderChipsInInput: false,
+          sortComparator: (a, b) => {
+            const key = (x) =>
+              String(x || "")
+                .trim()
+                .toLowerCase();
+            const ra = (() => {
+              const k = key(a);
+              if (k === "aperiodico" || k === "plurisettimanale") {
+                return { indefinite: true, days: Number.POSITIVE_INFINITY };
+              }
+              const days =
+                k === "quotidiano"
+                  ? 1
+                  : k === "trisettimanale"
+                  ? 7 / 3
+                  : k === "bisettimanale"
+                  ? 7 / 2
+                  : k === "settimanale"
+                  ? 7
+                  : k === "quattordicinale"
+                  ? 14
+                  : k === "quindicinale"
+                  ? 15
+                  : k === "mensile"
+                  ? 30
+                  : k === "bimestrale"
+                  ? 60
+                  : k === "trimestrale"
+                  ? 90
+                  : k === "quadrimestrale"
+                  ? 120
+                  : k === "semestrale"
+                  ? 182
+                  : k === "annuale"
+                  ? 365
+                  : k === "quadriennale"
+                  ? 365 * 4
+                  : Number.POSITIVE_INFINITY;
+              return { indefinite: false, days };
+            })();
+
+            const rb = (() => {
+              const k = key(b);
+              if (k === "aperiodico" || k === "plurisettimanale") {
+                return { indefinite: true, days: Number.POSITIVE_INFINITY };
+              }
+              const days =
+                k === "quotidiano"
+                  ? 1
+                  : k === "trisettimanale"
+                  ? 7 / 3
+                  : k === "bisettimanale"
+                  ? 7 / 2
+                  : k === "settimanale"
+                  ? 7
+                  : k === "quattordicinale"
+                  ? 14
+                  : k === "quindicinale"
+                  ? 15
+                  : k === "mensile"
+                  ? 30
+                  : k === "bimestrale"
+                  ? 60
+                  : k === "trimestrale"
+                  ? 90
+                  : k === "quadrimestrale"
+                  ? 120
+                  : k === "semestrale"
+                  ? 182
+                  : k === "annuale"
+                  ? 365
+                  : k === "quadriennale"
+                  ? 365 * 4
+                  : Number.POSITIVE_INFINITY;
+              return { indefinite: false, days };
+            })();
+
+            if (ra.indefinite !== rb.indefinite) {
+              return ra.indefinite ? 1 : -1;
+            }
+            if (ra.days !== rb.days) {
+              return ra.days - rb.days;
+            }
+            return String(a || "").localeCompare(String(b || ""), "it", {
+              sensitivity: "base",
+            });
+          },
         }
       );
       testataFrequenzaDropdown.updateAutocompleteHint("");
@@ -2793,6 +3012,7 @@
 
       const selectedJournalistIds = new Set();
       const selectedJournalistOrder = [];
+      let lastRenderedVisibleJournalistIds = [];
 
       const selectedPanelBody = document.getElementById("selectedPanelBody");
       const selectedClearAll = document.getElementById("selectedClearAll");
@@ -2804,14 +3024,34 @@
         "saveListModalOverlay"
       );
       const saveListModal = document.getElementById("saveListModal");
+      const saveListModalTitle = document.getElementById("saveListModalTitle");
       const saveListModalClose = document.getElementById("saveListModalClose");
       const saveListNameInput = document.getElementById("saveListNameInput");
       const saveListConfirm = document.getElementById("saveListConfirm");
       const saveListError = document.getElementById("saveListError");
       const mainTitleEl = document.getElementById("mainTitle");
+      const mailingListCountPill = document.getElementById(
+        "mailingListCountPill"
+      );
+      const mailingListActions = document.getElementById("mailingListActions");
+      const mailingListRenameLink = document.getElementById(
+        "mailingListRenameLink"
+      );
+      const mailingListDuplicateLink = document.getElementById(
+        "mailingListDuplicateLink"
+      );
+      const mailingListExportLink = document.getElementById(
+        "mailingListExportLink"
+      );
+      const mailingListCreatedAtSubtitle = document.getElementById(
+        "mailingListCreatedAtSubtitle"
+      );
       const dashboardMailingListsEl = document.getElementById(
         "dashboardMailingLists"
       );
+
+      let saveListModalMode = "create";
+      let saveListModalTargetId = "";
 
       const textFilterInput = document.getElementById("textFilterInput");
       const textFilterClear = document.getElementById("textFilterClearLink");
@@ -2819,7 +3059,7 @@
       const committedTextTerms = [];
 
       function getJournalistId(j) {
-        return j.email;
+        return String(j?.email || "").trim();
       }
 
       function getJournalistTestate(j) {
@@ -2852,9 +3092,46 @@
         if (!saveListModal || !saveListModalOverlay) return;
         if (selectedJournalistOrder.length === 0) return;
 
+        saveListModalMode = "create";
+        saveListModalTargetId = "";
+        if (saveListModalTitle) saveListModalTitle.textContent = "Salva lista";
+        if (saveListConfirm) saveListConfirm.textContent = "salva lista";
+
         if (saveListNameInput) {
           saveListNameInput.value = "";
           saveListNameInput.focus();
+        }
+        if (saveListError) {
+          saveListError.style.display = "none";
+        }
+
+        saveListModalOverlay.classList.add("show");
+        saveListModal.classList.add("show");
+        saveListModalOverlay.setAttribute("aria-hidden", "false");
+        saveListModal.setAttribute("aria-hidden", "false");
+      }
+
+      function openRenameListModal() {
+        if (!saveListModal || !saveListModalOverlay) return;
+        const activeList = getMailingListById(appState.activeMailingListId);
+        if (!activeList) return;
+
+        saveListModalMode = "rename";
+        saveListModalTargetId = String(activeList.id || "");
+        if (saveListModalTitle) {
+          saveListModalTitle.textContent = "Rinomina lista";
+        }
+        if (saveListConfirm) saveListConfirm.textContent = "rinomina lista";
+
+        if (saveListNameInput) {
+          saveListNameInput.value = String(activeList.name || "");
+          saveListNameInput.focus();
+          try {
+            saveListNameInput.setSelectionRange(
+              0,
+              String(saveListNameInput.value || "").length
+            );
+          } catch (_) {}
         }
         if (saveListError) {
           saveListError.style.display = "none";
@@ -2872,6 +3149,11 @@
         saveListModal.classList.remove("show");
         saveListModalOverlay.setAttribute("aria-hidden", "true");
         saveListModal.setAttribute("aria-hidden", "true");
+
+        saveListModalMode = "create";
+        saveListModalTargetId = "";
+        if (saveListModalTitle) saveListModalTitle.textContent = "Salva lista";
+        if (saveListConfirm) saveListConfirm.textContent = "salva lista";
       }
 
       function getMailingListById(id) {
@@ -2910,6 +3192,31 @@
         return `${base} (${Date.now()})`;
       }
 
+      function computeDuplicatedMailingListName(originalName) {
+        const base = String(originalName || "").trim();
+        if (!base) return "";
+
+        const existing = new Set(
+          (appState.mailingLists || [])
+            .map((x) =>
+              String(x?.name || "")
+                .trim()
+                .toLowerCase()
+            )
+            .filter(Boolean)
+        );
+
+        let i = 1;
+        while (i < 1000) {
+          const candidate = `${base} (${i})`;
+          if (!existing.has(candidate.toLowerCase())) {
+            return candidate;
+          }
+          i++;
+        }
+        return `${base} (${Date.now()})`;
+      }
+
       function createMailingList(name, journalistIds) {
         const id = `ml_${Date.now()}_${Math.random().toString(16).slice(2)}`;
         const list = {
@@ -2925,6 +3232,33 @@
         appState.mailingLists.unshift(list);
         appState.activeMailingListId = id;
         saveAppState(appState);
+        return list;
+      }
+
+      function duplicateActiveMailingList() {
+        const active = getMailingListById(appState.activeMailingListId);
+        if (!active) return null;
+
+        const newName = computeDuplicatedMailingListName(active.name);
+        if (!newName) return null;
+
+        const id = `ml_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+        const list = {
+          id,
+          name: newName,
+          journalistIds: Array.from(active.journalistIds || []),
+          createdAt: Date.now(),
+        };
+
+        if (!Array.isArray(appState.mailingLists)) {
+          appState.mailingLists = [];
+        }
+        appState.mailingLists.unshift(list);
+        appState.activeMailingListId = id;
+        saveAppState(appState);
+
+        renderDashboardMailingLists();
+        openMailingListById(id);
         return list;
       }
 
@@ -2980,13 +3314,16 @@
           title.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (typeof clearAllFilters === "function") {
+              clearAllFilters();
+            }
             openMailingListById(id);
           });
 
           const meta = document.createElement("div");
           meta.className = "dashboard-mailing-list-meta";
           if (Number.isFinite(createdAt) && createdAt > 0) {
-            const stamp = new Date(createdAt).toLocaleString("it-IT");
+            const stamp = new Date(createdAt).toLocaleDateString("it-IT");
             meta.textContent = `creata il ${stamp}`;
           } else {
             meta.textContent = "";
@@ -3489,6 +3826,13 @@
 
       const chooseDatabaseLink = document.getElementById("chooseDatabaseLink");
 
+      const selectAllLink = document.getElementById("selectAllLink");
+      const deselectAllLink = document.getElementById("deselectAllLink");
+      const bulkSelectControls = document.getElementById("bulkSelectControls");
+
+      const sortByNameLink = document.getElementById("sortByNameLink");
+      const sortByRoleLink = document.getElementById("sortByRoleLink");
+
       const notesModalOverlay = document.getElementById("notesModalOverlay");
       const notesModal = document.getElementById("notesModal");
       const notesModalTitle = document.getElementById("notesModalTitle");
@@ -3555,10 +3899,6 @@
       }
 
       function confirmSaveList() {
-        const selectionSnapshot = selectedJournalistOrder.filter((jid) =>
-          selectedJournalistIds.has(jid)
-        );
-
         const rawName = String(saveListNameInput?.value || "").trim();
         if (!rawName) {
           if (saveListError) saveListError.style.display = "block";
@@ -3566,6 +3906,31 @@
           return;
         }
         if (saveListError) saveListError.style.display = "none";
+
+        if (saveListModalMode === "rename") {
+          const targetId = String(saveListModalTargetId || "").trim();
+          if (!targetId) return;
+          if (!Array.isArray(appState.mailingLists)) return;
+
+          const idx = appState.mailingLists.findIndex(
+            (ml) => String(ml?.id || "") === targetId
+          );
+          if (idx === -1) return;
+
+          appState.mailingLists[idx] = {
+            ...appState.mailingLists[idx],
+            name: rawName,
+          };
+          saveAppState(appState);
+
+          closeSaveListModal();
+          scheduleRender();
+          return;
+        }
+
+        const selectionSnapshot = selectedJournalistOrder.filter((jid) =>
+          selectedJournalistIds.has(jid)
+        );
 
         const uniqueName = computeUniqueMailingListName(rawName);
         createMailingList(uniqueName, selectionSnapshot);
@@ -3618,7 +3983,23 @@
         }
       }
 
+      function closeAllFilterableDropdowns() {
+        for (const inst of FilterableDropdown._instances || []) {
+          if (inst?.isOpen) {
+            inst.close();
+          }
+        }
+      }
+
       if (textFilterInput) {
+        textFilterInput.addEventListener("focus", () => {
+          closeAllFilterableDropdowns();
+        });
+
+        textFilterInput.addEventListener("click", () => {
+          closeAllFilterableDropdowns();
+        });
+
         textFilterInput.addEventListener("input", () => {
           updateTextFilterClearVisibility();
           scheduleRender();
@@ -4335,7 +4716,7 @@
         for (const card of cards) {
           const valueEl = card.querySelector(".card-testate");
           const labelHost = card.querySelector(
-            ".card-journalist-testate-label"
+            ".card-journalist-testate-open, .card-journalist-testate-label"
           );
           if (!valueEl || !labelHost) continue;
 
@@ -4345,7 +4726,11 @@
           const j = (journalists || []).find((x) => getJournalistId(x) === jid);
           const hasData = (j ? getJournalistTestate(j) : []).length > 0;
           if (!hasData) {
-            labelHost.replaceWith(document.createTextNode("Testate"));
+            const span = document.createElement("span");
+            span.className = "card-journalist-testate-label";
+            span.setAttribute("data-jid", jid);
+            span.textContent = "Testate";
+            labelHost.replaceWith(span);
             continue;
           }
 
@@ -4369,8 +4754,8 @@
             clone.style.overflow = "visible";
             clone.style.textOverflow = "clip";
 
-            clone.style.display = "-webkit-box";
-            clone.style.webkitBoxOrient = "vertical";
+            clone.style.display = "block";
+            clone.style.webkitBoxOrient = "unset";
             clone.style.webkitLineClamp = "unset";
             clone.style.lineClamp = "unset";
 
@@ -4378,7 +4763,7 @@
             const fullH = clone.getBoundingClientRect().height;
             clone.remove();
 
-            return fullH > clampedRect.height + 1;
+            return fullH > clampedRect.height + 2;
           })();
 
           if (isTruncated) {
@@ -4389,7 +4774,11 @@
             a.textContent = "Testate";
             labelHost.replaceWith(a);
           } else {
-            labelHost.replaceWith(document.createTextNode("Testate"));
+            const span = document.createElement("span");
+            span.className = "card-journalist-testate-label";
+            span.setAttribute("data-jid", jid);
+            span.textContent = "Testate";
+            labelHost.replaceWith(span);
           }
         }
       }
@@ -4457,6 +4846,116 @@
           e.preventDefault();
           e.stopPropagation();
           openBancaDatiPanel();
+        });
+      }
+
+      if (mailingListRenameLink) {
+        mailingListRenameLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openRenameListModal();
+        });
+      }
+
+      if (mailingListDuplicateLink) {
+        mailingListDuplicateLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          duplicateActiveMailingList();
+        });
+      }
+
+      if (mailingListExportLink) {
+        mailingListExportLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      }
+
+      if (sortByNameLink) {
+        sortByNameLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setSortMode("name");
+        });
+      }
+
+      if (sortByRoleLink) {
+        sortByRoleLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setSortMode("role");
+        });
+      }
+
+      function selectAllFilteredCards() {
+        const grid = document.getElementById("cardsGrid");
+        const idsSet = new Set();
+        if (grid) {
+          for (const el of grid.querySelectorAll(".card-select[data-jid]")) {
+            const jid = String(el.getAttribute("data-jid") || "").trim();
+            if (jid) idsSet.add(jid);
+          }
+          for (const el of grid.querySelectorAll(".card[data-jid]")) {
+            const jid = String(el.getAttribute("data-jid") || "").trim();
+            if (jid) idsSet.add(jid);
+          }
+        }
+
+        if (
+          idsSet.size === 0 &&
+          Array.isArray(lastRenderedVisibleJournalistIds)
+        ) {
+          for (const raw of lastRenderedVisibleJournalistIds) {
+            const jid = String(raw || "").trim();
+            if (jid) idsSet.add(jid);
+          }
+        }
+
+        const ids = Array.from(idsSet);
+        if (!ids.length) return;
+
+        for (let i = ids.length - 1; i >= 0; i--) {
+          const jid = String(ids[i] || "").trim();
+          if (!jid) continue;
+          selectedJournalistIds.add(jid);
+          ensureSelectedOrder(jid);
+        }
+
+        openSelectedPanel();
+        scheduleRender();
+      }
+
+      function deselectAllCards() {
+        selectedJournalistIds.clear();
+        selectedJournalistOrder.length = 0;
+
+        document
+          .querySelectorAll(".card-select, .testata-panel-select")
+          .forEach((el) => {
+            el.checked = false;
+          });
+        document.querySelectorAll(".card.is-selected").forEach((el) => {
+          el.classList.remove("is-selected");
+        });
+
+        renderSelectedPanelList();
+        closeSelectedPanel();
+      }
+
+      if (selectAllLink) {
+        selectAllLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          selectAllFilteredCards();
+        });
+      }
+
+      if (deselectAllLink) {
+        deselectAllLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          deselectAllCards();
         });
       }
 
@@ -4542,10 +5041,7 @@
       }
 
       function applySidebarModeUI() {
-        const isMailingListView = appState.view === "mailing-list";
-        const effectiveMode = isMailingListView
-          ? "giornalisti"
-          : getSidebarMode();
+        const effectiveMode = getSidebarMode();
         const enableJournalistFilters = true;
 
         const journalistFiltersSlot = document.getElementById(
@@ -4646,6 +5142,9 @@
         const subtitleEl = document.getElementById("cardsSubtitle");
         const clearFiltersLink = document.getElementById("clearFiltersLink");
 
+        const sortByNameLink = document.getElementById("sortByNameLink");
+        const sortByRoleLink = document.getElementById("sortByRoleLink");
+
         const journalistById = new Map(
           (journalists || []).map((j) => [getJournalistId(j), j])
         );
@@ -4676,8 +5175,29 @@
 
         applySidebarModeUI();
 
-        const mode = isMailingListView ? "giornalisti" : getSidebarMode();
+        const mode = getSidebarMode();
         const isTestateMode = mode === "testate";
+
+        if (bulkSelectControls) {
+          bulkSelectControls.style.display = isTestateMode ? "none" : "";
+        }
+
+        const sortMode = getSortMode();
+        if (sortByNameLink) {
+          sortByNameLink.classList.toggle("is-active", sortMode === "name");
+          sortByNameLink.setAttribute(
+            "aria-current",
+            sortMode === "name" ? "true" : "false"
+          );
+        }
+        if (sortByRoleLink) {
+          sortByRoleLink.textContent = isTestateMode ? "frequenza" : "ruolo";
+          sortByRoleLink.classList.toggle("is-active", sortMode === "role");
+          sortByRoleLink.setAttribute(
+            "aria-current",
+            sortMode === "role" ? "true" : "false"
+          );
+        }
 
         if (mainTitleEl) {
           if (isMailingListView && activeList) {
@@ -4687,12 +5207,52 @@
           }
         }
 
+        if (isMailingListView && activeList) {
+          if (chooseDatabaseLink) chooseDatabaseLink.style.display = "none";
+          if (mailingListActions) mailingListActions.style.display = "flex";
+
+          const count = Array.isArray(activeList.journalistIds)
+            ? activeList.journalistIds.length
+            : 0;
+          if (mailingListCountPill) {
+            mailingListCountPill.textContent = String(count);
+            mailingListCountPill.style.display = "inline-block";
+          }
+
+          if (mailingListCreatedAtSubtitle) {
+            const createdAt = Number(activeList.createdAt || 0);
+            if (Number.isFinite(createdAt) && createdAt > 0) {
+              const stamp = new Date(createdAt).toLocaleDateString("it-IT");
+              mailingListCreatedAtSubtitle.textContent = `creata il ${stamp}`;
+              mailingListCreatedAtSubtitle.style.display = "block";
+            } else {
+              mailingListCreatedAtSubtitle.textContent = "";
+              mailingListCreatedAtSubtitle.style.display = "none";
+            }
+          }
+        } else {
+          if (chooseDatabaseLink) chooseDatabaseLink.style.display = "";
+          if (mailingListActions) mailingListActions.style.display = "none";
+          if (mailingListCountPill) {
+            mailingListCountPill.textContent = "";
+            mailingListCountPill.style.display = "none";
+          }
+          if (mailingListCreatedAtSubtitle) {
+            mailingListCreatedAtSubtitle.textContent = "";
+            mailingListCreatedAtSubtitle.style.display = "none";
+          }
+        }
+
         const baseJournalists = (() => {
-          if (!isMailingListView) return journalists;
-          if (!activeList) return [];
+          if (!isMailingListView || !activeList) return journalists;
           const allowed = new Set(activeList.journalistIds || []);
           return journalists.filter((j) => allowed.has(getJournalistId(j)));
         })();
+
+        const mailingAllowedJids =
+          isMailingListView && activeList
+            ? new Set(activeList.journalistIds || [])
+            : null;
 
         const matchesJournalist = (j) => {
           const serviceOk =
@@ -4766,9 +5326,17 @@
             ? t.redazione.giornalisti
             : [];
 
+          const relevantJids = mailingAllowedJids
+            ? jids.filter((jid) => mailingAllowedJids.has(jid))
+            : jids;
+
+          if (mailingAllowedJids && relevantJids.length === 0) {
+            return false;
+          }
+
           const servizioOk =
             !servicesActive ||
-            jids.some((jid) => {
+            relevantJids.some((jid) => {
               const j = journalistById.get(jid);
               if (!j) return false;
               return selectedServices.includes(String(j?.servizio || ""));
@@ -4776,7 +5344,7 @@
 
           const ruoloOk =
             !rolesActive ||
-            jids.some((jid) => {
+            relevantJids.some((jid) => {
               const j = journalistById.get(jid);
               if (!j) return false;
               return selectedRoles.includes(String(j?.ruolo || ""));
@@ -4808,7 +5376,7 @@
               const nome = String(t?.nome || "").toLowerCase();
               const argomento = String(t?.argomento || "").toLowerCase();
               const note = combineNotes(normalizeNotes(t?.note)).toLowerCase();
-              const giornalisti = (t?.redazione?.giornalisti || [])
+              const giornalisti = relevantJids
                 .map((jid) => getJournalistNameById(jid))
                 .join(" ")
                 .toLowerCase();
@@ -4866,10 +5434,79 @@
 
         if (isTestateMode) {
           const filteredTestate = (testate || []).filter(matchesTestata);
+          const sortedTestate = [...filteredTestate].sort((a, b) => {
+            if (sortMode === "role") {
+              const key = (x) =>
+                String(x || "")
+                  .trim()
+                  .toLowerCase();
+              const getFreqSort = (t) => {
+                const k = key(t?.frequenzaPubblicazione);
+                if (k === "aperiodico" || k === "plurisettimanale") {
+                  return { indefinite: true, days: Number.POSITIVE_INFINITY };
+                }
+                const days =
+                  k === "quotidiano"
+                    ? 1
+                    : k === "trisettimanale"
+                    ? 7 / 3
+                    : k === "bisettimanale"
+                    ? 7 / 2
+                    : k === "settimanale"
+                    ? 7
+                    : k === "quattordicinale"
+                    ? 14
+                    : k === "quindicinale"
+                    ? 15
+                    : k === "mensile"
+                    ? 30
+                    : k === "bimestrale"
+                    ? 60
+                    : k === "trimestrale"
+                    ? 90
+                    : k === "quadrimestrale"
+                    ? 120
+                    : k === "semestrale"
+                    ? 182
+                    : k === "annuale"
+                    ? 365
+                    : k === "quadriennale"
+                    ? 365 * 4
+                    : Number.POSITIVE_INFINITY;
+                return { indefinite: false, days };
+              };
+              const fa = getFreqSort(a);
+              const fb = getFreqSort(b);
+              if (fa.indefinite !== fb.indefinite) {
+                return fa.indefinite ? 1 : -1;
+              }
+              if (fa.days !== fb.days) {
+                return fa.days - fb.days;
+              }
+              return compareTestateByName(a, b);
+            }
+            return compareTestateByName(a, b);
+          });
 
           grid.innerHTML = "";
-          for (const t of filteredTestate) {
+          for (const t of sortedTestate) {
             grid.appendChild(createTestataCard(t, activeTextTerms));
+          }
+
+          {
+            const set = new Set();
+            for (const t of sortedTestate) {
+              const jids = Array.isArray(t?.redazione?.giornalisti)
+                ? t.redazione.giornalisti
+                : [];
+              for (const jid of jids) {
+                const id = String(jid || "").trim();
+                if (!id) continue;
+                if (mailingAllowedJids && !mailingAllowedJids.has(id)) continue;
+                set.add(id);
+              }
+            }
+            lastRenderedVisibleJournalistIds = Array.from(set);
           }
 
           if (!effectiveActive) {
@@ -5017,11 +5654,23 @@
         }
 
         const filtered = (baseJournalists || []).filter(matchesJournalist);
+        const sorted = [...filtered].sort((a, b) => {
+          if (sortMode === "role") {
+            const ra = getRoleRank(a?.ruolo);
+            const rb = getRoleRank(b?.ruolo);
+            return ra - rb || compareJournalistsByName(a, b);
+          }
+          return compareJournalistsByName(a, b);
+        });
 
         grid.innerHTML = "";
-        for (const j of filtered) {
+        for (const j of sorted) {
           grid.appendChild(createCard(j));
         }
+
+        lastRenderedVisibleJournalistIds = sorted
+          .map((j) => String(getJournalistId(j) || "").trim())
+          .filter(Boolean);
 
         requestAnimationFrame(() => {
           updateJournalistTestateLabelLinks(grid);
