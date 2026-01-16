@@ -1,61 +1,38 @@
-# Dropdown Filtrabile
+# UX / UI Design M\_\_
 
-## Descrizione dettagliata Interactions
+## 16 gennaio 2026
 
-### Apertura e Chiusura
+### SIDEBAR NAV
 
-- **Click sull'input**: Apre/chiude la tendina discesa
-- **Click fuori dalla componente**: Chiude automaticamente la tendina se aperta
-- **Tasto Escape**: Chiude la tendina se aperta
-- **Frecce Su/Giù**: Se la tendina è chiusa, la apre automaticamente
+- aggiunto link "mailing list"
+- eliminato "nuova spedizione"
+- modificati links
+  “nuovo comunicato” -> “comunicati e spedizioni”
+  “nuovo progetto” -> “progetti”
+  “nuovo todo” -> “todos”
+- cambiato background color active element
 
-### Filtraggio
+### SIDEBAR "SELEZIONATI"
 
-- **Digitazione nell'input**: Filtra le opzioni in tempo reale mostrando solo quelle che contengono il testo digitato
-- **Filtro case-insensitive**: La ricerca non distingue tra maiuscole e minuscole
-- **Ricerca parziale**: Trova le opzioni che contengono il termine digitato in qualsiasi posizione
-- **Nessun risultato**: Mostra il messaggio "Nessun risultato trovato" se il filtro non produce risultati
+- split button diviso in 3 bottoni
+- aggiunta funzione "aggiungi a lista"
+- nella dialog ho una dropdown filtrabile con un termine (vengono filtrate le liste che hanno almeno una parola che inizia con il termine inserito)
+- aggiunta funzione "aggiungi a spedizione" (ho sostituito "destinatari" con "spedizione)
+- spostate le dialog + in alto, non sono + centrate verticalmente; inoltre rispetto alla larghezza di "salva lista" sono state allargate
 
-### Selezione con Mouse
+### MAIN
 
-- **Click su elemento**: Seleziona l'elemento cliccato e chiude la tendina
-- **Hover**: Evidenzia visivamente l'elemento su cui si passa il mouse
-- **Elemento selezionato**: Mostra un background diverso per l'elemento attualmente selezionato
+- spostato il blocco di controlli "seleziona tutti... ordina:"
+- aggiunti ordinamenti sia in modalità "giornalisti" che "testate"
+- giornalisti -> aggiunti ruolo z-a, tipo di media, frequenza
+- testate -> aggiunti tipo di media, frequenza
+- modificato link "scegli Banca Dati" -> "banca dati"
+-
 
-### Navigazione con Tastiera
+### BUG FIX
 
-- **Freccia Giù**: Sposta l'evidenziazione verso il basso nella lista
-- **Freccia Su**: Sposta l'evidenziazione verso l'alto nella lista
-- **Enter**: Seleziona l'elemento attualmente evidenziato
-- **Navigazione ciclica**: Non è ciclica - si ferma al primo/ultimo elemento
+- seleziona giornalista, vai in dashboard, torna in filtra, la sidebar "selezionati" era chiusa, DEVE ESSERE APERTA
 
-### Comportamento dell'Input
+### MISC
 
-- **Valore preselezionato**: Quando si clicca sull'input con un valore già selezionato, tutto il testo viene selezionato
-- **Sostituzione rapida**: Dopo aver selezionato tutto il testo, iniziare a digitare sostituisce completamente il valore
-- **Placeholder**: Mostra "Cerca o seleziona un elemento..." quando l'input è vuoto
-
-### Gestione della Lista
-
-- **Posizionamento automatico**: Quando si riapre la tendina, si posiziona automaticamente sull'elemento precedentemente selezionato
-- **Scroll automatico**: L'elemento evidenziato viene automaticamente reso visibile nella lista
-- **Reset del filtro**: Dopo aver selezionato un elemento, alla prossima apertura vengono mostrate tutte le opzioni disponibili
-
-### Feedback Visivo
-
-- **Freccia**: Ruota quando la tendina è aperta
-- **Bordi**: L'input cambia aspetto quando la tendina è aperta (bordi arrotondati solo in alto)
-- **Evidenziazione**: L'elemento navigato con la tastiera viene evidenziato visivamente
-- **Elemento selezionato**: L'elemento attualmente selezionato ha un background distintivo
-
-### Comportamento di Ricerca
-
-- **Ricerca incrementale**: Il filtro si applica ad ogni carattere digitato
-- **Apertura automatica**: La tendina si apre automaticamente quando si inizia a digitare
-- **Mantenimento selezione**: L'elemento selezionato rimane evidenziato anche quando il filtro è attivo
-
-### Stato della Componente
-
-- **Selezione persistente**: Il valore selezionato rimane nell'input anche dopo la chiusura
-- **Stato iniziale**: All'apertura iniziale non c'è alcun elemento selezionato
-- **Recovery**: Dopo una selezione, la componente "ricorda" l'elemento scelto per le interazioni successive
+- uniformato copy: tolto "mailing list/s" ovunque, sostituito con "lista/e".

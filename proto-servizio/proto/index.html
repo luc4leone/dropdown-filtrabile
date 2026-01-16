@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>proto</title>
+    <title>M__</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -32,25 +32,26 @@
 
           <div class="nav-separator" aria-hidden="true"></div>
 
-          <a href="#">
-            <span
-              class="nav-icon"
-              data-icon="campaign"
-              aria-hidden="true"
-            ></span>
-            <span>nuovo</span><span>comunicato</span>
+          <a href="#mailing-lists" data-view="mailing-lists">
+            <span class="nav-icon" data-icon="list" aria-hidden="true"></span>
+            <span>liste</span>
           </a>
+
           <a href="#">
-            <span class="nav-icon" data-icon="send" aria-hidden="true"></span>
-            <span>nuova</span><span>spedizione</span>
+            <span class="nav-icons" aria-hidden="true">
+              <span class="nav-icon" data-icon="campaign"></span>
+              <span>/</span>
+              <span class="nav-icon" data-icon="send"></span>
+            </span>
+            <span>comunicati</span><span>e spedizioni</span>
           </a>
           <a href="#">
             <span class="nav-icon" data-icon="folder" aria-hidden="true"></span>
-            <span>nuovo</span><span>progetto</span>
+            <span>progetti</span>
           </a>
           <a href="#">
             <span class="nav-icon" data-icon="task" aria-hidden="true"></span>
-            <span>nuovo</span><span>todo</span>
+            <span>todos</span>
           </a>
 
           <div
@@ -573,7 +574,7 @@
                       style="display: none"
                     ></span>
                     <a href="#" class="testata-link" id="chooseDatabaseLink"
-                      >scegli Banca Dati</a
+                      >banca dati</a
                     >
                     <div
                       class="mailing-list-actions"
@@ -600,28 +601,6 @@
                       >
                     </div>
                   </div>
-                  <div class="main-header-right">
-                    <span class="bulk-select-controls" id="bulkSelectControls">
-                      <a href="#" class="bulk-select-link" id="selectAllLink"
-                        >seleziona tutti</a
-                      >
-                      <span class="sidebar-mode-separator" aria-hidden="true"
-                        >|</span
-                      >
-                      <a href="#" class="bulk-select-link" id="deselectAllLink"
-                        >deseleziona tutti</a
-                      >
-                      <span class="bulk-select-dot" aria-hidden="true">•</span>
-                    </span>
-                    <span class="main-subtitle">ordina:</span>
-                    <a href="#" class="sort-link" id="sortByNameLink"
-                      >nome (a-z)</a
-                    >
-                    <span class="sidebar-mode-separator" aria-hidden="true"
-                      >|</span
-                    >
-                    <a href="#" class="sort-link" id="sortByRoleLink">ruolo</a>
-                  </div>
                 </div>
                 <div
                   class="main-subtitle"
@@ -635,6 +614,55 @@
                   >rimuovi filtri</a
                 >
                 <div class="main-subtitle" id="cardsSubtitle"></div>
+                <div class="bulk-sort-controls-row">
+                  <span class="bulk-select-controls" id="bulkSelectControls">
+                    <a href="#" class="bulk-select-link" id="selectAllLink"
+                      >seleziona tutti</a
+                    >
+                    <span class="sidebar-mode-separator" aria-hidden="true"
+                      >|</span
+                    >
+                    <a href="#" class="bulk-select-link" id="deselectAllLink"
+                      >deseleziona tutti</a
+                    >
+                  </span>
+                  <span class="sort-controls" id="sortControls">
+                    <span class="main-subtitle">ordina:</span>
+                    <span class="main-subtitle">nome</span>
+                    <a href="#" class="sort-link" id="sortByNameAscLink">a-z</a>
+                    <span class="sidebar-mode-separator" aria-hidden="true"
+                      >/</span
+                    >
+                    <a href="#" class="sort-link" id="sortByNameDescLink"
+                      >z-a</a
+                    >
+                    <span
+                      class="sidebar-mode-separator"
+                      aria-hidden="true"
+                      id="sortSepAfterName"
+                      >|</span
+                    >
+                    <a href="#" class="sort-link" id="sortByRoleLink">ruolo</a>
+                    <span
+                      class="sidebar-mode-separator"
+                      aria-hidden="true"
+                      id="sortSepAfterRole"
+                      >|</span
+                    >
+                    <a href="#" class="sort-link" id="sortByMediaTypeLink"
+                      >tipo di media</a
+                    >
+                    <span
+                      class="sidebar-mode-separator"
+                      aria-hidden="true"
+                      id="sortSepAfterMediaType"
+                      >|</span
+                    >
+                    <a href="#" class="sort-link" id="sortByFrequencyLink"
+                      >frequenza</a
+                    >
+                  </span>
+                </div>
               </div>
             </div>
             <div class="cards-grid" id="cardsGrid"></div>
@@ -650,13 +678,32 @@
                 <a href="#" class="close-dropdown-link" id="selectedClearAll">
                   rimuovi selezionati
                 </a>
-                <a
-                  href="#"
-                  class="close-dropdown-link"
-                  id="saveMailingListLink"
-                >
-                  salva lista
-                </a>
+                <div class="selected-panel-actions-row">
+                  <a
+                    href="#"
+                    class="close-dropdown-link"
+                    id="saveMailingListLink"
+                  >
+                    salva lista
+                  </a>
+                  <span class="bulk-select-dot" aria-hidden="true">•</span>
+                  <span class="selected-panel-actions-text">aggiungi a</span>
+                  <a
+                    href="#"
+                    class="close-dropdown-link"
+                    id="addToMailingListLink"
+                  >
+                    lista
+                  </a>
+                  <span class="selected-panel-actions-text">o</span>
+                  <a
+                    href="#"
+                    class="close-dropdown-link"
+                    id="addToShipmentLink"
+                  >
+                    spedizione
+                  </a>
+                </div>
               </div>
             </div>
             <div class="selected-panel-body" id="selectedPanelBody"></div>
@@ -667,7 +714,7 @@
           <main class="main">
             <div class="main-header">
               <div>
-                <h1 class="main-title">Mailing lists</h1>
+                <h1 class="main-title">Liste</h1>
               </div>
             </div>
             <div class="dashboard-layout">
@@ -675,6 +722,17 @@
                 <div id="dashboardMailingLists"></div>
               </div>
             </div>
+          </main>
+        </div>
+
+        <div class="app-view" data-view="mailing-lists" id="viewMailingLists">
+          <main class="main">
+            <div class="main-header">
+              <div>
+                <h1 class="main-title">Mailing lists</h1>
+              </div>
+            </div>
+            <div class="muted">placeholder</div>
           </main>
         </div>
 
@@ -764,6 +822,153 @@
       </div>
     </div>
 
+    <div
+      class="notes-modal-overlay"
+      id="addToListModalOverlay"
+      aria-hidden="true"
+    ></div>
+    <div class="notes-modal" id="addToListModal" aria-hidden="true">
+      <div class="notes-modal-header">
+        <p class="notes-modal-title" id="addToListModalTitle">
+          Aggiungi a lista
+        </p>
+        <button
+          type="button"
+          class="notes-modal-close"
+          id="addToListModalClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="notes-modal-body">
+        <div class="dropdown-container" style="margin-bottom: 0">
+          <div class="filter-label-row">
+            <label class="field-label" for="addToListDropdownInput"
+              >Liste</label
+            >
+          </div>
+          <div class="dropdown-input" id="addToListDropdownInputWrapper">
+            <div id="addToListChipContainer"></div>
+            <input
+              type="text"
+              class="chip-text-input"
+              id="addToListDropdownInput"
+              autocomplete="off"
+            />
+            <div
+              class="autocomplete-inline"
+              id="addToListAutocompleteInline"
+              aria-hidden="true"
+            >
+              <span
+                class="autocomplete-suffix"
+                id="addToListAutocompleteSuffix"
+              ></span>
+              <span
+                class="autocomplete-tip"
+                id="addToListAutocompleteTip"
+              ></span>
+            </div>
+            <div class="dropdown-arrow" id="addToListDropdownArrow"></div>
+          </div>
+          <div class="dropdown-list" id="addToListDropdownList">
+            <div
+              class="dropdown-suggestions"
+              id="addToListDropdownSuggestions"
+            ></div>
+            <div class="dropdown-results" id="addToListDropdownResults"></div>
+          </div>
+        </div>
+
+        <div class="form-error" id="addToListError" style="display: none">
+          seleziona una lista
+        </div>
+
+        <a href="#" class="close-dropdown-link" id="addToListConfirm">
+          aggiungi
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="notes-modal-overlay"
+      id="addToShipmentModalOverlay"
+      aria-hidden="true"
+    ></div>
+    <div class="notes-modal" id="addToShipmentModal" aria-hidden="true">
+      <div class="notes-modal-header">
+        <p class="notes-modal-title" id="addToShipmentModalTitle">
+          aggiungi a spedizione
+        </p>
+        <button
+          type="button"
+          class="notes-modal-close"
+          id="addToShipmentModalClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="notes-modal-body">
+        <div class="dropdown-container" style="margin-bottom: 0">
+          <div class="filter-label-row">
+            <label class="field-label" for="addToShipmentDropdownInput"
+              >Spedizioni</label
+            >
+            <a
+              href="#"
+              class="filter-clear-link"
+              id="addToShipmentDropdownClearLink"
+              >rimuovi</a
+            >
+          </div>
+          <div class="dropdown-input" id="addToShipmentDropdownInputWrapper">
+            <div id="addToShipmentChipContainer"></div>
+            <input
+              type="text"
+              class="chip-text-input"
+              id="addToShipmentDropdownInput"
+              autocomplete="off"
+            />
+            <div
+              class="autocomplete-inline"
+              id="addToShipmentAutocompleteInline"
+              aria-hidden="true"
+            >
+              <span
+                class="autocomplete-suffix"
+                id="addToShipmentAutocompleteSuffix"
+              ></span>
+              <span
+                class="autocomplete-tip"
+                id="addToShipmentAutocompleteTip"
+              ></span>
+            </div>
+            <div class="dropdown-arrow" id="addToShipmentDropdownArrow"></div>
+          </div>
+          <div class="dropdown-list" id="addToShipmentDropdownList">
+            <div
+              class="dropdown-suggestions"
+              id="addToShipmentDropdownSuggestions"
+            ></div>
+            <div
+              class="dropdown-results"
+              id="addToShipmentDropdownResults"
+            ></div>
+          </div>
+        </div>
+
+        <div class="form-error" id="addToShipmentError" style="display: none">
+          seleziona una spedizione
+        </div>
+
+        <a href="#" class="close-dropdown-link" id="addToShipmentConfirm">
+          aggiungi
+        </a>
+      </div>
+    </div>
+
     <script>
       const APP_STORAGE_KEY = "proto-servizio-app-state-v1";
 
@@ -824,29 +1029,45 @@
       }
 
       if (typeof appState.sortMode !== "string") {
-        appState.sortMode = "name";
+        appState.sortMode = "name-asc";
       }
 
       function getSortMode() {
         const v = String(appState.sortMode || "")
           .trim()
           .toLowerCase();
-        return v === "role" ? "role" : "name";
+        if (v === "role") return "role";
+        if (v === "media-type") return "media-type";
+        if (v === "frequency") return "frequency";
+        if (v === "name-desc") return "name-desc";
+        return "name-asc";
       }
 
       function setSortMode(mode) {
+        const raw = String(mode || "")
+          .trim()
+          .toLowerCase();
         const next =
-          String(mode || "")
-            .trim()
-            .toLowerCase() === "role"
+          raw === "role"
             ? "role"
-            : "name";
+            : raw === "media-type" || raw === "tipo-media"
+            ? "media-type"
+            : raw === "frequency" || raw === "frequenza"
+            ? "frequency"
+            : raw === "name-desc" || raw === "name-z-a" || raw === "z-a"
+            ? "name-desc"
+            : "name-asc";
         appState.sortMode = next;
         saveAppState(appState);
         scheduleRender();
       }
 
-      const ENABLED_VIEWS = new Set(["filtra", "mailing-list", "dashboard"]);
+      const ENABLED_VIEWS = new Set([
+        "filtra",
+        "mailing-list",
+        "dashboard",
+        "mailing-lists",
+      ]);
 
       function normalizeViewId(value) {
         const v = String(value || "")
@@ -859,6 +1080,7 @@
 
       function setActiveView(viewId, options = {}) {
         const { save = true } = options;
+        const prevView = normalizeViewId(appState.view);
         let v = normalizeViewId(viewId);
         if (!v || !ENABLED_VIEWS.has(v)) {
           v = "filtra";
@@ -876,6 +1098,14 @@
           sp.classList.remove("show");
           sp.setAttribute("aria-hidden", "true");
           document.body.classList.remove("selection-panel-open");
+        }
+
+        if (
+          v === "filtra" &&
+          prevView !== "filtra" &&
+          selectedJournalistIds.size > 0
+        ) {
+          openSelectedPanel();
         }
 
         if (v === "mailing-list" && selectedJournalistIds.size > 0) {
@@ -927,6 +1157,15 @@
           } = config;
 
           this.renderChipsInInput = config.renderChipsInInput !== false;
+          this.renderCheckboxes = config.renderCheckboxes !== false;
+          this.singleSelect = config.singleSelect === true;
+          this.closeOnSelect = config.closeOnSelect === true;
+          this.writeSelectedToInput = config.writeSelectedToInput === true;
+          this.enableHighlight = config.enableHighlight === true;
+          this.minFilterChars =
+            typeof config.minFilterChars === "number"
+              ? config.minFilterChars
+              : 3;
           this.preserveParentOrder = config.preserveParentOrder === true;
           this.sortComparator =
             typeof config.sortComparator === "function"
@@ -952,9 +1191,11 @@
             document.getElementById(autocompleteSuffixId);
           this.autocompleteTip = document.getElementById(autocompleteTipId);
           this.arrow = document.getElementById(arrowId);
-          this.clear = document.getElementById(clearId);
+          this.clear = clearId ? document.getElementById(clearId) : null;
           this.list = document.getElementById(listId);
-          this.closeLink = document.getElementById(closeLinkId);
+          this.closeLink = closeLinkId
+            ? document.getElementById(closeLinkId)
+            : null;
           this.suggestions = document.getElementById(suggestionsId);
           this.results = document.getElementById(resultsId);
 
@@ -1294,7 +1535,7 @@
             this.suppressedAutocompleteTerms.clear();
           }
 
-          if (q.length < 3) {
+          if (q.length < this.minFilterChars) {
             this.filteredOptions = [...this.originalOptions];
             this.strongMatchOptions = new Set();
             this.matchRank = new Map();
@@ -1459,7 +1700,7 @@
 
           const query = this.input.value.trim();
           const q = query.toLowerCase();
-          const isFiltered = q.length >= 3;
+          const isFiltered = q.length >= this.minFilterChars;
 
           if (!isFiltered) {
             this.expandedParents?.clear();
@@ -1467,7 +1708,7 @@
 
           const suggestionsSet = new Set();
           const filteredSet = new Set(this.filteredOptions);
-          const showSuggestions = q.length >= 3;
+          const showSuggestions = q.length >= this.minFilterChars;
 
           if (showSuggestions) {
             const kwSuggestions = this.keywordToFiltersMap[q] || [];
@@ -1562,30 +1803,34 @@
               item.dataset.index = String(index);
 
               const checkbox = document.createElement("input");
-              checkbox.type = "checkbox";
-              checkbox.className = "dropdown-checkbox";
-              checkbox.checked = this.selectedValues.has(option);
-
               const label = document.createElement("span");
-              label.textContent = option;
+              if (this.enableHighlight && query) {
+                label.innerHTML = highlightHtml(option, query);
+              } else {
+                label.textContent = option;
+              }
 
               if (this.selectedValues.has(option)) {
                 item.classList.add("selected");
               }
 
-              checkbox.addEventListener("click", (e) => {
-                e.stopPropagation();
-              });
-              checkbox.addEventListener("change", (e) => {
-                e.stopPropagation();
-                this.toggleOption(option);
-              });
+              if (this.renderCheckboxes) {
+                checkbox.type = "checkbox";
+                checkbox.className = "dropdown-checkbox";
+                checkbox.checked = this.selectedValues.has(option);
+                checkbox.addEventListener("click", (e) => {
+                  e.stopPropagation();
+                });
+                checkbox.addEventListener("change", (e) => {
+                  e.stopPropagation();
+                  this.toggleOption(option);
+                });
+                item.appendChild(checkbox);
+              }
               item.addEventListener("click", (e) => {
                 e.stopPropagation();
                 this.toggleOption(option);
               });
-
-              item.appendChild(checkbox);
               item.appendChild(label);
               this.results.appendChild(item);
             });
@@ -1670,30 +1915,34 @@
               item.dataset.index = String(index);
 
               const checkbox = document.createElement("input");
-              checkbox.type = "checkbox";
-              checkbox.className = "dropdown-checkbox";
-              checkbox.checked = this.selectedValues.has(option);
-
               const label = document.createElement("span");
-              label.textContent = option;
+              if (this.enableHighlight && query) {
+                label.innerHTML = highlightHtml(option, query);
+              } else {
+                label.textContent = option;
+              }
 
               if (this.selectedValues.has(option)) {
                 item.classList.add("selected");
               }
 
-              checkbox.addEventListener("click", (e) => {
-                e.stopPropagation();
-              });
-              checkbox.addEventListener("change", (e) => {
-                e.stopPropagation();
-                this.toggleOption(option);
-              });
+              if (this.renderCheckboxes) {
+                checkbox.type = "checkbox";
+                checkbox.className = "dropdown-checkbox";
+                checkbox.checked = this.selectedValues.has(option);
+                checkbox.addEventListener("click", (e) => {
+                  e.stopPropagation();
+                });
+                checkbox.addEventListener("change", (e) => {
+                  e.stopPropagation();
+                  this.toggleOption(option);
+                });
+                item.appendChild(checkbox);
+              }
               item.addEventListener("click", (e) => {
                 e.stopPropagation();
                 this.toggleOption(option);
               });
-
-              item.appendChild(checkbox);
               item.appendChild(label);
               this.results.appendChild(item);
             });
@@ -1818,17 +2067,50 @@
         }
 
         toggleOption(option) {
-          if (this.selectedValues.has(option)) {
-            this.selectedValues.delete(option);
+          const alreadySelected = this.selectedValues.has(option);
+
+          if (this.singleSelect) {
+            this.selectedValues.clear();
+            if (!alreadySelected) {
+              this.selectedValues.add(option);
+            }
           } else {
-            this.selectedValues.add(option);
+            if (alreadySelected) {
+              this.selectedValues.delete(option);
+            } else {
+              this.selectedValues.add(option);
+            }
           }
+
+          if (this.writeSelectedToInput && this.input) {
+            if (this.selectedValues.size === 1) {
+              this.input.value = Array.from(this.selectedValues)[0] || "";
+            } else {
+              this.input.value = "";
+            }
+          }
+
           this.renderChips();
           this.renderList();
           this.updateClearVisibility();
           if (typeof this.onSelectionChange === "function") {
             this.onSelectionChange(Array.from(this.selectedValues));
           }
+
+          if (this.closeOnSelect && this.singleSelect) {
+            this.close();
+          }
+        }
+
+        setOptions(options = []) {
+          this.originalOptions = Array.isArray(options) ? options : [];
+          this.filteredOptions = [...this.originalOptions];
+          this.visibleOptions = [...this.originalOptions];
+          this.matchRank = new Map();
+          this.strongMatchOptions = new Set();
+          this.expandedParents?.clear();
+          this.resetSelection();
+          this.renderList();
         }
 
         removeOption(option) {
@@ -3019,6 +3301,10 @@
       const saveMailingListLink = document.getElementById(
         "saveMailingListLink"
       );
+      const addToMailingListLink = document.getElementById(
+        "addToMailingListLink"
+      );
+      const addToShipmentLink = document.getElementById("addToShipmentLink");
 
       const saveListModalOverlay = document.getElementById(
         "saveListModalOverlay"
@@ -3029,6 +3315,34 @@
       const saveListNameInput = document.getElementById("saveListNameInput");
       const saveListConfirm = document.getElementById("saveListConfirm");
       const saveListError = document.getElementById("saveListError");
+
+      const addToListModalOverlay = document.getElementById(
+        "addToListModalOverlay"
+      );
+      const addToListModal = document.getElementById("addToListModal");
+      const addToListModalClose = document.getElementById(
+        "addToListModalClose"
+      );
+      const addToListDropdownInput = document.getElementById(
+        "addToListDropdownInput"
+      );
+      const addToListConfirm = document.getElementById("addToListConfirm");
+      const addToListError = document.getElementById("addToListError");
+
+      const addToShipmentModalOverlay = document.getElementById(
+        "addToShipmentModalOverlay"
+      );
+      const addToShipmentModal = document.getElementById("addToShipmentModal");
+      const addToShipmentModalClose = document.getElementById(
+        "addToShipmentModalClose"
+      );
+      const addToShipmentDropdownInput = document.getElementById(
+        "addToShipmentDropdownInput"
+      );
+      const addToShipmentConfirm = document.getElementById(
+        "addToShipmentConfirm"
+      );
+      const addToShipmentError = document.getElementById("addToShipmentError");
       const mainTitleEl = document.getElementById("mainTitle");
       const mailingListCountPill = document.getElementById(
         "mailingListCountPill"
@@ -3162,6 +3476,168 @@
         return (
           (appState.mailingLists || []).find((x) => x && x.id === k) || null
         );
+      }
+
+      function getMailingListByName(name) {
+        const k = String(name || "").trim();
+        if (!k) return null;
+        return (
+          (appState.mailingLists || []).find(
+            (x) => String(x?.name || "") === k
+          ) || null
+        );
+      }
+
+      function getSpedizioneByName(name) {
+        const k = String(name || "").trim();
+        if (!k) return null;
+        return (
+          (appState.spedizioni || []).find(
+            (x) => String(x?.name || "") === k
+          ) || null
+        );
+      }
+
+      const addToListDropdown = new FilterableDropdown(
+        "addToListDropdownInput",
+        [],
+        {
+          inputWrapperId: "addToListDropdownInputWrapper",
+          chipContainerId: "addToListChipContainer",
+          autocompleteInlineId: "addToListAutocompleteInline",
+          autocompleteSuffixId: "addToListAutocompleteSuffix",
+          autocompleteTipId: "addToListAutocompleteTip",
+          arrowId: "addToListDropdownArrow",
+          clearId: null,
+          listId: "addToListDropdownList",
+          closeLinkId: null,
+          suggestionsId: "addToListDropdownSuggestions",
+          resultsId: "addToListDropdownResults",
+          synonymsByFilter: {},
+          renderChipsInInput: false,
+          renderCheckboxes: false,
+          singleSelect: true,
+          closeOnSelect: true,
+          writeSelectedToInput: true,
+          enableHighlight: true,
+          minFilterChars: 1,
+        }
+      );
+      addToListDropdown.updateAutocompleteHint("");
+
+      addToListDropdown.onSelectionChange = () => {
+        if (addToListError) addToListError.style.display = "none";
+      };
+
+      const addToShipmentDropdown = new FilterableDropdown(
+        "addToShipmentDropdownInput",
+        [],
+        {
+          inputWrapperId: "addToShipmentDropdownInputWrapper",
+          chipContainerId: "addToShipmentChipContainer",
+          autocompleteInlineId: "addToShipmentAutocompleteInline",
+          autocompleteSuffixId: "addToShipmentAutocompleteSuffix",
+          autocompleteTipId: "addToShipmentAutocompleteTip",
+          arrowId: "addToShipmentDropdownArrow",
+          clearId: "addToShipmentDropdownClearLink",
+          listId: "addToShipmentDropdownList",
+          closeLinkId: null,
+          suggestionsId: "addToShipmentDropdownSuggestions",
+          resultsId: "addToShipmentDropdownResults",
+          synonymsByFilter: {},
+          renderChipsInInput: false,
+          renderCheckboxes: false,
+          singleSelect: true,
+          closeOnSelect: true,
+          writeSelectedToInput: true,
+          enableHighlight: true,
+          minFilterChars: 1,
+        }
+      );
+      addToShipmentDropdown.updateAutocompleteHint("");
+
+      addToShipmentDropdown.onSelectionChange = () => {
+        if (addToShipmentError) addToShipmentError.style.display = "none";
+      };
+
+      function openAddToListModal() {
+        if (!addToListModal || !addToListModalOverlay) return;
+        if (selectedJournalistOrder.length === 0) return;
+
+        closeAllFilterableDropdowns();
+
+        const listNames = (appState.mailingLists || [])
+          .map((x) => String(x?.name || "").trim())
+          .filter(Boolean);
+        addToListDropdown.setOptions(listNames);
+
+        if (addToListError) {
+          addToListError.style.display = "none";
+        }
+
+        addToListModalOverlay.classList.add("show");
+        addToListModal.classList.add("show");
+        addToListModalOverlay.setAttribute("aria-hidden", "false");
+        addToListModal.setAttribute("aria-hidden", "false");
+
+        if (addToListDropdownInput) {
+          addToListDropdownInput.focus();
+        }
+      }
+
+      function closeAddToListModal() {
+        if (!addToListModal || !addToListModalOverlay) return;
+        if (addToListDropdown?.isOpen) {
+          addToListDropdown.close();
+        }
+        addToListModalOverlay.classList.remove("show");
+        addToListModal.classList.remove("show");
+        addToListModalOverlay.setAttribute("aria-hidden", "true");
+        addToListModal.setAttribute("aria-hidden", "true");
+
+        if (addToListError) {
+          addToListError.style.display = "none";
+        }
+      }
+
+      function openAddToShipmentModal() {
+        if (!addToShipmentModal || !addToShipmentModalOverlay) return;
+        if (selectedJournalistOrder.length === 0) return;
+
+        closeAllFilterableDropdowns();
+
+        const shipmentNames = (appState.spedizioni || [])
+          .map((x) => String(x?.name || "").trim())
+          .filter(Boolean);
+        addToShipmentDropdown.setOptions(shipmentNames);
+
+        if (addToShipmentError) {
+          addToShipmentError.style.display = "none";
+        }
+
+        addToShipmentModalOverlay.classList.add("show");
+        addToShipmentModal.classList.add("show");
+        addToShipmentModalOverlay.setAttribute("aria-hidden", "false");
+        addToShipmentModal.setAttribute("aria-hidden", "false");
+
+        if (addToShipmentDropdownInput) {
+          addToShipmentDropdownInput.focus();
+        }
+      }
+
+      function closeAddToShipmentModal() {
+        if (!addToShipmentModal || !addToShipmentModalOverlay) return;
+        if (addToShipmentDropdown?.isOpen) {
+          addToShipmentDropdown.close();
+        }
+        addToShipmentModalOverlay.classList.remove("show");
+        addToShipmentModal.classList.remove("show");
+        addToShipmentModalOverlay.setAttribute("aria-hidden", "true");
+        addToShipmentModal.setAttribute("aria-hidden", "true");
+
+        if (addToShipmentError) {
+          addToShipmentError.style.display = "none";
+        }
       }
 
       function computeUniqueMailingListName(baseName) {
@@ -3830,8 +4306,15 @@
       const deselectAllLink = document.getElementById("deselectAllLink");
       const bulkSelectControls = document.getElementById("bulkSelectControls");
 
-      const sortByNameLink = document.getElementById("sortByNameLink");
+      const sortByNameAscLink = document.getElementById("sortByNameAscLink");
+      const sortByNameDescLink = document.getElementById("sortByNameDescLink");
       const sortByRoleLink = document.getElementById("sortByRoleLink");
+      const sortByMediaTypeLink = document.getElementById(
+        "sortByMediaTypeLink"
+      );
+      const sortByFrequencyLink = document.getElementById(
+        "sortByFrequencyLink"
+      );
 
       const notesModalOverlay = document.getElementById("notesModalOverlay");
       const notesModal = document.getElementById("notesModal");
@@ -3883,6 +4366,22 @@
         });
       }
 
+      if (addToMailingListLink) {
+        addToMailingListLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openAddToListModal();
+        });
+      }
+
+      if (addToShipmentLink) {
+        addToShipmentLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openAddToShipmentModal();
+        });
+      }
+
       if (saveListModalClose) {
         saveListModalClose.addEventListener("click", (e) => {
           e.preventDefault();
@@ -3895,6 +4394,122 @@
         saveListModalOverlay.addEventListener("click", (e) => {
           e.preventDefault();
           closeSaveListModal();
+        });
+      }
+
+      if (addToListModalClose) {
+        addToListModalClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeAddToListModal();
+        });
+      }
+
+      if (addToListModalOverlay) {
+        addToListModalOverlay.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeAddToListModal();
+        });
+      }
+
+      if (addToShipmentModalClose) {
+        addToShipmentModalClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeAddToShipmentModal();
+        });
+      }
+
+      if (addToShipmentModalOverlay) {
+        addToShipmentModalOverlay.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeAddToShipmentModal();
+        });
+      }
+
+      if (addToListConfirm) {
+        addToListConfirm.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const selectedName = Array.from(
+            addToListDropdown.selectedValues || []
+          )
+            .map((x) => String(x || "").trim())
+            .filter(Boolean)[0];
+          if (!selectedName) {
+            if (addToListError) addToListError.style.display = "block";
+            return;
+          }
+
+          const list = getMailingListByName(selectedName);
+          if (!list) {
+            if (addToListError) addToListError.style.display = "block";
+            return;
+          }
+
+          const current = new Set(
+            Array.isArray(list.journalistIds)
+              ? list.journalistIds.map((x) => String(x || "").trim())
+              : []
+          );
+          for (const jid of selectedJournalistOrder) {
+            current.add(String(jid || "").trim());
+          }
+          list.journalistIds = Array.from(current).filter(Boolean);
+
+          saveAppState(appState);
+          closeAddToListModal();
+
+          selectedJournalistIds.clear();
+          selectedJournalistOrder.length = 0;
+          renderSelectedPanelList();
+          closeSelectedPanel();
+          scheduleRender();
+
+          openMailingListById(list.id);
+        });
+      }
+
+      if (addToShipmentConfirm) {
+        addToShipmentConfirm.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const selectedName = Array.from(
+            addToShipmentDropdown.selectedValues || []
+          )
+            .map((x) => String(x || "").trim())
+            .filter(Boolean)[0];
+          if (!selectedName) {
+            if (addToShipmentError) addToShipmentError.style.display = "block";
+            return;
+          }
+
+          const shipment = getSpedizioneByName(selectedName);
+          if (!shipment) {
+            if (addToShipmentError) addToShipmentError.style.display = "block";
+            return;
+          }
+
+          const current = new Set(
+            Array.isArray(shipment.journalistIds)
+              ? shipment.journalistIds.map((x) => String(x || "").trim())
+              : []
+          );
+          for (const jid of selectedJournalistOrder) {
+            current.add(String(jid || "").trim());
+          }
+          shipment.journalistIds = Array.from(current).filter(Boolean);
+
+          saveAppState(appState);
+          closeAddToShipmentModal();
+
+          selectedJournalistIds.clear();
+          selectedJournalistOrder.length = 0;
+          renderSelectedPanelList();
+          closeSelectedPanel();
+          scheduleRender();
         });
       }
 
@@ -4872,11 +5487,19 @@
         });
       }
 
-      if (sortByNameLink) {
-        sortByNameLink.addEventListener("click", (e) => {
+      if (sortByNameAscLink) {
+        sortByNameAscLink.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
-          setSortMode("name");
+          setSortMode("name-asc");
+        });
+      }
+
+      if (sortByNameDescLink) {
+        sortByNameDescLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setSortMode("name-desc");
         });
       }
 
@@ -4885,6 +5508,22 @@
           e.preventDefault();
           e.stopPropagation();
           setSortMode("role");
+        });
+      }
+
+      if (sortByMediaTypeLink) {
+        sortByMediaTypeLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setSortMode("media-type");
+        });
+      }
+
+      if (sortByFrequencyLink) {
+        sortByFrequencyLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setSortMode("frequency");
         });
       }
 
@@ -4987,6 +5626,18 @@
         "keydown",
         (e) => {
           if (e.key !== "Escape") return;
+          if (addToShipmentModal?.classList?.contains("show")) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeAddToShipmentModal();
+            return;
+          }
+          if (addToListModal?.classList?.contains("show")) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeAddToListModal();
+            return;
+          }
           if (saveListModal?.classList?.contains("show")) {
             e.preventDefault();
             e.stopPropagation();
@@ -5142,8 +5793,21 @@
         const subtitleEl = document.getElementById("cardsSubtitle");
         const clearFiltersLink = document.getElementById("clearFiltersLink");
 
-        const sortByNameLink = document.getElementById("sortByNameLink");
+        const sortByNameAscLink = document.getElementById("sortByNameAscLink");
+        const sortByNameDescLink =
+          document.getElementById("sortByNameDescLink");
         const sortByRoleLink = document.getElementById("sortByRoleLink");
+        const sortByMediaTypeLink = document.getElementById(
+          "sortByMediaTypeLink"
+        );
+        const sortByFrequencyLink = document.getElementById(
+          "sortByFrequencyLink"
+        );
+        const sortSepAfterName = document.getElementById("sortSepAfterName");
+        const sortSepAfterRole = document.getElementById("sortSepAfterRole");
+        const sortSepAfterMediaType = document.getElementById(
+          "sortSepAfterMediaType"
+        );
 
         const journalistById = new Map(
           (journalists || []).map((j) => [getJournalistId(j), j])
@@ -5183,20 +5847,125 @@
         }
 
         const sortMode = getSortMode();
-        if (sortByNameLink) {
-          sortByNameLink.classList.toggle("is-active", sortMode === "name");
-          sortByNameLink.setAttribute(
+        const effectiveSortMode =
+          isTestateMode && sortMode === "role" ? "frequency" : sortMode;
+
+        const keyLower = (x) =>
+          String(x || "")
+            .trim()
+            .toLowerCase();
+        const getFreqSort = (freqLabel) => {
+          const k = keyLower(freqLabel);
+          if (k === "aperiodico" || k === "plurisettimanale") {
+            return { indefinite: true, days: Number.POSITIVE_INFINITY };
+          }
+          const days =
+            k === "quotidiano"
+              ? 1
+              : k === "trisettimanale"
+              ? 7 / 3
+              : k === "bisettimanale"
+              ? 7 / 2
+              : k === "settimanale"
+              ? 7
+              : k === "quattordicinale"
+              ? 14
+              : k === "quindicinale"
+              ? 15
+              : k === "mensile"
+              ? 30
+              : k === "bimestrale"
+              ? 60
+              : k === "trimestrale"
+              ? 90
+              : k === "quadrimestrale"
+              ? 120
+              : k === "semestrale"
+              ? 182
+              : k === "annuale"
+              ? 365
+              : k === "quadriennale"
+              ? 365 * 4
+              : Number.POSITIVE_INFINITY;
+          return { indefinite: false, days };
+        };
+
+        const mediaParentOrder = ["Radio", "TV", "Carta Stampata", "Web"];
+        const mediaParentRank = new Map(
+          mediaParentOrder.map((p, idx) => [p, idx])
+        );
+        const mediaChildRankByParent = new Map();
+        for (const p of mediaParentOrder) {
+          const list = (TESTATA_MEDIA_BY_PARENT || {})[p] || [];
+          const map = new Map();
+          list.forEach((c, idx) => map.set(String(c || ""), idx));
+          mediaChildRankByParent.set(p, map);
+        }
+        const getTestataMediaRank = (t) => {
+          const p = String(t?.tipoMedia?.parent || "").trim();
+          const c = String(t?.tipoMedia?.child || "").trim();
+          const pr = mediaParentRank.has(p) ? mediaParentRank.get(p) : 999;
+          const cr = mediaChildRankByParent.get(p)?.has(c)
+            ? mediaChildRankByParent.get(p).get(c)
+            : 999;
+          return pr * 1000 + cr;
+        };
+        if (sortByNameAscLink) {
+          sortByNameAscLink.classList.toggle(
+            "is-active",
+            effectiveSortMode === "name-asc"
+          );
+          sortByNameAscLink.setAttribute(
             "aria-current",
-            sortMode === "name" ? "true" : "false"
+            effectiveSortMode === "name-asc" ? "true" : "false"
+          );
+        }
+        if (sortByNameDescLink) {
+          sortByNameDescLink.classList.toggle(
+            "is-active",
+            effectiveSortMode === "name-desc"
+          );
+          sortByNameDescLink.setAttribute(
+            "aria-current",
+            effectiveSortMode === "name-desc" ? "true" : "false"
           );
         }
         if (sortByRoleLink) {
-          sortByRoleLink.textContent = isTestateMode ? "frequenza" : "ruolo";
-          sortByRoleLink.classList.toggle("is-active", sortMode === "role");
+          sortByRoleLink.style.display = isTestateMode ? "none" : "";
+          sortByRoleLink.classList.toggle(
+            "is-active",
+            effectiveSortMode === "role"
+          );
           sortByRoleLink.setAttribute(
             "aria-current",
-            sortMode === "role" ? "true" : "false"
+            effectiveSortMode === "role" ? "true" : "false"
           );
+        }
+
+        if (sortByMediaTypeLink) {
+          sortByMediaTypeLink.classList.toggle(
+            "is-active",
+            effectiveSortMode === "media-type"
+          );
+          sortByMediaTypeLink.setAttribute(
+            "aria-current",
+            effectiveSortMode === "media-type" ? "true" : "false"
+          );
+        }
+
+        if (sortByFrequencyLink) {
+          sortByFrequencyLink.classList.toggle(
+            "is-active",
+            effectiveSortMode === "frequency"
+          );
+          sortByFrequencyLink.setAttribute(
+            "aria-current",
+            effectiveSortMode === "frequency" ? "true" : "false"
+          );
+        }
+
+        if (sortSepAfterRole) {
+          sortSepAfterRole.style.display = isTestateMode ? "none" : "";
         }
 
         if (mainTitleEl) {
@@ -5435,48 +6204,9 @@
         if (isTestateMode) {
           const filteredTestate = (testate || []).filter(matchesTestata);
           const sortedTestate = [...filteredTestate].sort((a, b) => {
-            if (sortMode === "role") {
-              const key = (x) =>
-                String(x || "")
-                  .trim()
-                  .toLowerCase();
-              const getFreqSort = (t) => {
-                const k = key(t?.frequenzaPubblicazione);
-                if (k === "aperiodico" || k === "plurisettimanale") {
-                  return { indefinite: true, days: Number.POSITIVE_INFINITY };
-                }
-                const days =
-                  k === "quotidiano"
-                    ? 1
-                    : k === "trisettimanale"
-                    ? 7 / 3
-                    : k === "bisettimanale"
-                    ? 7 / 2
-                    : k === "settimanale"
-                    ? 7
-                    : k === "quattordicinale"
-                    ? 14
-                    : k === "quindicinale"
-                    ? 15
-                    : k === "mensile"
-                    ? 30
-                    : k === "bimestrale"
-                    ? 60
-                    : k === "trimestrale"
-                    ? 90
-                    : k === "quadrimestrale"
-                    ? 120
-                    : k === "semestrale"
-                    ? 182
-                    : k === "annuale"
-                    ? 365
-                    : k === "quadriennale"
-                    ? 365 * 4
-                    : Number.POSITIVE_INFINITY;
-                return { indefinite: false, days };
-              };
-              const fa = getFreqSort(a);
-              const fb = getFreqSort(b);
+            if (effectiveSortMode === "frequency") {
+              const fa = getFreqSort(a?.frequenzaPubblicazione);
+              const fb = getFreqSort(b?.frequenzaPubblicazione);
               if (fa.indefinite !== fb.indefinite) {
                 return fa.indefinite ? 1 : -1;
               }
@@ -5484,6 +6214,14 @@
                 return fa.days - fb.days;
               }
               return compareTestateByName(a, b);
+            }
+            if (effectiveSortMode === "media-type") {
+              const ra = getTestataMediaRank(a);
+              const rb = getTestataMediaRank(b);
+              return ra - rb || compareTestateByName(a, b);
+            }
+            if (sortMode === "name-desc") {
+              return compareTestateByName(b, a);
             }
             return compareTestateByName(a, b);
           });
@@ -5655,10 +6393,52 @@
 
         const filtered = (baseJournalists || []).filter(matchesJournalist);
         const sorted = [...filtered].sort((a, b) => {
-          if (sortMode === "role") {
+          if (effectiveSortMode === "role") {
             const ra = getRoleRank(a?.ruolo);
             const rb = getRoleRank(b?.ruolo);
             return ra - rb || compareJournalistsByName(a, b);
+          }
+          if (effectiveSortMode === "media-type") {
+            const getMediaKey = (j) => {
+              const t = getJournalistTestate(j);
+              const first = String(t?.[0] || "").trim();
+              if (!first) return "";
+              const key = normalizeTestataKey(first);
+              const testata = testateByKey.get(key);
+              const p = String(testata?.tipoMedia?.parent || "").trim();
+              const c = String(testata?.tipoMedia?.child || "").trim();
+              return p && c ? `${p} / ${c}` : p || c;
+            };
+            const ka = getMediaKey(a);
+            const kb = getMediaKey(b);
+            if (!!ka !== !!kb) return ka ? -1 : 1;
+            const cmp = String(ka || "").localeCompare(String(kb || ""), "it", {
+              sensitivity: "base",
+            });
+            return cmp || compareJournalistsByName(a, b);
+          }
+          if (effectiveSortMode === "frequency") {
+            const getJournalistFreq = (j) => {
+              const t = getJournalistTestate(j);
+              const first = String(t?.[0] || "").trim();
+              if (!first) return "";
+              const k = normalizeTestataKey(first);
+              const testata = testateByKey.get(k);
+              return String(testata?.frequenzaPubblicazione || "").trim();
+            };
+
+            const fa = getFreqSort(getJournalistFreq(a));
+            const fb = getFreqSort(getJournalistFreq(b));
+            if (fa.indefinite !== fb.indefinite) {
+              return fa.indefinite ? 1 : -1;
+            }
+            if (fa.days !== fb.days) {
+              return fa.days - fb.days;
+            }
+            return compareJournalistsByName(a, b);
+          }
+          if (effectiveSortMode === "name-desc") {
+            return compareJournalistsByName(b, a);
           }
           return compareJournalistsByName(a, b);
         });
