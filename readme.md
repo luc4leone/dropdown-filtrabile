@@ -13,8 +13,8 @@
 elenco puntato numerato fa riferimento a quello sopra:
 
 1. ho sostituito il sort control in "filtra banca dati"
-   1.1 dato che è un prototipo lascio perdere "aggiungere criterio testata" - sarebbe "testata a-z"?
-   1.2 su mobile non metterei nemmeno il controllo
+   - 1.1 dato che è un prototipo lascio perdere "aggiungere criterio testata" - sarebbe "testata a-z"?
+   - 1.2 su mobile non metterei nemmeno il controllo
 2. non convince al 100% nemmeno me; nasce dal fatto che la lista dei comunicati e la lista delle spedizioni ripetono spesso gli stessi dati (titolo, autore, data creazione); lo terrei così per ora
 3. IN PROGRESS
 4. modificato colore active element in nav bar
