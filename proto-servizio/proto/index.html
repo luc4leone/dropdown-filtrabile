@@ -626,41 +626,138 @@
                       >deseleziona tutti</a
                     >
                   </span>
-                  <span class="sort-controls" id="sortControls">
+                  <span
+                    class="sort-controls c-sort-controls c-sort-controls--v2"
+                    id="sortControls"
+                  >
                     <span class="main-subtitle">ordina:</span>
-                    <span class="main-subtitle">nome</span>
-                    <a href="#" class="sort-link" id="sortByNameAscLink">a-z</a>
-                    <span class="sidebar-mode-separator" aria-hidden="true"
-                      >/</span
-                    >
-                    <a href="#" class="sort-link" id="sortByNameDescLink"
-                      >z-a</a
-                    >
+
                     <span
-                      class="sidebar-mode-separator"
-                      aria-hidden="true"
-                      id="sortSepAfterName"
-                      >|</span
+                      class="c-sort-controls__group c-sort-controls__group--legacy"
                     >
-                    <a href="#" class="sort-link" id="sortByRoleLink">ruolo</a>
+                      <span class="main-subtitle">nome</span>
+                      <a href="#" class="sort-link" id="sortByNameAscLink"
+                        >a-z</a
+                      >
+                      <span class="sidebar-mode-separator" aria-hidden="true"
+                        >/</span
+                      >
+                      <a href="#" class="sort-link" id="sortByNameDescLink"
+                        >z-a</a
+                      >
+                    </span>
+
                     <span
-                      class="sidebar-mode-separator"
-                      aria-hidden="true"
-                      id="sortSepAfterRole"
-                      >|</span
+                      class="c-sort-controls__group c-sort-controls__group--dropdown"
                     >
-                    <a href="#" class="sort-link" id="sortByMediaTypeLink"
-                      >tipo di media</a
-                    >
+                      <span class="c-sort-select" id="sortByNameSelect">
+                        <button
+                          type="button"
+                          class="c-sort-select__trigger"
+                          id="sortByNameSelectTrigger"
+                          aria-haspopup="listbox"
+                          aria-expanded="false"
+                        >
+                          <span
+                            class="sort-link is-active"
+                            id="sortByNameSelectValue"
+                            >nome a-z</span
+                          >
+                        </button>
+                        <span
+                          class="c-sort-select__arrow"
+                          aria-hidden="true"
+                        ></span>
+                        <div
+                          class="dropdown-list c-sort-select__menu"
+                          id="sortByNameSelectMenu"
+                          role="listbox"
+                          aria-hidden="true"
+                        >
+                          <div class="dropdown-results">
+                            <div
+                              class="dropdown-item"
+                              role="option"
+                              aria-selected="true"
+                              data-sort="name-asc"
+                              id="sortByNameOptionAsc"
+                            >
+                              <a href="#" class="sort-link is-active"
+                                >nome a-z</a
+                              >
+                            </div>
+                            <div
+                              class="dropdown-item"
+                              role="option"
+                              aria-selected="false"
+                              data-sort="name-desc"
+                              id="sortByNameOptionDesc"
+                            >
+                              <a href="#" class="sort-link">nome z-a</a>
+                            </div>
+                            <div
+                              class="dropdown-item"
+                              role="option"
+                              aria-selected="false"
+                              data-sort="role"
+                              id="sortByNameOptionRole"
+                            >
+                              <a href="#" class="sort-link">ruolo</a>
+                            </div>
+                            <div
+                              class="dropdown-item"
+                              role="option"
+                              aria-selected="false"
+                              data-sort="media-type"
+                              id="sortByNameOptionMediaType"
+                            >
+                              <a href="#" class="sort-link">tipo di media</a>
+                            </div>
+                            <div
+                              class="dropdown-item"
+                              role="option"
+                              aria-selected="false"
+                              data-sort="frequency"
+                              id="sortByNameOptionFrequency"
+                            >
+                              <a href="#" class="sort-link">frequenza</a>
+                            </div>
+                          </div>
+                        </div>
+                      </span>
+                    </span>
+
                     <span
-                      class="sidebar-mode-separator"
-                      aria-hidden="true"
-                      id="sortSepAfterMediaType"
-                      >|</span
+                      class="c-sort-controls__group c-sort-controls__group--links"
                     >
-                    <a href="#" class="sort-link" id="sortByFrequencyLink"
-                      >frequenza</a
-                    >
+                      <span
+                        class="sidebar-mode-separator"
+                        aria-hidden="true"
+                        id="sortSepAfterName"
+                        >|</span
+                      >
+                      <a href="#" class="sort-link" id="sortByRoleLink"
+                        >ruolo</a
+                      >
+                      <span
+                        class="sidebar-mode-separator"
+                        aria-hidden="true"
+                        id="sortSepAfterRole"
+                        >|</span
+                      >
+                      <a href="#" class="sort-link" id="sortByMediaTypeLink"
+                        >tipo di media</a
+                      >
+                      <span
+                        class="sidebar-mode-separator"
+                        aria-hidden="true"
+                        id="sortSepAfterMediaType"
+                        >|</span
+                      >
+                      <a href="#" class="sort-link" id="sortByFrequencyLink"
+                        >frequenza</a
+                      >
+                    </span>
                   </span>
                 </div>
               </div>
@@ -4316,6 +4413,32 @@
         "sortByFrequencyLink"
       );
 
+      const sortByNameSelect = document.getElementById("sortByNameSelect");
+      const sortByNameSelectTrigger = document.getElementById(
+        "sortByNameSelectTrigger"
+      );
+      const sortByNameSelectMenu = document.getElementById(
+        "sortByNameSelectMenu"
+      );
+      const sortByNameSelectValue = document.getElementById(
+        "sortByNameSelectValue"
+      );
+      const sortByNameOptionAsc = document.getElementById(
+        "sortByNameOptionAsc"
+      );
+      const sortByNameOptionDesc = document.getElementById(
+        "sortByNameOptionDesc"
+      );
+      const sortByNameOptionRole = document.getElementById(
+        "sortByNameOptionRole"
+      );
+      const sortByNameOptionMediaType = document.getElementById(
+        "sortByNameOptionMediaType"
+      );
+      const sortByNameOptionFrequency = document.getElementById(
+        "sortByNameOptionFrequency"
+      );
+
       const notesModalOverlay = document.getElementById("notesModalOverlay");
       const notesModal = document.getElementById("notesModal");
       const notesModalTitle = document.getElementById("notesModalTitle");
@@ -5527,6 +5650,76 @@
         });
       }
 
+      function closeSortByNameMenu() {
+        if (!sortByNameSelectMenu || !sortByNameSelectTrigger) return;
+        sortByNameSelectMenu.classList.remove("show");
+        sortByNameSelectMenu.setAttribute("aria-hidden", "true");
+        sortByNameSelectTrigger.setAttribute("aria-expanded", "false");
+      }
+
+      function toggleSortByNameMenu() {
+        if (!sortByNameSelectMenu || !sortByNameSelectTrigger) return;
+        const isOpen = sortByNameSelectMenu.classList.contains("show");
+        if (isOpen) {
+          closeSortByNameMenu();
+        } else {
+          sortByNameSelectMenu.classList.add("show");
+          sortByNameSelectMenu.setAttribute("aria-hidden", "false");
+          sortByNameSelectTrigger.setAttribute("aria-expanded", "true");
+        }
+      }
+
+      if (sortByNameSelectTrigger) {
+        sortByNameSelectTrigger.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleSortByNameMenu();
+        });
+      }
+
+      if (sortByNameSelectMenu) {
+        sortByNameSelectMenu.addEventListener("click", (e) => {
+          const item = e.target?.closest?.(".dropdown-item[data-sort]");
+          if (!item) return;
+          e.preventDefault();
+          e.stopPropagation();
+          let mode = String(item.getAttribute("data-sort") || "")
+            .trim()
+            .toLowerCase();
+          if (!mode) return;
+          const sidebarMode = getSidebarMode();
+          const isTestateMode = sidebarMode === "testate";
+          if (isTestateMode && mode === "role") mode = "frequency";
+          setSortMode(mode);
+          closeSortByNameMenu();
+        });
+      }
+
+      document.addEventListener(
+        "click",
+        (e) => {
+          if (!sortByNameSelectMenu || !sortByNameSelectTrigger) return;
+          if (!sortByNameSelectMenu.classList.contains("show")) return;
+          const t = e.target;
+          if (sortByNameSelect && sortByNameSelect.contains(t)) return;
+          closeSortByNameMenu();
+        },
+        true
+      );
+
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key !== "Escape") return;
+          if (!sortByNameSelectMenu || !sortByNameSelectTrigger) return;
+          if (!sortByNameSelectMenu.classList.contains("show")) return;
+          e.preventDefault();
+          e.stopPropagation();
+          closeSortByNameMenu();
+        },
+        true
+      );
+
       function selectAllFilteredCards() {
         const grid = document.getElementById("cardsGrid");
         const idsSet = new Set();
@@ -5929,6 +6122,42 @@
             "aria-current",
             effectiveSortMode === "name-desc" ? "true" : "false"
           );
+        }
+
+        {
+          const labelBySortMode = {
+            "name-asc": "nome a-z",
+            "name-desc": "nome z-a",
+            role: "ruolo",
+            "media-type": "tipo di media",
+            frequency: "frequenza",
+          };
+
+          const label = labelBySortMode[effectiveSortMode] || "nome a-z";
+          if (sortByNameSelectValue) sortByNameSelectValue.textContent = label;
+
+          const isAsc = effectiveSortMode === "name-asc";
+          const isDesc = effectiveSortMode === "name-desc";
+          const isRole = effectiveSortMode === "role";
+          const isMediaType = effectiveSortMode === "media-type";
+          const isFrequency = effectiveSortMode === "frequency";
+
+          const setOptionState = (el, active) => {
+            if (!el) return;
+            el.setAttribute("aria-selected", active ? "true" : "false");
+            const a = el.querySelector(".sort-link");
+            if (a) a.classList.toggle("is-active", active);
+          };
+
+          setOptionState(sortByNameOptionAsc, isAsc);
+          setOptionState(sortByNameOptionDesc, isDesc);
+          setOptionState(sortByNameOptionRole, isRole);
+          setOptionState(sortByNameOptionMediaType, isMediaType);
+          setOptionState(sortByNameOptionFrequency, isFrequency);
+
+          if (sortByNameOptionRole) {
+            sortByNameOptionRole.style.display = isTestateMode ? "none" : "";
+          }
         }
         if (sortByRoleLink) {
           sortByRoleLink.style.display = isTestateMode ? "none" : "";
