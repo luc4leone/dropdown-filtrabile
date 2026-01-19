@@ -600,7 +600,7 @@ body {
   align-items: center;
   gap: 8px;
   border: 1px solid var(--grey-200);
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--white);
   padding: 5px 28px 5px 10px;
   line-height: 1.1;
@@ -1182,6 +1182,12 @@ body.selection-panel-open .cards-grid {
   transform: translateX(-50%);
 }
 
+#addToNewShipmentModal {
+  width: min(440px, calc(100vw - 40px));
+  top: 25vh;
+  transform: translateX(-50%);
+}
+
 .notes-modal.show {
   opacity: 1;
   pointer-events: auto;
@@ -1204,6 +1210,18 @@ body.selection-panel-open .cards-grid {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+#saveListModal .notes-modal-title,
+#addToListModal .notes-modal-title,
+#addToNewShipmentModal .notes-modal-title {
+  font-size: var(--fs-lg);
+}
+
+#saveListModal .field-label,
+#addToListModal .field-label,
+#addToNewShipmentModal .field-label {
+  font-size: var(--fs-md);
 }
 
 .notes-modal-close {
@@ -1347,6 +1365,8 @@ body.selection-panel-open .cards-grid {
   width: min(20vw, 282px);
   transform: translateX(0);
   border-left: 1px solid var(--grey-200);
+  overflow: visible;
+  z-index: 70;
 }
 
 .selected-panel-header {
@@ -1373,6 +1393,8 @@ body.selection-panel-open .cards-grid {
   display: flex;
   flex-direction: column;
   gap: 0px;
+  width: 100%;
+  min-width: 0;
 }
 
 .selected-panel-actions-row {
@@ -1382,10 +1404,113 @@ body.selection-panel-open .cards-grid {
   flex-wrap: wrap;
 }
 
+.c-split-button {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.c-split-button__main,
+.c-split-button__toggle {
+  border: 1px solid var(--grey-200);
+  background: var(--white);
+  padding: 5px 10px;
+  line-height: 1.1;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--fs-md);
+  color: var(--grey-900);
+}
+
+.c-split-button__main {
+  border-right: 0;
+  border-radius: 6px 0px 0px 6px;
+  font-weight: 500;
+  color: var(--blue-500);
+}
+
+.c-split-button__toggle {
+  border-radius: 0 6px 6px 0;
+  padding: 5px 10px;
+}
+
+.c-split-button__main:hover,
+.c-split-button__toggle:hover {
+  border-color: var(--grey-300);
+}
+
+.c-split-button__main:focus,
+.c-split-button__toggle:focus {
+  outline: none;
+}
+
+.c-split-button__arrow {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--grey-500);
+  pointer-events: none;
+}
+
+.dropdown-list.c-split-button__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 220px;
+  z-index: 60;
+}
+
+.dropdown-list.c-split-button__menu .dropdown-item {
+  padding: 10px 12px;
+}
+
+.dropdown-list.c-split-button__menu .close-dropdown-link {
+  text-decoration: underline;
+}
+
+.dropdown-list.c-split-button__menu .close-dropdown-link:hover,
+.dropdown-list.c-split-button__menu .dropdown-item:hover .close-dropdown-link {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.dropdown-list.c-split-button__menu .dropdown-item:hover #addToMailingListLink,
+.dropdown-list.c-split-button__menu .dropdown-item:hover #addToShipmentLink,
+.dropdown-list.c-split-button__menu .dropdown-item:hover #addToNewShipmentLink {
+  text-decoration-thickness: 2px;
+}
+
+#saveMailingListLink:hover,
+#addToMailingListLink:hover,
+#addToShipmentLink:hover,
+#addToNewShipmentLink:hover {
+  text-decoration-thickness: 2px;
+}
+
+.c-split-button__main:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.c-split-button__main {
+  text-decoration: underline;
+}
+
 .selected-panel-title-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.selected-panel-title-row-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .selected-panel-title {

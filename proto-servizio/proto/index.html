@@ -769,38 +769,80 @@
             <div class="selected-panel-header">
               <div class="selected-panel-header-left">
                 <div class="selected-panel-title-row">
-                  <p class="selected-panel-title">Selezionati</p>
-                  <span class="pill" id="selectedCountPill"></span>
+                  <span class="selected-panel-title-row-left">
+                    <p class="selected-panel-title">Selezionati</p>
+                    <span class="pill" id="selectedCountPill"></span>
+                  </span>
+                  <span class="c-split-button" id="selectedActionsSplit">
+                    <button
+                      type="button"
+                      class="c-split-button__main"
+                      id="saveMailingListLink"
+                    >
+                      salva lista
+                    </button>
+                    <button
+                      type="button"
+                      class="c-split-button__toggle"
+                      id="selectedActionsToggle"
+                      aria-haspopup="listbox"
+                      aria-expanded="false"
+                    >
+                      <span
+                        class="c-split-button__arrow"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                    <div
+                      class="dropdown-list c-split-button__menu"
+                      id="selectedActionsMenu"
+                      role="listbox"
+                      aria-hidden="true"
+                    >
+                      <div class="dropdown-results">
+                        <div
+                          class="dropdown-item"
+                          role="option"
+                          data-action="add-to-list"
+                        >
+                          <a
+                            href="#"
+                            class="close-dropdown-link"
+                            id="addToMailingListLink"
+                            >aggiungi a lista</a
+                          >
+                        </div>
+                        <div
+                          class="dropdown-item"
+                          role="option"
+                          data-action="add-to-shipment"
+                        >
+                          <a
+                            href="#"
+                            class="close-dropdown-link"
+                            id="addToShipmentLink"
+                            >aggiungi a spedizione</a
+                          >
+                        </div>
+                        <div
+                          class="dropdown-item"
+                          role="option"
+                          data-action="add-to-new-shipment"
+                        >
+                          <a
+                            href="#"
+                            class="close-dropdown-link"
+                            id="addToNewShipmentLink"
+                            >aggiungi a nuova spedizione</a
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </span>
                 </div>
                 <a href="#" class="close-dropdown-link" id="selectedClearAll">
                   rimuovi selezionati
                 </a>
-                <div class="selected-panel-actions-row">
-                  <a
-                    href="#"
-                    class="close-dropdown-link"
-                    id="saveMailingListLink"
-                  >
-                    salva lista
-                  </a>
-                  <span class="bulk-select-dot" aria-hidden="true">•</span>
-                  <span class="selected-panel-actions-text">aggiungi a</span>
-                  <a
-                    href="#"
-                    class="close-dropdown-link"
-                    id="addToMailingListLink"
-                  >
-                    lista
-                  </a>
-                  <span class="selected-panel-actions-text">o</span>
-                  <a
-                    href="#"
-                    class="close-dropdown-link"
-                    id="addToShipmentLink"
-                  >
-                    spedizione
-                  </a>
-                </div>
               </div>
             </div>
             <div class="selected-panel-body" id="selectedPanelBody"></div>
@@ -1062,6 +1104,52 @@
 
         <a href="#" class="close-dropdown-link" id="addToShipmentConfirm">
           aggiungi
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="notes-modal-overlay"
+      id="addToNewShipmentModalOverlay"
+      aria-hidden="true"
+    ></div>
+    <div class="notes-modal" id="addToNewShipmentModal" aria-hidden="true">
+      <div class="notes-modal-header">
+        <p class="notes-modal-title" id="addToNewShipmentModalTitle">
+          aggiungi a nuova spedizione
+        </p>
+        <button
+          type="button"
+          class="notes-modal-close"
+          id="addToNewShipmentModalClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="notes-modal-body">
+        <label class="field-label" for="addToNewShipmentNameInput"
+          >Oggetto spedizione</label
+        >
+        <div class="dropdown-input">
+          <input
+            type="text"
+            class="chip-text-input"
+            id="addToNewShipmentNameInput"
+            autocomplete="off"
+          />
+        </div>
+
+        <div
+          class="form-error"
+          id="addToNewShipmentError"
+          style="display: none"
+        >
+          inserisci oggetto spedizione
+        </div>
+
+        <a href="#" class="close-dropdown-link" id="addToNewShipmentConfirm">
+          crea nuova spedizione
         </a>
       </div>
     </div>
@@ -3395,6 +3483,15 @@
 
       const selectedPanelBody = document.getElementById("selectedPanelBody");
       const selectedClearAll = document.getElementById("selectedClearAll");
+      const selectedActionsSplit = document.getElementById(
+        "selectedActionsSplit"
+      );
+      const selectedActionsToggle = document.getElementById(
+        "selectedActionsToggle"
+      );
+      const selectedActionsMenu = document.getElementById(
+        "selectedActionsMenu"
+      );
       const saveMailingListLink = document.getElementById(
         "saveMailingListLink"
       );
@@ -3402,6 +3499,9 @@
         "addToMailingListLink"
       );
       const addToShipmentLink = document.getElementById("addToShipmentLink");
+      const addToNewShipmentLink = document.getElementById(
+        "addToNewShipmentLink"
+      );
 
       const saveListModalOverlay = document.getElementById(
         "saveListModalOverlay"
@@ -3440,6 +3540,25 @@
         "addToShipmentConfirm"
       );
       const addToShipmentError = document.getElementById("addToShipmentError");
+
+      const addToNewShipmentModalOverlay = document.getElementById(
+        "addToNewShipmentModalOverlay"
+      );
+      const addToNewShipmentModal = document.getElementById(
+        "addToNewShipmentModal"
+      );
+      const addToNewShipmentModalClose = document.getElementById(
+        "addToNewShipmentModalClose"
+      );
+      const addToNewShipmentNameInput = document.getElementById(
+        "addToNewShipmentNameInput"
+      );
+      const addToNewShipmentConfirm = document.getElementById(
+        "addToNewShipmentConfirm"
+      );
+      const addToNewShipmentError = document.getElementById(
+        "addToNewShipmentError"
+      );
       const mainTitleEl = document.getElementById("mainTitle");
       const mailingListCountPill = document.getElementById(
         "mailingListCountPill"
@@ -3722,6 +3841,37 @@
         }
       }
 
+      function openAddToNewShipmentModal() {
+        if (!addToNewShipmentModal || !addToNewShipmentModalOverlay) return;
+        if (selectedJournalistOrder.length === 0) return;
+
+        closeAllFilterableDropdowns();
+
+        {
+          const titleEl = document.getElementById("addToNewShipmentModalTitle");
+          const n = Number(selectedJournalistIds?.size || 0);
+          const label =
+            n === 1
+              ? "Aggiungi 1 giornalista a nuova spedizione"
+              : `Aggiungi ${n} giornalisti a nuova spedizione`;
+          if (titleEl) titleEl.textContent = label;
+        }
+
+        if (addToNewShipmentError) {
+          addToNewShipmentError.style.display = "none";
+        }
+
+        addToNewShipmentModalOverlay.classList.add("show");
+        addToNewShipmentModal.classList.add("show");
+        addToNewShipmentModalOverlay.setAttribute("aria-hidden", "false");
+        addToNewShipmentModal.setAttribute("aria-hidden", "false");
+
+        if (addToNewShipmentNameInput) {
+          addToNewShipmentNameInput.value = "";
+          addToNewShipmentNameInput.focus();
+        }
+      }
+
       function closeAddToShipmentModal() {
         if (!addToShipmentModal || !addToShipmentModalOverlay) return;
         if (addToShipmentDropdown?.isOpen) {
@@ -3735,6 +3885,43 @@
         if (addToShipmentError) {
           addToShipmentError.style.display = "none";
         }
+      }
+
+      function closeAddToNewShipmentModal() {
+        if (!addToNewShipmentModal || !addToNewShipmentModalOverlay) return;
+        addToNewShipmentModalOverlay.classList.remove("show");
+        addToNewShipmentModal.classList.remove("show");
+        addToNewShipmentModalOverlay.setAttribute("aria-hidden", "true");
+        addToNewShipmentModal.setAttribute("aria-hidden", "true");
+
+        if (addToNewShipmentError) {
+          addToNewShipmentError.style.display = "none";
+        }
+      }
+
+      function computeUniqueSpedizioneName(baseName) {
+        const base = String(baseName || "").trim();
+        if (!base) return "";
+
+        const existing = new Set(
+          (appState.spedizioni || [])
+            .map((x) =>
+              String(x?.name || "")
+                .trim()
+                .toLowerCase()
+            )
+            .filter(Boolean)
+        );
+        const baseKey = base.toLowerCase();
+        if (!existing.has(baseKey)) return base;
+
+        let i = 1;
+        while (i < 1000) {
+          const candidate = `${base} (${i})`;
+          if (!existing.has(candidate.toLowerCase())) return candidate;
+          i++;
+        }
+        return `${base} (${Date.now()})`;
       }
 
       function computeUniqueMailingListName(baseName) {
@@ -4480,11 +4667,64 @@
         });
       }
 
+      function closeSelectedActionsMenu() {
+        if (!selectedActionsMenu || !selectedActionsToggle) return;
+        selectedActionsMenu.classList.remove("show");
+        selectedActionsMenu.setAttribute("aria-hidden", "true");
+        selectedActionsToggle.setAttribute("aria-expanded", "false");
+      }
+
+      function toggleSelectedActionsMenu() {
+        if (!selectedActionsMenu || !selectedActionsToggle) return;
+        const isOpen = selectedActionsMenu.classList.contains("show");
+        if (isOpen) {
+          closeSelectedActionsMenu();
+        } else {
+          selectedActionsMenu.classList.add("show");
+          selectedActionsMenu.setAttribute("aria-hidden", "false");
+          selectedActionsToggle.setAttribute("aria-expanded", "true");
+        }
+      }
+
+      if (selectedActionsToggle) {
+        selectedActionsToggle.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleSelectedActionsMenu();
+        });
+      }
+
+      document.addEventListener(
+        "click",
+        (e) => {
+          if (!selectedActionsMenu || !selectedActionsToggle) return;
+          if (!selectedActionsMenu.classList.contains("show")) return;
+          const t = e.target;
+          if (selectedActionsSplit && selectedActionsSplit.contains(t)) return;
+          closeSelectedActionsMenu();
+        },
+        true
+      );
+
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.key !== "Escape") return;
+          if (!selectedActionsMenu || !selectedActionsToggle) return;
+          if (!selectedActionsMenu.classList.contains("show")) return;
+          e.preventDefault();
+          e.stopPropagation();
+          closeSelectedActionsMenu();
+        },
+        true
+      );
+
       if (saveMailingListLink) {
         saveMailingListLink.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
           if (selectedJournalistOrder.length === 0) return;
+          closeSelectedActionsMenu();
           openSaveListModal();
         });
       }
@@ -4493,6 +4733,7 @@
         addToMailingListLink.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
+          closeSelectedActionsMenu();
           openAddToListModal();
         });
       }
@@ -4501,7 +4742,17 @@
         addToShipmentLink.addEventListener("click", (e) => {
           e.preventDefault();
           e.stopPropagation();
+          closeSelectedActionsMenu();
           openAddToShipmentModal();
+        });
+      }
+
+      if (addToNewShipmentLink) {
+        addToNewShipmentLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeSelectedActionsMenu();
+          openAddToNewShipmentModal();
         });
       }
 
@@ -4547,6 +4798,21 @@
         addToShipmentModalOverlay.addEventListener("click", (e) => {
           e.preventDefault();
           closeAddToShipmentModal();
+        });
+      }
+
+      if (addToNewShipmentModalClose) {
+        addToNewShipmentModalClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeAddToNewShipmentModal();
+        });
+      }
+
+      if (addToNewShipmentModalOverlay) {
+        addToNewShipmentModalOverlay.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeAddToNewShipmentModal();
         });
       }
 
@@ -4627,6 +4893,46 @@
 
           saveAppState(appState);
           closeAddToShipmentModal();
+
+          selectedJournalistIds.clear();
+          selectedJournalistOrder.length = 0;
+          renderSelectedPanelList();
+          closeSelectedPanel();
+          scheduleRender();
+        });
+      }
+
+      if (addToNewShipmentConfirm) {
+        addToNewShipmentConfirm.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const rawName = String(addToNewShipmentNameInput?.value || "").trim();
+          if (!rawName) {
+            if (addToNewShipmentError)
+              addToNewShipmentError.style.display = "block";
+            if (addToNewShipmentNameInput) addToNewShipmentNameInput.focus();
+            return;
+          }
+          if (addToNewShipmentError)
+            addToNewShipmentError.style.display = "none";
+
+          const selectionSnapshot = selectedJournalistOrder.filter((jid) =>
+            selectedJournalistIds.has(jid)
+          );
+          const uniqueName = computeUniqueSpedizioneName(rawName);
+
+          const shipment = {
+            name: uniqueName,
+            journalistIds: Array.from(selectionSnapshot || []),
+            createdAt: Date.now(),
+          };
+          if (!Array.isArray(appState.spedizioni)) {
+            appState.spedizioni = [];
+          }
+          appState.spedizioni.unshift(shipment);
+          saveAppState(appState);
+          closeAddToNewShipmentModal();
 
           selectedJournalistIds.clear();
           selectedJournalistOrder.length = 0;
@@ -5823,6 +6129,12 @@
             e.preventDefault();
             e.stopPropagation();
             closeAddToShipmentModal();
+            return;
+          }
+          if (addToNewShipmentModal?.classList?.contains("show")) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeAddToNewShipmentModal();
             return;
           }
           if (addToListModal?.classList?.contains("show")) {
