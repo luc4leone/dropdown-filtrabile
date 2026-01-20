@@ -1,5 +1,12 @@
 # UX / UI Design M\_\_
 
+## todos
+
+- [ ] *condividi mailing list*
+- [ ] *elimina mailing list in mailing list*
+- [ ] *completa scheda giornalista*
+- [ ] *completa scheda testata*
+
 ## 20 gennaio 2026
 
 - [x] **aggiunto funzionalità "rimuovi selezionati da mailing list"** -> in mailing list, seleziona giornalista -> vedi riga 2 dall'alto nel panel selezionati
