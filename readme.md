@@ -11,12 +11,13 @@
 
 ---
 
-facendo riferimento al punto 3 del 19 gennaio: 3. ho aggiunto split button
+facendo riferimento al punto 3 del 19 gennaio:
 
-- 3.1 ho modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
-  - 3.1.1 nota che il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
-  - 3.1.2 "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
-- 3.2 ho modificato la creazione di una nuova lista
+3. ho aggiunto split button
+   3.1 ho modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
+   3.2 il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
+   3.3 "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
+   3.4 ho modificato la creazione di una nuova lista
 
 ## 19 gennaio 2026
 
