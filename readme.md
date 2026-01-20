@@ -2,10 +2,10 @@
 
 ## 20 gennaio 2026
 
-- [x] aggiunto funzionalità "rimuovi selezionati da mailing list",ì -> in mailing list, seleziona giornalista -> vedi riga 2 dall'alto nel panel selezionati
+- [x] aggiunto funzionalità "rimuovi selezionati da mailing list" -> in mailing list, seleziona giornalista -> vedi riga 2 dall'alto nel panel selezionati
   - questa riga viene mostrata solo in lista, non cross viste (non per es in filtra)
-- [x] aggiunto bottone "rimuovi da lista" in card in lista
-- [x] rinominate le opzioni del menu dello split button. ora sono logiche (@fabio 💪), vediamo se nei test di usabilità sono comprensibili
+- [x] aggiunto action link "rimuovi da lista" in card in lista
+- [x] rinominate le opzioni del menu dello split button (potremmo chiamarlo "split link" 😉). ora sono logiche (@fabio 💪), vediamo se nei test di usabilità sono comprensibili
 - [x] tolto action link "deseleziona tutti" da main, era ridondante e forse fuorviante (@fabio 💪)
 - [x] rinominato action link"rimuovi selezionati" in "svuota selezione" in panel selezionati per evitare confusione con action link riga sopra "rimuovi da lista"
 
