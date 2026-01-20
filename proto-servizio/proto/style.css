@@ -677,10 +677,29 @@ body.selection-panel-open .cards-grid {
   border-radius: 12px;
   padding: 14px 9px;
   background: var(--white);
+  position: relative;
 }
 
 .card.is-selected {
   background: var(--grey-050);
+}
+
+.card-remove-from-list {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  line-height: 1;
+}
+
+body[data-active-view="filtra"] .card-remove-from-list {
+  display: none;
+}
+
+.card-remove-from-list:hover {
+  background: var(--grey-200);
 }
 
 .card-top {
@@ -816,7 +835,8 @@ body.selection-panel-open .cards-grid {
   padding: 0 2px;
 }
 
-.pill {
+.pill,
+.c-pill {
   display: inline-block;
   font-size: var(--fs-xs);
   padding: 3px 8px;
@@ -1085,16 +1105,37 @@ body.selection-panel-open .cards-grid {
   text-decoration: none;
 }
 
-#saveMailingListLink {
+.c-link {
+  display: inline-block;
+  font-size: var(--fs-md);
+  color: var(--blue-500);
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+}
+
+.c-link.is-disabled {
+  color: var(--grey-500);
+  cursor: default;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+.c-link--nav {
   text-decoration: underline;
 }
 
-#addToMailingListLink {
-  text-decoration: underline;
+.c-link--nav:hover {
+  text-decoration-thickness: 2px;
 }
 
-#addToShipmentLink {
-  text-decoration: underline;
+.c-link--action {
+  text-decoration: none;
+}
+
+.c-link--action:hover {
+  text-decoration: none;
 }
 
 .selected-panel-actions-text {
@@ -1404,6 +1445,10 @@ body.selection-panel-open .cards-grid {
   flex-wrap: wrap;
 }
 
+.selected-panel-actions-row--secondary {
+  margin-top: 4px;
+}
+
 .c-split-button {
   position: relative;
   display: inline-flex;
@@ -1462,46 +1507,23 @@ body.selection-panel-open .cards-grid {
   z-index: 60;
 }
 
+.c-split-button--menu-left .dropdown-list.c-split-button__menu {
+  left: 0;
+  right: auto;
+}
+
 .dropdown-list.c-split-button__menu .dropdown-item {
   padding: 10px 12px;
 }
 
-.dropdown-list.c-split-button__menu .close-dropdown-link {
-  text-decoration: underline;
-}
-
-.dropdown-list.c-split-button__menu .close-dropdown-link:hover,
-.dropdown-list.c-split-button__menu .dropdown-item:hover .close-dropdown-link {
-  text-decoration: underline;
+.dropdown-list.c-split-button__menu .c-link--nav:hover,
+.dropdown-list.c-split-button__menu .dropdown-item:hover .c-link--nav {
   text-decoration-thickness: 2px;
-}
-
-.dropdown-list.c-split-button__menu .dropdown-item:hover #addToMailingListLink,
-.dropdown-list.c-split-button__menu .dropdown-item:hover #addToShipmentLink,
-.dropdown-list.c-split-button__menu .dropdown-item:hover #addToNewShipmentLink {
-  text-decoration-thickness: 2px;
-}
-
-#saveMailingListLink:hover,
-#addToMailingListLink:hover,
-#addToShipmentLink:hover,
-#addToNewShipmentLink:hover {
-  text-decoration-thickness: 2px;
-}
-
-.c-split-button__main:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-}
-
-.c-split-button__main {
-  text-decoration: underline;
 }
 
 .selected-panel-title-row {
   display: flex;
   align-items: center;
-  gap: 8px;
   justify-content: space-between;
   width: 100%;
 }

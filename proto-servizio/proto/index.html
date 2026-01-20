@@ -619,17 +619,8 @@
                     <a href="#" class="bulk-select-link" id="selectAllLink"
                       >seleziona tutti</a
                     >
-                    <span class="sidebar-mode-separator" aria-hidden="true"
-                      >|</span
-                    >
-                    <a href="#" class="bulk-select-link" id="deselectAllLink"
-                      >deseleziona tutti</a
-                    >
                   </span>
-                  <span
-                    class="sort-controls c-sort-controls c-sort-controls--v2"
-                    id="sortControls"
-                  >
+                  <span class="c-sort-controls c-sort-controls--v2">
                     <span class="main-subtitle">ordina:</span>
 
                     <span
@@ -773,18 +764,23 @@
                     <p class="selected-panel-title">Selezionati</p>
                     <span class="pill" id="selectedCountPill"></span>
                   </span>
-                  <span class="c-split-button" id="selectedActionsSplit">
+                  <span
+                    class="c-split-button"
+                    id="selectedActionsSplit"
+                    data-split-button
+                  >
                     <button
                       type="button"
-                      class="c-split-button__main"
-                      id="saveMailingListLink"
+                      class="c-split-button__main c-link c-link--nav"
+                      data-split-main
+                      data-split-action="save-list"
                     >
                       salva lista
                     </button>
                     <button
                       type="button"
                       class="c-split-button__toggle"
-                      id="selectedActionsToggle"
+                      data-split-toggle
                       aria-haspopup="listbox"
                       aria-expanded="false"
                     >
@@ -795,53 +791,61 @@
                     </button>
                     <div
                       class="dropdown-list c-split-button__menu"
-                      id="selectedActionsMenu"
+                      data-split-menu
                       role="listbox"
                       aria-hidden="true"
                     >
                       <div class="dropdown-results">
-                        <div
-                          class="dropdown-item"
-                          role="option"
-                          data-action="add-to-list"
-                        >
+                        <div class="dropdown-item" role="option">
                           <a
                             href="#"
-                            class="close-dropdown-link"
-                            id="addToMailingListLink"
+                            class="c-link c-link--nav"
+                            data-split-action="add-to-list"
                             >aggiungi a lista</a
                           >
                         </div>
-                        <div
-                          class="dropdown-item"
-                          role="option"
-                          data-action="add-to-shipment"
-                        >
+                        <div class="dropdown-item" role="option">
                           <a
                             href="#"
-                            class="close-dropdown-link"
-                            id="addToShipmentLink"
-                            >aggiungi a spedizione</a
+                            class="c-link c-link--nav"
+                            data-split-action="add-to-new-shipment"
+                            >salva spedizione</a
                           >
                         </div>
-                        <div
-                          class="dropdown-item"
-                          role="option"
-                          data-action="add-to-new-shipment"
-                        >
+                        <div class="dropdown-item" role="option">
                           <a
                             href="#"
-                            class="close-dropdown-link"
-                            id="addToNewShipmentLink"
-                            >aggiungi a nuova spedizione</a
+                            class="c-link c-link--nav"
+                            data-split-action="add-to-shipment"
+                            >aggiungi a spedizione</a
                           >
                         </div>
                       </div>
                     </div>
                   </span>
                 </div>
+                <div
+                  class="selected-panel-actions-row selected-panel-actions-row--secondary"
+                  id="selectedInListRow"
+                  style="display: none"
+                >
+                  <span class="selected-panel-actions-text">
+                    in lista
+                    <span class="c-pill" id="selectedInListCount"></span>
+                  </span>
+                  <span class="sidebar-mode-separator" aria-hidden="true"
+                    >•</span
+                  >
+                  <a
+                    href="#"
+                    class="c-link c-link--action"
+                    id="selectedRemoveFromListLink"
+                  >
+                    rimuovili da lista
+                  </a>
+                </div>
                 <a href="#" class="close-dropdown-link" id="selectedClearAll">
-                  rimuovi selezionati
+                  svuota selezione
                 </a>
               </div>
             </div>
@@ -1271,6 +1275,9 @@
           v = "filtra";
         }
 
+        appState.view = v;
+        document.body.dataset.activeView = v;
+
         document.querySelectorAll(".app-view").forEach((el) => {
           const viewKey = el.getAttribute("data-view");
           const shouldShow =
@@ -1308,7 +1315,6 @@
         });
 
         if (save) {
-          appState.view = v;
           saveAppState(appState);
         }
 
@@ -3486,21 +3492,12 @@
       const selectedActionsSplit = document.getElementById(
         "selectedActionsSplit"
       );
-      const selectedActionsToggle = document.getElementById(
-        "selectedActionsToggle"
+      const selectedInListRow = document.getElementById("selectedInListRow");
+      const selectedInListCount = document.getElementById(
+        "selectedInListCount"
       );
-      const selectedActionsMenu = document.getElementById(
-        "selectedActionsMenu"
-      );
-      const saveMailingListLink = document.getElementById(
-        "saveMailingListLink"
-      );
-      const addToMailingListLink = document.getElementById(
-        "addToMailingListLink"
-      );
-      const addToShipmentLink = document.getElementById("addToShipmentLink");
-      const addToNewShipmentLink = document.getElementById(
-        "addToNewShipmentLink"
+      const selectedRemoveFromListLink = document.getElementById(
+        "selectedRemoveFromListLink"
       );
 
       const saveListModalOverlay = document.getElementById(
@@ -4309,6 +4306,28 @@
         if (selectedCountEl) {
           selectedCountEl.textContent = String(selectedJournalistIds.size || 0);
         }
+
+        if (selectedInListRow) {
+          selectedInListRow.style.display = "none";
+        }
+
+        if (appState.view === "mailing-list") {
+          const activeList = getMailingListById(appState.activeMailingListId);
+          if (activeList && Array.isArray(activeList.journalistIds)) {
+            const allowed = new Set(activeList.journalistIds);
+            let inListCount = 0;
+            for (const jid of selectedJournalistIds) {
+              if (allowed.has(jid)) inListCount++;
+            }
+            if (inListCount > 0 && selectedInListRow) {
+              if (selectedInListCount) {
+                selectedInListCount.textContent = String(inListCount);
+              }
+              selectedInListRow.style.display = "flex";
+            }
+          }
+        }
+
         selectedPanelBody.innerHTML = "";
 
         if (selectedJournalistOrder.length === 0) {
@@ -4351,6 +4370,44 @@
         }
 
         selectedPanelBody.appendChild(list);
+      }
+
+      if (selectedRemoveFromListLink) {
+        selectedRemoveFromListLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (appState.view !== "mailing-list") return;
+          const activeList = getMailingListById(appState.activeMailingListId);
+          if (!activeList || !Array.isArray(activeList.journalistIds)) return;
+
+          const allowed = new Set(activeList.journalistIds);
+          const toRemove = [];
+          for (const jid of selectedJournalistIds) {
+            if (allowed.has(jid)) toRemove.push(jid);
+          }
+          if (!toRemove.length) return;
+
+          const toRemoveSet = new Set(toRemove);
+          activeList.journalistIds = (activeList.journalistIds || []).filter(
+            (jid) => !toRemoveSet.has(jid)
+          );
+          saveAppState(appState);
+
+          for (const jid of toRemove) {
+            selectedJournalistIds.delete(jid);
+            removeFromSelectedOrder(jid);
+            updateCheckboxUI(jid);
+            updateCardSelectionUI(jid);
+          }
+
+          if (selectedJournalistIds.size === 0) {
+            closeSelectedPanel();
+          } else {
+            renderSelectedPanelList();
+          }
+          scheduleRender();
+        });
       }
 
       function createCard(j) {
@@ -4426,7 +4483,13 @@
           ? highlightHtmlMulti(noteDisplayRaw, activeTerms)
           : '<em class="muted">nessuna nota</em>';
 
+        const removeFromListHtml =
+          appState.view === "mailing-list"
+            ? `<button type="button" class="c-pill card-remove-from-list" data-remove-from-list-jid="${jid}" aria-label="rimuovi da lista">×</button>`
+            : "";
+
         card.innerHTML = `
+          ${removeFromListHtml}
           <div class="card-top">
             <div class="card-name-row">
               <input
@@ -4587,7 +4650,6 @@
       const chooseDatabaseLink = document.getElementById("chooseDatabaseLink");
 
       const selectAllLink = document.getElementById("selectAllLink");
-      const deselectAllLink = document.getElementById("deselectAllLink");
       const bulkSelectControls = document.getElementById("bulkSelectControls");
 
       const sortByNameAscLink = document.getElementById("sortByNameAscLink");
@@ -4667,93 +4729,110 @@
         });
       }
 
-      function closeSelectedActionsMenu() {
-        if (!selectedActionsMenu || !selectedActionsToggle) return;
-        selectedActionsMenu.classList.remove("show");
-        selectedActionsMenu.setAttribute("aria-hidden", "true");
-        selectedActionsToggle.setAttribute("aria-expanded", "false");
-      }
+      function initSplitButtons() {
+        const splitButtons = document.querySelectorAll("[data-split-button]");
+        for (const split of splitButtons) {
+          const toggle = split.querySelector("[data-split-toggle]");
+          const menu = split.querySelector("[data-split-menu]");
+          if (!toggle || !menu) continue;
 
-      function toggleSelectedActionsMenu() {
-        if (!selectedActionsMenu || !selectedActionsToggle) return;
-        const isOpen = selectedActionsMenu.classList.contains("show");
-        if (isOpen) {
-          closeSelectedActionsMenu();
-        } else {
-          selectedActionsMenu.classList.add("show");
-          selectedActionsMenu.setAttribute("aria-hidden", "false");
-          selectedActionsToggle.setAttribute("aria-expanded", "true");
+          function closeMenu() {
+            if (!menu.classList.contains("show")) return;
+            menu.classList.remove("show");
+            menu.setAttribute("aria-hidden", "true");
+            toggle.setAttribute("aria-expanded", "false");
+          }
+
+          function toggleMenu() {
+            const isOpen = menu.classList.contains("show");
+            if (isOpen) {
+              closeMenu();
+            } else {
+              menu.classList.add("show");
+              menu.setAttribute("aria-hidden", "false");
+              toggle.setAttribute("aria-expanded", "true");
+            }
+          }
+
+          toggle.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMenu();
+          });
+
+          document.addEventListener(
+            "click",
+            (e) => {
+              if (!menu.classList.contains("show")) return;
+              const t = e.target;
+              if (split.contains(t)) return;
+              closeMenu();
+            },
+            true
+          );
+
+          document.addEventListener(
+            "keydown",
+            (e) => {
+              if (e.key !== "Escape") return;
+              if (!menu.classList.contains("show")) return;
+              e.preventDefault();
+              e.stopPropagation();
+              closeMenu();
+            },
+            true
+          );
+
+          split.addEventListener("click", (e) => {
+            const actionEl = e.target.closest("[data-split-action]");
+            if (!actionEl) return;
+            if (!split.contains(actionEl)) return;
+
+            const action = actionEl.getAttribute("data-split-action");
+            if (!action) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            closeMenu();
+
+            split.dispatchEvent(
+              new CustomEvent("split-button-action", {
+                detail: { action },
+                bubbles: true,
+              })
+            );
+          });
         }
       }
 
-      if (selectedActionsToggle) {
-        selectedActionsToggle.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleSelectedActionsMenu();
-        });
-      }
+      initSplitButtons();
 
-      document.addEventListener(
-        "click",
-        (e) => {
-          if (!selectedActionsMenu || !selectedActionsToggle) return;
-          if (!selectedActionsMenu.classList.contains("show")) return;
-          const t = e.target;
-          if (selectedActionsSplit && selectedActionsSplit.contains(t)) return;
-          closeSelectedActionsMenu();
-        },
-        true
-      );
+      if (selectedActionsSplit) {
+        selectedActionsSplit.addEventListener(
+          "split-button-action",
+          (e) => {
+            const action = e?.detail?.action;
+            if (!action) return;
 
-      document.addEventListener(
-        "keydown",
-        (e) => {
-          if (e.key !== "Escape") return;
-          if (!selectedActionsMenu || !selectedActionsToggle) return;
-          if (!selectedActionsMenu.classList.contains("show")) return;
-          e.preventDefault();
-          e.stopPropagation();
-          closeSelectedActionsMenu();
-        },
-        true
-      );
-
-      if (saveMailingListLink) {
-        saveMailingListLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (selectedJournalistOrder.length === 0) return;
-          closeSelectedActionsMenu();
-          openSaveListModal();
-        });
-      }
-
-      if (addToMailingListLink) {
-        addToMailingListLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          closeSelectedActionsMenu();
-          openAddToListModal();
-        });
-      }
-
-      if (addToShipmentLink) {
-        addToShipmentLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          closeSelectedActionsMenu();
-          openAddToShipmentModal();
-        });
-      }
-
-      if (addToNewShipmentLink) {
-        addToNewShipmentLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          closeSelectedActionsMenu();
-          openAddToNewShipmentModal();
-        });
+            if (action === "save-list") {
+              openSaveListModal();
+              return;
+            }
+            if (action === "add-to-list") {
+              openAddToListModal();
+              return;
+            }
+            if (action === "add-to-shipment") {
+              openAddToShipmentModal();
+              return;
+            }
+            if (action === "add-to-new-shipment") {
+              openAddToNewShipmentModal();
+              return;
+            }
+          },
+          true
+        );
       }
 
       if (saveListModalClose) {
@@ -6089,14 +6168,6 @@
         });
       }
 
-      if (deselectAllLink) {
-        deselectAllLink.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          deselectAllCards();
-        });
-      }
-
       if (testataPanelBody) {
         testataPanelBody.addEventListener("click", (e) => {
           const journalistLink = e.target?.closest?.(".journalist-link");
@@ -7209,6 +7280,9 @@
       const cardsGrid = document.getElementById("cardsGrid");
       if (cardsGrid) {
         cardsGrid.addEventListener("click", (e) => {
+          const removeFromListBtn = e.target?.closest?.(
+            ".card-remove-from-list[data-remove-from-list-jid]"
+          );
           const notesLink = e.target?.closest?.(".card-notes-open");
           const journalistsLink = e.target?.closest?.(
             ".card-testata-journalists-open"
@@ -7219,6 +7293,7 @@
           const testataLink = e.target?.closest?.(".testata-link");
           const journalistLink = e.target?.closest?.(".journalist-link");
           if (
+            !removeFromListBtn &&
             !notesLink &&
             !journalistsLink &&
             !testateLabelLink &&
@@ -7229,6 +7304,39 @@
 
           e.preventDefault();
           e.stopPropagation();
+
+          if (removeFromListBtn) {
+            if (appState.view !== "mailing-list") return;
+
+            const jid = removeFromListBtn.getAttribute(
+              "data-remove-from-list-jid"
+            );
+            if (!jid) return;
+
+            const activeList = getMailingListById(appState.activeMailingListId);
+            if (!activeList || !Array.isArray(activeList.journalistIds)) return;
+
+            activeList.journalistIds = (activeList.journalistIds || []).filter(
+              (x) => String(x || "").trim() !== String(jid || "").trim()
+            );
+            saveAppState(appState);
+
+            if (selectedJournalistIds.has(jid)) {
+              selectedJournalistIds.delete(jid);
+              removeFromSelectedOrder(jid);
+              updateCheckboxUI(jid);
+              updateCardSelectionUI(jid);
+
+              if (selectedJournalistIds.size === 0) {
+                closeSelectedPanel();
+              } else {
+                renderSelectedPanelList();
+              }
+            }
+
+            scheduleRender();
+            return;
+          }
 
           if (notesLink) {
             const jid = notesLink.getAttribute("data-jid");
