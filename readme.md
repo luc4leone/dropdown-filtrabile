@@ -3,7 +3,7 @@
 ## 20 gennaio 2026
 
 - [x] aggiunto "rimuovi selezionati in mailing list da mailing list", riga 2 dall'alto nel panel selezionati
-  - [x] questa riga viene mostrata solo in lista, non cross viste (non per es in filtra)
+  - questa riga viene mostrata solo in lista, non cross viste (non per es in filtra)
 - [x] aggiunto pulsante "rimuovi da lista" in card in lista
 - [x] rinominate le opzioni del menu dello split button. ora sono logiche (@fabio 💪), vediamo se nei test di usabilità sono comprensibili
 - [x] tolto "deseleziona tutti" da main, era ridondante e forse fuorviante (@fabio 💪)
@@ -13,11 +13,11 @@
 
 facendo riferimento al punto 3 del 19 gennaio:
 
-- [x] ho aggiunto split button
-  - [x] ho modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
-  - [x] il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
-  - [x] "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
-  - [x] ho modificato la creazione di una nuova lista
+- [x] aggiunto split button
+  - [x] modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
+    - il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
+    - "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
+  - [x] modificato patter per la creazione di una nuova spedizione
 
 ## 19 gennaio 2026
 
