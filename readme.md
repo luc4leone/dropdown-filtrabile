@@ -2,23 +2,22 @@
 
 ## 20 gennaio 2026
 
-1. aggiunto "rimuovi selezionati in mailing list da mailing list", riga 2 dall'alto nel panel selezionati
-   1.1 questa riga viene mostrata solo in lista, non cross viste (non per es in filtra)
-2. aggiunto pulsante "rimuovi da lista" in card in lista
-3. rinominate le opzioni del menu dello split button. ora sono logiche (@fabio 💪), vediamo se nei test di usabilità sono comprensibili
-4. tolto "deseleziona tutti" da main, era ridondante e forse fuorviante (@fabio 💪)
-5. rinominato "rimuovi selezionati" in "svuota selezione" in panel selezionati per evitare confusione con button riga sopra "rimuovi da lista"
+- [x] aggiunto "rimuovi selezionati in mailing list da mailing list", riga 2 dall'alto nel panel selezionati
+  - [x] questa riga viene mostrata solo in lista, non cross viste (non per es in filtra)
+- [x] aggiunto pulsante "rimuovi da lista" in card in lista
+- [x] rinominate le opzioni del menu dello split button. ora sono logiche (@fabio 💪), vediamo se nei test di usabilità sono comprensibili
+- [x] tolto "deseleziona tutti" da main, era ridondante e forse fuorviante (@fabio 💪)
+- [x] rinominato "rimuovi selezionati" in "svuota selezione" in panel selezionati per evitare confusione con button riga sopra "rimuovi da lista"
 
 ---
 
 facendo riferimento al punto 3 del 19 gennaio:
 
-3 ho aggiunto split button
-
-- 3.1 ho modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
-- 3.2 il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
-- 3.3 "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
-- 3.4 ho modificato la creazione di una nuova lista
+- [x] ho aggiunto split button
+  - [x] ho modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
+  - [x] il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
+  - [x] "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
+  - [x] ho modificato la creazione di una nuova lista
 
 ## 19 gennaio 2026
 
