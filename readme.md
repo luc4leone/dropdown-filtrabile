@@ -13,11 +13,12 @@
 
 facendo riferimento al punto 3 del 19 gennaio:
 
-3. ho aggiunto split button
-   3.1 ho modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
-   3.2 il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
-   3.3 "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
-   3.4 ho modificato la creazione di una nuova lista
+3 ho aggiunto split button
+
+- 3.1 ho modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
+- 3.2 il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
+- 3.3 "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
+- 3.4 ho modificato la creazione di una nuova lista
 
 ## 19 gennaio 2026
 
@@ -32,8 +33,10 @@ facendo riferimento al punto 3 del 19 gennaio:
 elenco puntato numerato fa riferimento a quello sopra:
 
 1. ho sostituito il sort control in "filtra banca dati"
-   - 1.1 dato che è un prototipo lascio perdere "aggiungere criterio testata" - sarebbe "testata a-z"?
-   - 1.2 su mobile non metterei nemmeno il controllo
+
+- 1.1 dato che è un prototipo lascio perdere "aggiungere criterio testata" - sarebbe "testata a-z"?
+- 1.2 su mobile non metterei nemmeno il controllo
+
 2. non convince al 100% nemmeno me; nasce dal fatto che la lista dei comunicati e la lista delle spedizioni ripetono spesso gli stessi dati (titolo, autore, data creazione); lo terrei così per ora
 3. IN PROGRESS
 4. modificato colore active element in nav bar
