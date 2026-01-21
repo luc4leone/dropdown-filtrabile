@@ -472,7 +472,7 @@ body {
 .main-subtitle {
   font-size: var(--fs-md);
   color: var(--grey-750);
-  margin-top: 3px;
+  margin-top: 6px;
 }
 
 .main-header-row {
@@ -485,7 +485,7 @@ body {
 
 .main-header-left {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
   min-width: 0;
 }
@@ -1033,7 +1033,9 @@ body[data-active-view="filtra"] .card-remove-from-list {
   z-index: 0;
   opacity: 0;
   visibility: hidden;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
   box-shadow: none;
   display: flex;
   flex-direction: column;
@@ -1152,7 +1154,7 @@ body[data-active-view="filtra"] .card-remove-from-list {
   text-decoration: underline;
 }
 
-#mailingListDuplicateLink {
+.testata-link#mailingListDuplicateLink {
   text-decoration: none;
 }
 
@@ -1206,6 +1208,12 @@ body[data-active-view="filtra"] .card-remove-from-list {
 }
 
 #saveListModal {
+  width: min(440px, calc(100vw - 40px));
+  top: 25vh;
+  transform: translateX(-50%);
+}
+
+#shareListModal {
   width: min(440px, calc(100vw - 40px));
   top: 25vh;
   transform: translateX(-50%);
@@ -1303,6 +1311,25 @@ body[data-active-view="filtra"] .card-remove-from-list {
   gap: 8px;
 }
 
+.share-list-users {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.share-list-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.share-list-user input[type="checkbox"] {
+  margin: 0;
+}
+
 .testata-overlay {
   position: fixed;
   inset: 0;
@@ -1395,7 +1422,9 @@ body[data-active-view="filtra"] .card-remove-from-list {
   overflow: hidden;
   background: var(--white);
   transform: translateX(100%);
-  transition: width 0.25s ease, transform 0.25s ease;
+  transition:
+    width 0.25s ease,
+    transform 0.25s ease;
   display: flex;
   flex-direction: column;
   position: relative;

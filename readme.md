@@ -1,11 +1,22 @@
 # UX / UI Design M\_\_
 
-## todos
+## _in progress_
 
-- [ ] *condividi mailing list*
-- [ ] *elimina mailing list in mailing list*
 - [ ] *completa scheda giornalista*
 - [ ] *completa scheda testata*
+- [ ] *suggerimenti AI*
+- [ ] *disegnare Account*
+- [ ] *mobile app*
+- [ ] *filtro sede giornalista*
+- [ ] *nuove statistiche proposte per dashboard*
+
+## 21 gennaio 2026
+
+- [x] **condividi mailing list**
+  - ho aggiunto l'autore della mailing list, nel proto è una valore statico perché non ho sviluppato il concetto di user del programma, quindi tutte le mailing list sono create da @ugo
+- [x] **elimina mailing list in mailing list**
+  - così lo user può eliminare una mailing list sia dalla lista delle mailing list che dalla mailing list stessa
+
 
 ## 20 gennaio 2026
 

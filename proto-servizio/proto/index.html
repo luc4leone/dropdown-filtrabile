@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
   <head>
     <meta charset="UTF-8" />
@@ -583,21 +583,30 @@
                     >
                       <a
                         href="#"
-                        class="testata-link"
+                        class="c-link c-link--nav"
                         id="mailingListRenameLink"
                         >rinomina</a
                       >
                       <a
                         href="#"
-                        class="testata-link"
+                        class="c-link c-link--nav"
+                        id="mailingListExportLink"
+                        >esporta</a
+                      >
+                      <span class="sidebar-mode-separator" aria-hidden="true"
+                        >•</span
+                      >
+                      <a
+                        href="#"
+                        class="c-link c-link--action"
                         id="mailingListDuplicateLink"
                         >duplica</a
                       >
                       <a
                         href="#"
-                        class="testata-link"
-                        id="mailingListExportLink"
-                        >esporta</a
+                        class="c-link c-link--action"
+                        id="mailingListDeleteLink"
+                        >elimina</a
                       >
                     </div>
                   </div>
@@ -967,6 +976,33 @@
 
     <div
       class="notes-modal-overlay"
+      id="shareListModalOverlay"
+      aria-hidden="true"
+    ></div>
+    <div class="notes-modal" id="shareListModal" aria-hidden="true">
+      <div class="notes-modal-header">
+        <p class="notes-modal-title" id="shareListModalTitle">
+          condividi lista
+        </p>
+        <button
+          type="button"
+          class="notes-modal-close"
+          id="shareListModalClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="notes-modal-body">
+        <div class="share-list-users" id="shareListUsers"></div>
+        <a href="#" class="c-link c-link--action" id="shareListConfirm">
+          condividi
+        </a>
+      </div>
+    </div>
+
+    <div
+      class="notes-modal-overlay"
       id="addToListModalOverlay"
       aria-hidden="true"
     ></div>
@@ -1240,12 +1276,12 @@
           raw === "role"
             ? "role"
             : raw === "media-type" || raw === "tipo-media"
-            ? "media-type"
-            : raw === "frequency" || raw === "frequenza"
-            ? "frequency"
-            : raw === "name-desc" || raw === "name-z-a" || raw === "z-a"
-            ? "name-desc"
-            : "name-asc";
+              ? "media-type"
+              : raw === "frequency" || raw === "frequenza"
+                ? "frequency"
+                : raw === "name-desc" || raw === "name-z-a" || raw === "z-a"
+                  ? "name-desc"
+                  : "name-asc";
         appState.sortMode = next;
         saveAppState(appState);
         scheduleRender();
@@ -1367,7 +1403,7 @@
           this.inputWrapper = document.getElementById(inputWrapperId);
           this.container = this.input?.closest(".dropdown-container");
           this.label = this.container?.querySelector(
-            `label.field-label[for="${inputId}"]`
+            `label.field-label[for="${inputId}"]`,
           );
 
           this.baseContainerMarginBottom = 0;
@@ -1777,7 +1813,7 @@
           }
 
           this.filteredOptions = this.originalOptions.filter((opt) =>
-            includeSet.has(opt)
+            includeSet.has(opt),
           );
           this.strongMatchOptions = strongSet;
           this.matchRank = rank;
@@ -1808,7 +1844,7 @@
           if (candidates.length === 0) return null;
 
           candidates.sort(
-            (a, b) => a.length - b.length || a.localeCompare(b, "it")
+            (a, b) => a.length - b.length || a.localeCompare(b, "it"),
           );
           const full = candidates[0];
           const suffix = full.slice(q.length);
@@ -1925,7 +1961,7 @@
           const suggestions = Array.from(suggestionsSet)
             .filter(
               (opt) =>
-                this.originalOptions.includes(opt) && !filteredSet.has(opt)
+                this.originalOptions.includes(opt) && !filteredSet.has(opt),
             )
             .sort((a, b) => this.sortComparator(a, b));
 
@@ -1961,11 +1997,11 @@
               const c2 = childrenByParentVisible.get(p2) || [];
               const best1 = c1.reduce(
                 (acc, x) => Math.min(acc, this.matchRank?.get(x) ?? 99),
-                99
+                99,
               );
               const best2 = c2.reduce(
                 (acc, x) => Math.min(acc, this.matchRank?.get(x) ?? 99),
-                99
+                99,
               );
               return (
                 best1 - best2 ||
@@ -2084,13 +2120,13 @@
             this.results.appendChild(group);
 
             const visibleChildren = (childrenByParentVisible.get(p) || []).sort(
-              (a, b) => this.sortComparator(a, b)
+              (a, b) => this.sortComparator(a, b),
             );
 
             let childrenToRender = visibleChildren;
             if (isFiltered && this.expandedParents.has(p)) {
               const allChildren = [...(this.childrenByParent?.[p] || [])].sort(
-                (a, b) => this.sortComparator(a, b)
+                (a, b) => this.sortComparator(a, b),
               );
               const inVisible = new Set(visibleChildren);
               const extra = allChildren.filter((c) => !inVisible.has(c));
@@ -2192,7 +2228,7 @@
               e.preventDefault();
               this.selectedIndex = Math.min(
                 this.selectedIndex + 1,
-                totalItems - 1
+                totalItems - 1,
               );
               break;
             case "ArrowUp":
@@ -2629,7 +2665,7 @@
           synonymsByFilter: {},
           renderChipsInInput: false,
           preserveParentOrder: true,
-        }
+        },
       );
       roleDropdown.updateAutocompleteHint("");
 
@@ -3238,7 +3274,7 @@
 
         for (const t of byKey.values()) {
           const inferred = inferTestataArgomentoFromServiceCounts(
-            t._serviceCounts
+            t._serviceCounts,
           );
           t.argomento = inferred.argomento;
           t.note = NOTES_BY_TESTATA_KEY[String(t?.id || "")] || "";
@@ -3248,7 +3284,7 @@
         return Array.from(byKey.values()).sort((a, b) =>
           String(a.nome || "").localeCompare(String(b.nome || ""), "it", {
             sensitivity: "base",
-          })
+          }),
         );
       }
 
@@ -3285,7 +3321,7 @@
           childrenByParent: SERVICES_BY_PARENT,
           renderChipsInInput: false,
           preserveParentOrder: false,
-        }
+        },
       );
       testataArgomentoDropdown.updateAutocompleteHint("");
 
@@ -3325,7 +3361,7 @@
           synonymsByFilter: {},
           renderChipsInInput: false,
           preserveParentOrder: true,
-        }
+        },
       );
       testataTipoMediaDropdown.updateAutocompleteHint("");
 
@@ -3378,30 +3414,30 @@
                 k === "quotidiano"
                   ? 1
                   : k === "trisettimanale"
-                  ? 7 / 3
-                  : k === "bisettimanale"
-                  ? 7 / 2
-                  : k === "settimanale"
-                  ? 7
-                  : k === "quattordicinale"
-                  ? 14
-                  : k === "quindicinale"
-                  ? 15
-                  : k === "mensile"
-                  ? 30
-                  : k === "bimestrale"
-                  ? 60
-                  : k === "trimestrale"
-                  ? 90
-                  : k === "quadrimestrale"
-                  ? 120
-                  : k === "semestrale"
-                  ? 182
-                  : k === "annuale"
-                  ? 365
-                  : k === "quadriennale"
-                  ? 365 * 4
-                  : Number.POSITIVE_INFINITY;
+                    ? 7 / 3
+                    : k === "bisettimanale"
+                      ? 7 / 2
+                      : k === "settimanale"
+                        ? 7
+                        : k === "quattordicinale"
+                          ? 14
+                          : k === "quindicinale"
+                            ? 15
+                            : k === "mensile"
+                              ? 30
+                              : k === "bimestrale"
+                                ? 60
+                                : k === "trimestrale"
+                                  ? 90
+                                  : k === "quadrimestrale"
+                                    ? 120
+                                    : k === "semestrale"
+                                      ? 182
+                                      : k === "annuale"
+                                        ? 365
+                                        : k === "quadriennale"
+                                          ? 365 * 4
+                                          : Number.POSITIVE_INFINITY;
               return { indefinite: false, days };
             })();
 
@@ -3414,30 +3450,30 @@
                 k === "quotidiano"
                   ? 1
                   : k === "trisettimanale"
-                  ? 7 / 3
-                  : k === "bisettimanale"
-                  ? 7 / 2
-                  : k === "settimanale"
-                  ? 7
-                  : k === "quattordicinale"
-                  ? 14
-                  : k === "quindicinale"
-                  ? 15
-                  : k === "mensile"
-                  ? 30
-                  : k === "bimestrale"
-                  ? 60
-                  : k === "trimestrale"
-                  ? 90
-                  : k === "quadrimestrale"
-                  ? 120
-                  : k === "semestrale"
-                  ? 182
-                  : k === "annuale"
-                  ? 365
-                  : k === "quadriennale"
-                  ? 365 * 4
-                  : Number.POSITIVE_INFINITY;
+                    ? 7 / 3
+                    : k === "bisettimanale"
+                      ? 7 / 2
+                      : k === "settimanale"
+                        ? 7
+                        : k === "quattordicinale"
+                          ? 14
+                          : k === "quindicinale"
+                            ? 15
+                            : k === "mensile"
+                              ? 30
+                              : k === "bimestrale"
+                                ? 60
+                                : k === "trimestrale"
+                                  ? 90
+                                  : k === "quadrimestrale"
+                                    ? 120
+                                    : k === "semestrale"
+                                      ? 182
+                                      : k === "annuale"
+                                        ? 365
+                                        : k === "quadriennale"
+                                          ? 365 * 4
+                                          : Number.POSITIVE_INFINITY;
               return { indefinite: false, days };
             })();
 
@@ -3451,7 +3487,7 @@
               sensitivity: "base",
             });
           },
-        }
+        },
       );
       testataFrequenzaDropdown.updateAutocompleteHint("");
 
@@ -3479,7 +3515,7 @@
           resultsId: "testataDiffusioneDropdownResults",
           synonymsByFilter: {},
           renderChipsInInput: false,
-        }
+        },
       );
       testataDiffusioneDropdown.updateAutocompleteHint("");
 
@@ -3490,18 +3526,18 @@
       const selectedPanelBody = document.getElementById("selectedPanelBody");
       const selectedClearAll = document.getElementById("selectedClearAll");
       const selectedActionsSplit = document.getElementById(
-        "selectedActionsSplit"
+        "selectedActionsSplit",
       );
       const selectedInListRow = document.getElementById("selectedInListRow");
       const selectedInListCount = document.getElementById(
-        "selectedInListCount"
+        "selectedInListCount",
       );
       const selectedRemoveFromListLink = document.getElementById(
-        "selectedRemoveFromListLink"
+        "selectedRemoveFromListLink",
       );
 
       const saveListModalOverlay = document.getElementById(
-        "saveListModalOverlay"
+        "saveListModalOverlay",
       );
       const saveListModal = document.getElementById("saveListModal");
       const saveListModalTitle = document.getElementById("saveListModalTitle");
@@ -3510,71 +3546,84 @@
       const saveListConfirm = document.getElementById("saveListConfirm");
       const saveListError = document.getElementById("saveListError");
 
+      const shareListModalOverlay = document.getElementById(
+        "shareListModalOverlay",
+      );
+      const shareListModal = document.getElementById("shareListModal");
+      const shareListModalClose = document.getElementById(
+        "shareListModalClose",
+      );
+      const shareListUsers = document.getElementById("shareListUsers");
+      const shareListConfirm = document.getElementById("shareListConfirm");
+
       const addToListModalOverlay = document.getElementById(
-        "addToListModalOverlay"
+        "addToListModalOverlay",
       );
       const addToListModal = document.getElementById("addToListModal");
       const addToListModalClose = document.getElementById(
-        "addToListModalClose"
+        "addToListModalClose",
       );
       const addToListDropdownInput = document.getElementById(
-        "addToListDropdownInput"
+        "addToListDropdownInput",
       );
       const addToListConfirm = document.getElementById("addToListConfirm");
       const addToListError = document.getElementById("addToListError");
 
       const addToShipmentModalOverlay = document.getElementById(
-        "addToShipmentModalOverlay"
+        "addToShipmentModalOverlay",
       );
       const addToShipmentModal = document.getElementById("addToShipmentModal");
       const addToShipmentModalClose = document.getElementById(
-        "addToShipmentModalClose"
+        "addToShipmentModalClose",
       );
       const addToShipmentDropdownInput = document.getElementById(
-        "addToShipmentDropdownInput"
+        "addToShipmentDropdownInput",
       );
       const addToShipmentConfirm = document.getElementById(
-        "addToShipmentConfirm"
+        "addToShipmentConfirm",
       );
       const addToShipmentError = document.getElementById("addToShipmentError");
 
       const addToNewShipmentModalOverlay = document.getElementById(
-        "addToNewShipmentModalOverlay"
+        "addToNewShipmentModalOverlay",
       );
       const addToNewShipmentModal = document.getElementById(
-        "addToNewShipmentModal"
+        "addToNewShipmentModal",
       );
       const addToNewShipmentModalClose = document.getElementById(
-        "addToNewShipmentModalClose"
+        "addToNewShipmentModalClose",
       );
       const addToNewShipmentNameInput = document.getElementById(
-        "addToNewShipmentNameInput"
+        "addToNewShipmentNameInput",
       );
       const addToNewShipmentConfirm = document.getElementById(
-        "addToNewShipmentConfirm"
+        "addToNewShipmentConfirm",
       );
       const addToNewShipmentError = document.getElementById(
-        "addToNewShipmentError"
+        "addToNewShipmentError",
       );
       const mainTitleEl = document.getElementById("mainTitle");
       const mailingListCountPill = document.getElementById(
-        "mailingListCountPill"
+        "mailingListCountPill",
       );
       const mailingListActions = document.getElementById("mailingListActions");
       const mailingListRenameLink = document.getElementById(
-        "mailingListRenameLink"
+        "mailingListRenameLink",
       );
       const mailingListDuplicateLink = document.getElementById(
-        "mailingListDuplicateLink"
+        "mailingListDuplicateLink",
       );
       const mailingListExportLink = document.getElementById(
-        "mailingListExportLink"
+        "mailingListExportLink",
+      );
+      const mailingListDeleteLink = document.getElementById(
+        "mailingListDeleteLink",
       );
       const mailingListCreatedAtSubtitle = document.getElementById(
-        "mailingListCreatedAtSubtitle"
+        "mailingListCreatedAtSubtitle",
       );
       const dashboardMailingListsEl = document.getElementById(
-        "dashboardMailingLists"
+        "dashboardMailingLists",
       );
 
       let saveListModalMode = "create";
@@ -3656,7 +3705,7 @@
           try {
             saveListNameInput.setSelectionRange(
               0,
-              String(saveListNameInput.value || "").length
+              String(saveListNameInput.value || "").length,
             );
           } catch (_) {}
         }
@@ -3683,6 +3732,54 @@
         if (saveListConfirm) saveListConfirm.textContent = "salva lista";
       }
 
+      const COLLEAGUES = [
+        { id: "oleandro", name: "oleandro" },
+        { id: "rosa", name: "rosa" },
+        { id: "margherita", name: "margherita" },
+      ];
+
+      function openShareListModal() {
+        if (!shareListModal || !shareListModalOverlay || !shareListUsers)
+          return;
+        const activeList = getMailingListById(appState.activeMailingListId);
+        if (!activeList) return;
+
+        const selected = new Set(
+          Array.isArray(activeList.sharedWith) ? activeList.sharedWith : [],
+        );
+        shareListUsers.innerHTML = "";
+
+        for (const c of COLLEAGUES) {
+          const row = document.createElement("label");
+          row.className = "share-list-user";
+
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.checked = selected.has(c.id);
+          cb.setAttribute("data-colleague-id", c.id);
+
+          const text = document.createElement("span");
+          text.textContent = c.name;
+
+          row.appendChild(cb);
+          row.appendChild(text);
+          shareListUsers.appendChild(row);
+        }
+
+        shareListModalOverlay.classList.add("show");
+        shareListModal.classList.add("show");
+        shareListModalOverlay.setAttribute("aria-hidden", "false");
+        shareListModal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeShareListModal() {
+        if (!shareListModal || !shareListModalOverlay) return;
+        shareListModalOverlay.classList.remove("show");
+        shareListModal.classList.remove("show");
+        shareListModalOverlay.setAttribute("aria-hidden", "true");
+        shareListModal.setAttribute("aria-hidden", "true");
+      }
+
       function getMailingListById(id) {
         const k = String(id || "").trim();
         if (!k) return null;
@@ -3696,7 +3793,7 @@
         if (!k) return null;
         return (
           (appState.mailingLists || []).find(
-            (x) => String(x?.name || "") === k
+            (x) => String(x?.name || "") === k,
           ) || null
         );
       }
@@ -3706,7 +3803,7 @@
         if (!k) return null;
         return (
           (appState.spedizioni || []).find(
-            (x) => String(x?.name || "") === k
+            (x) => String(x?.name || "") === k,
           ) || null
         );
       }
@@ -3734,7 +3831,7 @@
           writeSelectedToInput: true,
           enableHighlight: true,
           minFilterChars: 1,
-        }
+        },
       );
       addToListDropdown.updateAutocompleteHint("");
 
@@ -3765,7 +3862,7 @@
           writeSelectedToInput: true,
           enableHighlight: true,
           minFilterChars: 1,
-        }
+        },
       );
       addToShipmentDropdown.updateAutocompleteHint("");
 
@@ -3905,9 +4002,9 @@
             .map((x) =>
               String(x?.name || "")
                 .trim()
-                .toLowerCase()
+                .toLowerCase(),
             )
-            .filter(Boolean)
+            .filter(Boolean),
         );
         const baseKey = base.toLowerCase();
         if (!existing.has(baseKey)) return base;
@@ -3930,9 +4027,9 @@
             .map((x) =>
               String(x?.name || "")
                 .trim()
-                .toLowerCase()
+                .toLowerCase(),
             )
-            .filter(Boolean)
+            .filter(Boolean),
         );
 
         const baseKey = base.toLowerCase();
@@ -3958,9 +4055,9 @@
             .map((x) =>
               String(x?.name || "")
                 .trim()
-                .toLowerCase()
+                .toLowerCase(),
             )
-            .filter(Boolean)
+            .filter(Boolean),
         );
 
         let i = 1;
@@ -4106,7 +4203,7 @@
             if (!ok) return;
 
             appState.mailingLists = (appState.mailingLists || []).filter(
-              (x) => String(x?.id || "") !== id
+              (x) => String(x?.id || "") !== id,
             );
             if (String(appState.activeMailingListId || "") === id) {
               appState.activeMailingListId = "";
@@ -4206,7 +4303,7 @@
           const end = start + match[0].length;
           out += escapeHtml(raw.slice(lastIndex, start));
           out += `<span class="highlight">${escapeHtml(
-            raw.slice(start, end)
+            raw.slice(start, end),
           )}</span>`;
           lastIndex = end;
           if (match[0].length === 0) break;
@@ -4242,7 +4339,7 @@
           const end = start + match[0].length;
           out += escapeHtml(raw.slice(lastIndex, start));
           out += `<span class="highlight">${escapeHtml(
-            raw.slice(start, end)
+            raw.slice(start, end),
           )}</span>`;
           lastIndex = end;
           if (match[0].length === 0) break;
@@ -4278,7 +4375,7 @@
 
       function updateCardSelectionUI(jid) {
         const card = document.querySelector(
-          `.card[data-jid="${CSS.escape(jid)}"]`
+          `.card[data-jid="${CSS.escape(jid)}"]`,
         );
         if (!card) return;
         if (selectedJournalistIds.has(jid)) {
@@ -4291,8 +4388,8 @@
       function updateCheckboxUI(jid) {
         const checkboxes = document.querySelectorAll(
           `.card-select[data-jid="${CSS.escape(
-            jid
-          )}"], .testata-panel-select[data-jid="${CSS.escape(jid)}"]`
+            jid,
+          )}"], .testata-panel-select[data-jid="${CSS.escape(jid)}"]`,
         );
         if (!checkboxes.length) return;
         for (const checkbox of checkboxes) {
@@ -4390,7 +4487,7 @@
 
           const toRemoveSet = new Set(toRemove);
           activeList.journalistIds = (activeList.journalistIds || []).filter(
-            (jid) => !toRemoveSet.has(jid)
+            (jid) => !toRemoveSet.has(jid),
           );
           saveAppState(appState);
 
@@ -4428,7 +4525,7 @@
         const activeTerms = getActiveTextTerms();
         const highlightedName = highlightHtmlMulti(
           `${j.nome} ${j.cognome}`,
-          activeTerms
+          activeTerms,
         );
         const testate = getJournalistTestate(j);
         const testatePreviewHtml = testate.length
@@ -4436,7 +4533,7 @@
               .map((tname) => {
                 const label = highlightHtmlMulti(tname, activeTerms);
                 return `<a href="#" class="testata-link" data-testata="${escapeHtml(
-                  tname
+                  tname,
                 )}">${label}</a>`;
               })
               .join(" • ")
@@ -4587,24 +4684,24 @@
           .map((jid) => getJournalistNameById(jid))
           .join(" • ");
         const testataJournalistsLabelHtml = `<a href="#" class="card-label-link card-testata-journalists-open" data-testata-key="${escapeHtml(
-          String(t?.id || "")
+          String(t?.id || ""),
         )}">Giornalisti</a>`;
 
         const highlightedName = highlightHtmlMulti(
           String(t?.nome || ""),
-          activeTerms
+          activeTerms,
         );
         const highlightedArgomento = highlightHtmlMulti(
           String(t?.argomento || ""),
-          activeTerms
+          activeTerms,
         );
         const highlightedTelefono = highlightHtmlMulti(
           String(t?.telefono || ""),
-          activeTerms
+          activeTerms,
         );
         const highlightedEmail = highlightHtmlMulti(
           String(t?.email || ""),
-          activeTerms
+          activeTerms,
         );
         const highlightedJournalists = journalistNamesRaw
           ? highlightHtmlMulti(journalistNamesRaw, activeTerms)
@@ -4632,7 +4729,7 @@
           <div class="card-row"><div class="card-label">${
             noteShowsEllipsis
               ? `<a href="#" class="card-label-link card-notes-open" data-testata-key="${escapeHtml(
-                  String(t?.id || "")
+                  String(t?.id || ""),
                 )}">Note</a>`
               : "Note"
           }</div><div class="card-value muted card-note">${highlightedNote}</div></div>
@@ -4656,36 +4753,36 @@
       const sortByNameDescLink = document.getElementById("sortByNameDescLink");
       const sortByRoleLink = document.getElementById("sortByRoleLink");
       const sortByMediaTypeLink = document.getElementById(
-        "sortByMediaTypeLink"
+        "sortByMediaTypeLink",
       );
       const sortByFrequencyLink = document.getElementById(
-        "sortByFrequencyLink"
+        "sortByFrequencyLink",
       );
 
       const sortByNameSelect = document.getElementById("sortByNameSelect");
       const sortByNameSelectTrigger = document.getElementById(
-        "sortByNameSelectTrigger"
+        "sortByNameSelectTrigger",
       );
       const sortByNameSelectMenu = document.getElementById(
-        "sortByNameSelectMenu"
+        "sortByNameSelectMenu",
       );
       const sortByNameSelectValue = document.getElementById(
-        "sortByNameSelectValue"
+        "sortByNameSelectValue",
       );
       const sortByNameOptionAsc = document.getElementById(
-        "sortByNameOptionAsc"
+        "sortByNameOptionAsc",
       );
       const sortByNameOptionDesc = document.getElementById(
-        "sortByNameOptionDesc"
+        "sortByNameOptionDesc",
       );
       const sortByNameOptionRole = document.getElementById(
-        "sortByNameOptionRole"
+        "sortByNameOptionRole",
       );
       const sortByNameOptionMediaType = document.getElementById(
-        "sortByNameOptionMediaType"
+        "sortByNameOptionMediaType",
       );
       const sortByNameOptionFrequency = document.getElementById(
-        "sortByNameOptionFrequency"
+        "sortByNameOptionFrequency",
       );
 
       const notesModalOverlay = document.getElementById("notesModalOverlay");
@@ -4768,7 +4865,7 @@
               if (split.contains(t)) return;
               closeMenu();
             },
-            true
+            true,
           );
 
           document.addEventListener(
@@ -4780,7 +4877,7 @@
               e.stopPropagation();
               closeMenu();
             },
-            true
+            true,
           );
 
           split.addEventListener("click", (e) => {
@@ -4799,7 +4896,7 @@
               new CustomEvent("split-button-action", {
                 detail: { action },
                 bubbles: true,
-              })
+              }),
             );
           });
         }
@@ -4831,7 +4928,7 @@
               return;
             }
           },
-          true
+          true,
         );
       }
 
@@ -4847,6 +4944,46 @@
         saveListModalOverlay.addEventListener("click", (e) => {
           e.preventDefault();
           closeSaveListModal();
+        });
+      }
+
+      if (shareListModalClose) {
+        shareListModalClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeShareListModal();
+        });
+      }
+
+      if (shareListModalOverlay) {
+        shareListModalOverlay.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeShareListModal();
+        });
+      }
+
+      if (shareListConfirm) {
+        shareListConfirm.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const activeList = getMailingListById(appState.activeMailingListId);
+          if (!activeList || !shareListUsers) return;
+
+          const checked = Array.from(
+            shareListUsers.querySelectorAll(
+              'input[type="checkbox"][data-colleague-id]',
+            ),
+          )
+            .filter((cb) => cb.checked)
+            .map((cb) => cb.getAttribute("data-colleague-id"))
+            .map((x) => String(x || "").trim())
+            .filter(Boolean);
+
+          activeList.sharedWith = checked;
+          saveAppState(appState);
+          closeShareListModal();
+          scheduleRender();
         });
       }
 
@@ -4901,7 +5038,7 @@
           e.stopPropagation();
 
           const selectedName = Array.from(
-            addToListDropdown.selectedValues || []
+            addToListDropdown.selectedValues || [],
           )
             .map((x) => String(x || "").trim())
             .filter(Boolean)[0];
@@ -4919,7 +5056,7 @@
           const current = new Set(
             Array.isArray(list.journalistIds)
               ? list.journalistIds.map((x) => String(x || "").trim())
-              : []
+              : [],
           );
           for (const jid of selectedJournalistOrder) {
             current.add(String(jid || "").trim());
@@ -4945,7 +5082,7 @@
           e.stopPropagation();
 
           const selectedName = Array.from(
-            addToShipmentDropdown.selectedValues || []
+            addToShipmentDropdown.selectedValues || [],
           )
             .map((x) => String(x || "").trim())
             .filter(Boolean)[0];
@@ -4963,7 +5100,7 @@
           const current = new Set(
             Array.isArray(shipment.journalistIds)
               ? shipment.journalistIds.map((x) => String(x || "").trim())
-              : []
+              : [],
           );
           for (const jid of selectedJournalistOrder) {
             current.add(String(jid || "").trim());
@@ -4997,7 +5134,7 @@
             addToNewShipmentError.style.display = "none";
 
           const selectionSnapshot = selectedJournalistOrder.filter((jid) =>
-            selectedJournalistIds.has(jid)
+            selectedJournalistIds.has(jid),
           );
           const uniqueName = computeUniqueSpedizioneName(rawName);
 
@@ -5036,7 +5173,7 @@
           if (!Array.isArray(appState.mailingLists)) return;
 
           const idx = appState.mailingLists.findIndex(
-            (ml) => String(ml?.id || "") === targetId
+            (ml) => String(ml?.id || "") === targetId,
           );
           if (idx === -1) return;
 
@@ -5052,7 +5189,7 @@
         }
 
         const selectionSnapshot = selectedJournalistOrder.filter((jid) =>
-          selectedJournalistIds.has(jid)
+          selectedJournalistIds.has(jid),
         );
 
         const uniqueName = computeUniqueMailingListName(rawName);
@@ -5141,7 +5278,7 @@
             (t) =>
               String(t || "")
                 .trim()
-                .toLowerCase() === k
+                .toLowerCase() === k,
           );
           if (!exists) {
             committedTextTerms.unshift(term);
@@ -5285,11 +5422,11 @@
             const rows = jids
               .map((jid) => {
                 const j = (journalists || []).find(
-                  (x) => getJournalistId(x) === jid
+                  (x) => getJournalistId(x) === jid,
                 );
                 const name = j
                   ? `${String(j?.nome || "").trim()} ${String(
-                      j?.cognome || ""
+                      j?.cognome || "",
                     ).trim()}`.trim()
                   : getJournalistNameById(jid);
                 return {
@@ -5304,7 +5441,7 @@
               .sort((a, b) =>
                 String(a.name || "").localeCompare(String(b.name || ""), "it", {
                   sensitivity: "base",
-                })
+                }),
               );
 
             for (const item of rows) {
@@ -5314,7 +5451,7 @@
 
               const checkboxId = `testata-panel-select-${jid.replace(
                 /[^a-zA-Z0-9_-]/g,
-                "_"
+                "_",
               )}`;
 
               const tdCb = document.createElement("td");
@@ -5412,7 +5549,7 @@
 
         const j = (journalists || []).find((x) => {
           const k = `${String(x?.nome || "").trim()} ${String(
-            x?.cognome || ""
+            x?.cognome || "",
           ).trim()}`
             .trim()
             .toLowerCase();
@@ -5425,7 +5562,7 @@
           const jid = getJournalistId(j);
           const checkboxId = `journalist-panel-select-${jid.replace(
             /[^a-zA-Z0-9_-]/g,
-            "_"
+            "_",
           )}`;
 
           const titleRow = document.createElement("div");
@@ -5643,11 +5780,11 @@
           const rows = cleanJids
             .map((jid) => {
               const j = (journalists || []).find(
-                (x) => getJournalistId(x) === jid
+                (x) => getJournalistId(x) === jid,
               );
               const name = j
                 ? `${String(j?.nome || "").trim()} ${String(
-                    j?.cognome || ""
+                    j?.cognome || "",
                   ).trim()}`.trim()
                 : getJournalistNameById(jid);
               return {
@@ -5662,7 +5799,7 @@
             .sort((a, b) =>
               String(a.name || "").localeCompare(String(b.name || ""), "it", {
                 sensitivity: "base",
-              })
+              }),
             );
 
           for (const item of rows) {
@@ -5671,7 +5808,7 @@
 
             const checkboxId = `testata-modal-select-${jid.replace(
               /[^a-zA-Z0-9_-]/g,
-              "_"
+              "_",
             )}`;
 
             const tdCb = document.createElement("td");
@@ -5839,7 +5976,7 @@
         for (const card of cards) {
           const valueEl = card.querySelector(".card-testate");
           const labelHost = card.querySelector(
-            ".card-journalist-testate-open, .card-journalist-testate-label"
+            ".card-journalist-testate-open, .card-journalist-testate-label",
           );
           if (!valueEl || !labelHost) continue;
 
@@ -5995,6 +6132,34 @@
         });
       }
 
+      if (mailingListDeleteLink) {
+        mailingListDeleteLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const activeList = getMailingListById(appState.activeMailingListId);
+          if (!activeList) return;
+
+          const id = String(activeList.id || "").trim();
+          const name = String(activeList.name || "").trim();
+          if (!id) return;
+
+          const ok = window.confirm(`Eliminare la mailing list "${name}"?`);
+          if (!ok) return;
+
+          appState.mailingLists = (appState.mailingLists || []).filter(
+            (x) => String(x?.id || "") !== id,
+          );
+          if (String(appState.activeMailingListId || "") === id) {
+            appState.activeMailingListId = "";
+          }
+          saveAppState(appState);
+          renderDashboardMailingLists();
+
+          window.location.hash = "#dashboard";
+        });
+      }
+
       if (sortByNameAscLink) {
         sortByNameAscLink.addEventListener("click", (e) => {
           e.preventDefault();
@@ -6089,7 +6254,7 @@
           if (sortByNameSelect && sortByNameSelect.contains(t)) return;
           closeSortByNameMenu();
         },
-        true
+        true,
       );
 
       document.addEventListener(
@@ -6102,7 +6267,7 @@
           e.stopPropagation();
           closeSortByNameMenu();
         },
-        true
+        true,
       );
 
       function selectAllFilteredCards() {
@@ -6232,7 +6397,7 @@
           e.stopPropagation();
           closeTestataPanel();
         },
-        true
+        true,
       );
 
       let _renderRaf = null;
@@ -6272,13 +6437,13 @@
         const enableJournalistFilters = true;
 
         const journalistFiltersSlot = document.getElementById(
-          "journalistFiltersSlot"
+          "journalistFiltersSlot",
         );
         const journalistFiltersContent = document.getElementById(
-          "journalistFiltersContent"
+          "journalistFiltersContent",
         );
         const journalistFiltersPlaceholder = document.getElementById(
-          "journalistFiltersPlaceholder"
+          "journalistFiltersPlaceholder",
         );
 
         if (journalistFiltersSlot && journalistFiltersContent) {
@@ -6310,16 +6475,16 @@
         const selectedServices = Array.from(dropdown.selectedValues || []);
         const selectedRoles = Array.from(roleDropdown.selectedValues || []);
         const selectedTestataArgomenti = Array.from(
-          testataArgomentoDropdown.selectedValues || []
+          testataArgomentoDropdown.selectedValues || [],
         );
         const selectedTestataTipoMedia = Array.from(
-          testataTipoMediaDropdown.selectedValues || []
+          testataTipoMediaDropdown.selectedValues || [],
         );
         const selectedTestataFrequenze = Array.from(
-          testataFrequenzaDropdown.selectedValues || []
+          testataFrequenzaDropdown.selectedValues || [],
         );
         const selectedTestataDiffusioni = Array.from(
-          testataDiffusioneDropdown.selectedValues || []
+          testataDiffusioneDropdown.selectedValues || [],
         );
         const activeTextTerms = getActiveTextTerms();
         const currentTextQuery = (textFilterInput?.value || "").trim();
@@ -6363,7 +6528,7 @@
       function renderCards() {
         const grid = document.getElementById("cardsGrid");
         const countJournalistsEl = document.getElementById(
-          "sidebarCountJournalists"
+          "sidebarCountJournalists",
         );
         const countTestateEl = document.getElementById("sidebarCountTestate");
         const subtitleEl = document.getElementById("cardsSubtitle");
@@ -6374,19 +6539,19 @@
           document.getElementById("sortByNameDescLink");
         const sortByRoleLink = document.getElementById("sortByRoleLink");
         const sortByMediaTypeLink = document.getElementById(
-          "sortByMediaTypeLink"
+          "sortByMediaTypeLink",
         );
         const sortByFrequencyLink = document.getElementById(
-          "sortByFrequencyLink"
+          "sortByFrequencyLink",
         );
         const sortSepAfterName = document.getElementById("sortSepAfterName");
         const sortSepAfterRole = document.getElementById("sortSepAfterRole");
         const sortSepAfterMediaType = document.getElementById(
-          "sortSepAfterMediaType"
+          "sortSepAfterMediaType",
         );
 
         const journalistById = new Map(
-          (journalists || []).map((j) => [getJournalistId(j), j])
+          (journalists || []).map((j) => [getJournalistId(j), j]),
         );
 
         const {
@@ -6439,36 +6604,36 @@
             k === "quotidiano"
               ? 1
               : k === "trisettimanale"
-              ? 7 / 3
-              : k === "bisettimanale"
-              ? 7 / 2
-              : k === "settimanale"
-              ? 7
-              : k === "quattordicinale"
-              ? 14
-              : k === "quindicinale"
-              ? 15
-              : k === "mensile"
-              ? 30
-              : k === "bimestrale"
-              ? 60
-              : k === "trimestrale"
-              ? 90
-              : k === "quadrimestrale"
-              ? 120
-              : k === "semestrale"
-              ? 182
-              : k === "annuale"
-              ? 365
-              : k === "quadriennale"
-              ? 365 * 4
-              : Number.POSITIVE_INFINITY;
+                ? 7 / 3
+                : k === "bisettimanale"
+                  ? 7 / 2
+                  : k === "settimanale"
+                    ? 7
+                    : k === "quattordicinale"
+                      ? 14
+                      : k === "quindicinale"
+                        ? 15
+                        : k === "mensile"
+                          ? 30
+                          : k === "bimestrale"
+                            ? 60
+                            : k === "trimestrale"
+                              ? 90
+                              : k === "quadrimestrale"
+                                ? 120
+                                : k === "semestrale"
+                                  ? 182
+                                  : k === "annuale"
+                                    ? 365
+                                    : k === "quadriennale"
+                                      ? 365 * 4
+                                      : Number.POSITIVE_INFINITY;
           return { indefinite: false, days };
         };
 
         const mediaParentOrder = ["Radio", "TV", "Carta Stampata", "Web"];
         const mediaParentRank = new Map(
-          mediaParentOrder.map((p, idx) => [p, idx])
+          mediaParentOrder.map((p, idx) => [p, idx]),
         );
         const mediaChildRankByParent = new Map();
         for (const p of mediaParentOrder) {
@@ -6489,21 +6654,21 @@
         if (sortByNameAscLink) {
           sortByNameAscLink.classList.toggle(
             "is-active",
-            effectiveSortMode === "name-asc"
+            effectiveSortMode === "name-asc",
           );
           sortByNameAscLink.setAttribute(
             "aria-current",
-            effectiveSortMode === "name-asc" ? "true" : "false"
+            effectiveSortMode === "name-asc" ? "true" : "false",
           );
         }
         if (sortByNameDescLink) {
           sortByNameDescLink.classList.toggle(
             "is-active",
-            effectiveSortMode === "name-desc"
+            effectiveSortMode === "name-desc",
           );
           sortByNameDescLink.setAttribute(
             "aria-current",
-            effectiveSortMode === "name-desc" ? "true" : "false"
+            effectiveSortMode === "name-desc" ? "true" : "false",
           );
         }
 
@@ -6546,33 +6711,33 @@
           sortByRoleLink.style.display = isTestateMode ? "none" : "";
           sortByRoleLink.classList.toggle(
             "is-active",
-            effectiveSortMode === "role"
+            effectiveSortMode === "role",
           );
           sortByRoleLink.setAttribute(
             "aria-current",
-            effectiveSortMode === "role" ? "true" : "false"
+            effectiveSortMode === "role" ? "true" : "false",
           );
         }
 
         if (sortByMediaTypeLink) {
           sortByMediaTypeLink.classList.toggle(
             "is-active",
-            effectiveSortMode === "media-type"
+            effectiveSortMode === "media-type",
           );
           sortByMediaTypeLink.setAttribute(
             "aria-current",
-            effectiveSortMode === "media-type" ? "true" : "false"
+            effectiveSortMode === "media-type" ? "true" : "false",
           );
         }
 
         if (sortByFrequencyLink) {
           sortByFrequencyLink.classList.toggle(
             "is-active",
-            effectiveSortMode === "frequency"
+            effectiveSortMode === "frequency",
           );
           sortByFrequencyLink.setAttribute(
             "aria-current",
-            effectiveSortMode === "frequency" ? "true" : "false"
+            effectiveSortMode === "frequency" ? "true" : "false",
           );
         }
 
@@ -6604,7 +6769,12 @@
             const createdAt = Number(activeList.createdAt || 0);
             if (Number.isFinite(createdAt) && createdAt > 0) {
               const stamp = new Date(createdAt).toLocaleDateString("it-IT");
-              mailingListCreatedAtSubtitle.textContent = `creata il ${stamp}`;
+              const sharedWith = Array.isArray(activeList.sharedWith)
+                ? activeList.sharedWith
+                : [];
+              const n = sharedWith.filter(Boolean).length;
+              const status = n > 0 ? `lista condivisa (${n})` : "lista privata";
+              mailingListCreatedAtSubtitle.innerHTML = `creata il ${stamp} da @ugo <span class="sidebar-mode-separator" aria-hidden="true">&nbsp;•&nbsp;</span> ${status} &nbsp;<a href="#" class="c-link c-link--nav" id="mailingListShareLink">condividi</a>`;
               mailingListCreatedAtSubtitle.style.display = "block";
             } else {
               mailingListCreatedAtSubtitle.textContent = "";
@@ -6621,6 +6791,19 @@
           if (mailingListCreatedAtSubtitle) {
             mailingListCreatedAtSubtitle.textContent = "";
             mailingListCreatedAtSubtitle.style.display = "none";
+          }
+        }
+
+        if (mailingListCreatedAtSubtitle) {
+          const shareLink = mailingListCreatedAtSubtitle.querySelector(
+            "#mailingListShareLink",
+          );
+          if (shareLink) {
+            shareLink.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              openShareListModal();
+            });
           }
         }
 
@@ -6649,32 +6832,32 @@
           const testataArgomentoOk =
             !testataArgomentoActive ||
             testateObjs.some((t) =>
-              selectedTestataArgomenti.includes(String(t?.argomento || ""))
+              selectedTestataArgomenti.includes(String(t?.argomento || "")),
             );
           const testataTipoMediaOk =
             !testataTipoMediaActive ||
             testateObjs.some((t) =>
               selectedTestataTipoMedia.includes(
-                String(t?.tipoMedia?.child || "")
-              )
+                String(t?.tipoMedia?.child || ""),
+              ),
             );
           const testataFrequenzaOk =
             !testataFrequenzaActive ||
             testateObjs.some((t) =>
               selectedTestataFrequenze.includes(
-                String(t?.frequenzaPubblicazione || "")
-              )
+                String(t?.frequenzaPubblicazione || ""),
+              ),
             );
           const testataDiffusioneOk =
             !testataDiffusioneActive ||
             testateObjs.some((t) =>
-              selectedTestataDiffusioni.includes(String(t?.diffusione || ""))
+              selectedTestataDiffusioni.includes(String(t?.diffusione || "")),
             );
 
           const fullName = `${j.nome} ${j.cognome}`.toLowerCase();
           const testata = getJournalistTestate(j).join(" ").toLowerCase();
           const noteCombined = combineNotes(
-            normalizeNotes(j.note)
+            normalizeNotes(j.note),
           ).toLowerCase();
 
           const textOk =
@@ -6738,13 +6921,13 @@
           const tipoMediaOk =
             !testataTipoMediaActive ||
             selectedTestataTipoMedia.includes(
-              String(t?.tipoMedia?.child || "")
+              String(t?.tipoMedia?.child || ""),
             );
 
           const frequenzaOk =
             !testataFrequenzaActive ||
             selectedTestataFrequenze.includes(
-              String(t?.frequenzaPubblicazione || "")
+              String(t?.frequenzaPubblicazione || ""),
             );
 
           const diffusioneOk =
@@ -6789,7 +6972,7 @@
 
         if (countJournalistsEl) {
           const filteredCount = (baseJournalists || []).filter(
-            matchesJournalist
+            matchesJournalist,
           ).length;
           countJournalistsEl.textContent = String(filteredCount);
         }
@@ -6908,7 +7091,7 @@
                     if (idx !== -1) committedTextTerms.splice(idx, 1);
                     updateTextFilterClearVisibility();
                     scheduleRender();
-                  })
+                  }),
                 );
               }
 
@@ -6919,7 +7102,7 @@
                     textFilterInput.value = "";
                     updateTextFilterClearVisibility();
                     scheduleRender();
-                  })
+                  }),
                 );
               }
 
@@ -6932,7 +7115,7 @@
                 row.appendChild(
                   createChip(s, () => {
                     dropdown.removeOption(s);
-                  })
+                  }),
                 );
               }
               bar.appendChild(row);
@@ -6944,7 +7127,7 @@
                 row.appendChild(
                   createChip(r, () => {
                     roleDropdown.removeOption(r);
-                  })
+                  }),
                 );
               }
               bar.appendChild(row);
@@ -6956,7 +7139,7 @@
                 row.appendChild(
                   createChip(a, () => {
                     testataArgomentoDropdown.removeOption(a);
-                  })
+                  }),
                 );
               }
               bar.appendChild(row);
@@ -6968,7 +7151,7 @@
                 row.appendChild(
                   createChip(tm, () => {
                     testataTipoMediaDropdown.removeOption(tm);
-                  })
+                  }),
                 );
               }
               bar.appendChild(row);
@@ -6980,7 +7163,7 @@
                 row.appendChild(
                   createChip(f, () => {
                     testataFrequenzaDropdown.removeOption(f);
-                  })
+                  }),
                 );
               }
               bar.appendChild(row);
@@ -6992,7 +7175,7 @@
                 row.appendChild(
                   createChip(d, () => {
                     testataDiffusioneDropdown.removeOption(d);
-                  })
+                  }),
                 );
               }
               bar.appendChild(row);
@@ -7119,7 +7302,7 @@
                   if (idx !== -1) committedTextTerms.splice(idx, 1);
                   updateTextFilterClearVisibility();
                   scheduleRender();
-                })
+                }),
               );
             }
 
@@ -7130,7 +7313,7 @@
                   textFilterInput.value = "";
                   updateTextFilterClearVisibility();
                   scheduleRender();
-                })
+                }),
               );
             }
             bar.appendChild(row);
@@ -7142,7 +7325,7 @@
               row.appendChild(
                 createChip(s, () => {
                   dropdown.removeOption(s);
-                })
+                }),
               );
             }
             bar.appendChild(row);
@@ -7154,7 +7337,7 @@
               row.appendChild(
                 createChip(r, () => {
                   roleDropdown.removeOption(r);
-                })
+                }),
               );
             }
             bar.appendChild(row);
@@ -7166,7 +7349,7 @@
               row.appendChild(
                 createChip(a, () => {
                   testataArgomentoDropdown.removeOption(a);
-                })
+                }),
               );
             }
             bar.appendChild(row);
@@ -7178,7 +7361,7 @@
               row.appendChild(
                 createChip(tm, () => {
                   testataTipoMediaDropdown.removeOption(tm);
-                })
+                }),
               );
             }
             bar.appendChild(row);
@@ -7190,7 +7373,7 @@
               row.appendChild(
                 createChip(f, () => {
                   testataFrequenzaDropdown.removeOption(f);
-                })
+                }),
               );
             }
             bar.appendChild(row);
@@ -7202,7 +7385,7 @@
               row.appendChild(
                 createChip(d, () => {
                   testataDiffusioneDropdown.removeOption(d);
-                })
+                }),
               );
             }
             bar.appendChild(row);
@@ -7281,14 +7464,14 @@
       if (cardsGrid) {
         cardsGrid.addEventListener("click", (e) => {
           const removeFromListBtn = e.target?.closest?.(
-            ".card-remove-from-list[data-remove-from-list-jid]"
+            ".card-remove-from-list[data-remove-from-list-jid]",
           );
           const notesLink = e.target?.closest?.(".card-notes-open");
           const journalistsLink = e.target?.closest?.(
-            ".card-testata-journalists-open"
+            ".card-testata-journalists-open",
           );
           const testateLabelLink = e.target?.closest?.(
-            ".card-journalist-testate-open"
+            ".card-journalist-testate-open",
           );
           const testataLink = e.target?.closest?.(".testata-link");
           const journalistLink = e.target?.closest?.(".journalist-link");
@@ -7309,7 +7492,7 @@
             if (appState.view !== "mailing-list") return;
 
             const jid = removeFromListBtn.getAttribute(
-              "data-remove-from-list-jid"
+              "data-remove-from-list-jid",
             );
             if (!jid) return;
 
@@ -7317,7 +7500,7 @@
             if (!activeList || !Array.isArray(activeList.journalistIds)) return;
 
             activeList.journalistIds = (activeList.journalistIds || []).filter(
-              (x) => String(x || "").trim() !== String(jid || "").trim()
+              (x) => String(x || "").trim() !== String(jid || "").trim(),
             );
             saveAppState(appState);
 
