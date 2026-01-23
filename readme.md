@@ -12,14 +12,21 @@
 
 ## 23 gennaio 2026
 
-- [x] **primo allineamnto grafica tra app e landing page marketing**
+- [x] **modificata grafica**
+  - obiettivo: allineamento tra app e landing page marketing
+  - sostituito type
+  - modificato radius filtri e chips
+  - modificato background color nav sidebar
+  - modificato color active link nav sidebar
+  - sostituito logo
+  - modificato il blue dei link
 
 
 ## 21 gennaio 2026
 
-- [x] **condividi mailing list**
+- [x] **aggiunto funzionalità "condividi mailing list"**
   - ho aggiunto l'autore della mailing list, nel proto è una valore statico perché non ho sviluppato il concetto di user del programma, quindi tutte le mailing list sono create da @ugo
-- [x] **elimina mailing list in mailing list**
+- [x] **aggiunto funzionalità "elimina mailing list in mailing list"**
   - così lo user può eliminare una mailing list sia dalla lista delle mailing list che dalla mailing list stessa
 
 
