@@ -10,6 +10,11 @@
 - [ ] *filtro sede giornalista*
 - [ ] *nuove statistiche proposte per dashboard*
 
+## 23 gennaio 2026
+
+- [x] **primo allineamnto grafica tra app e landing page marketing**
+
+
 ## 21 gennaio 2026
 
 - [x] **condividi mailing list**

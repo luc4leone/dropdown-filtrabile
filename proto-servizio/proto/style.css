@@ -7,6 +7,8 @@
   --fs-xl: 16px;
   --fs-2xl: 18px;
 
+  --border-radius-xs: 2px;
+
   --white: #ffffff;
   --transparent: transparent;
 
@@ -21,7 +23,8 @@
   --grey-900: #334155; /* #333; */
   --grey-950: #1e293b; /* #111; */
 
-  --blue-500: #0255d9; /* #007bff; */
+  --blue-500: #0c53d4; /*#0255d9; /* #007bff; */
+  --blue-800: #263756;
   --red-600: #c62828;
   --yellow-200: #fff79c;
 
@@ -38,6 +41,7 @@ body {
   /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, "Apple Color Emoji", "Segoe UI Emoji";*/
   font-family: "Atkinson Hyperlegible Next", sans-serif;
+  font-family: "Schibsted Grotesk", sans-serif;
   margin: 0;
   padding: 0;
   background: var(--white);
@@ -88,7 +92,7 @@ body {
 .nav-sidebar {
   width: 102px;
   border-right: 1px solid var(--grey-200);
-  background: var(--grey-800);
+  background: var(--blue-800);
   box-sizing: border-box;
   display: flex;
   height: 100vh;
@@ -131,7 +135,7 @@ body {
   font-size: var(--fs-md);
   font-weight: 500;
   padding: 8px 8px;
-  border-radius: 8px;
+  border-radius: var(--border-radius-xs);
   text-align: center;
   line-height: 1.35;
   width: 100%;
@@ -169,7 +173,7 @@ body {
 }
 
 .nav-sidebar .nav-icon[data-icon="M__"] {
-  --nav-icon-url: url("icons/M__.svg");
+  --nav-icon-url: url("icons/M_.svg");
 }
 
 .nav-sidebar .nav-icon[data-icon="filter"] {
@@ -213,7 +217,8 @@ body {
 }
 
 .nav-sidebar a.is-active {
-  background: linear-gradient(90deg, #fff79c 24.74%, #334155 981.07%);
+  /*background: linear-gradient(90deg, #fff79c 24.74%, #334155 981.07%); */
+  background-color: var(--yellow-200);
   color: var(--grey-900);
   font-weight: 600;
 }
@@ -337,7 +342,7 @@ body {
 #viewFiltra .main-header {
   flex: 0 0 auto;
   position: relative;
-  padding-bottom: 10px;
+  padding-bottom: 4px;
 }
 
 #viewFiltra .main-header > div {
@@ -674,7 +679,7 @@ body.selection-panel-open .cards-grid {
 
 .card {
   border: 1px solid var(--grey-200);
-  border-radius: 12px;
+  border-radius: var(--border-radius-xs);
   padding: 14px 9px;
   background: var(--white);
   position: relative;
@@ -902,7 +907,7 @@ body[data-active-view="filtra"] .card-remove-from-list {
 
 .dropdown-input {
   border: 1px solid var(--grey-200);
-  border-radius: 8px;
+  border-radius: var(--border-radius-xs);
   padding: 8px 40px 8px 12px;
   display: flex;
   align-items: center;
@@ -931,7 +936,7 @@ body[data-active-view="filtra"] .card-remove-from-list {
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: var(--border-radius-xs);
   border: 1px solid var(--grey-300);
   background: var(--grey-100);
   font-size: var(--fs-md);
@@ -1027,7 +1032,7 @@ body[data-active-view="filtra"] .card-remove-from-list {
   position: relative;
   background: var(--white);
   border: 0;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 var(--border-radius-xs) var(--border-radius-xs);
   overflow: hidden;
   max-height: 0;
   z-index: 0;

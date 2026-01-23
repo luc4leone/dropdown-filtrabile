@@ -10,6 +10,12 @@
       href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -2424,7 +2430,8 @@
 
           this.list.classList.add("show");
           this.arrow.classList.add("rotated");
-          this.inputWrapper.style.borderRadius = "8px 8px 0 0";
+          this.inputWrapper.style.borderRadius =
+            "var(--border-radius-xs) var(--border-radius-xs) 0 0";
           // Force style/layout flush so the margin-bottom transition starts in sync
           // with the dropdown-list transition.
           this.list.getBoundingClientRect();
@@ -2435,7 +2442,7 @@
           this.isOpen = false;
           this.list.classList.remove("show");
           this.arrow.classList.remove("rotated");
-          this.inputWrapper.style.borderRadius = "8px";
+          this.inputWrapper.style.borderRadius = "var(--border-radius-xs)";
           this.selectedIndex = -1;
           this.updateAutocompleteHint("");
           this.updateReservedSpace();
