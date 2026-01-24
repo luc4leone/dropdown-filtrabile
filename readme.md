@@ -29,6 +29,8 @@
   - resi più scuri i testi dei valori dei campi (servizio giornalistico: mostre -> ora mostre è più scuro)
   - fixato regressione su color card note value
   - aggiunta ombreggiatura a cards
+- [x] **migliorato dettaglio di interaction**
+  - chevron ruota su controllo "ordina" in main, e split button in panel selezionati
 
 ## 23 gennaio 2026
 

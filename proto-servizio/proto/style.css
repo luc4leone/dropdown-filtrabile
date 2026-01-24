@@ -637,7 +637,12 @@ body {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 6px solid var(--grey-500);
+  transition: transform 0.18s ease;
   pointer-events: none;
+}
+
+.c-sort-select__trigger[aria-expanded="true"] + .c-sort-select__arrow {
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .dropdown-list.c-sort-select__menu {
@@ -1568,7 +1573,12 @@ body[data-active-view="filtra"] .card-remove-from-list {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 6px solid var(--grey-500);
+  transition: transform 0.18s ease;
   pointer-events: none;
+}
+
+.c-split-button__toggle[aria-expanded="true"] .c-split-button__arrow {
+  transform: rotate(180deg);
 }
 
 .dropdown-list.c-split-button__menu {
