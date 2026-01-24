@@ -33,7 +33,7 @@
             aria-current="page"
           >
             <span class="nav-icon" data-icon="filter" aria-hidden="true"></span>
-            <span>filtra</span><span>banca dati</span></a
+            <span>banca dati</span></a
           >
 
           <div class="nav-separator" aria-hidden="true"></div>
@@ -43,19 +43,25 @@
             <span>liste</span>
           </a>
 
-          <a href="#">
-            <span class="nav-icons" aria-hidden="true">
-              <span class="nav-icon" data-icon="campaign"></span>
-              <span>/</span>
-              <span class="nav-icon" data-icon="send"></span>
-            </span>
-            <span>comunicati</span><span>e spedizioni</span>
+          <a href="#comunicati" data-view="comunicati">
+            <span
+              class="nav-icon"
+              data-icon="campaign"
+              aria-hidden="true"
+            ></span>
+            <span>comunicati</span>
           </a>
-          <a href="#">
+
+          <a href="#spedizioni" data-view="spedizioni">
+            <span class="nav-icon" data-icon="send" aria-hidden="true"></span>
+            <span>spedizioni</span>
+          </a>
+
+          <a href="#progetti" data-view="progetti">
             <span class="nav-icon" data-icon="folder" aria-hidden="true"></span>
             <span>progetti</span>
           </a>
-          <a href="#">
+          <a href="#todos" data-view="todos">
             <span class="nav-icon" data-icon="task" aria-hidden="true"></span>
             <span>todos</span>
           </a>
@@ -573,14 +579,14 @@
               <div>
                 <div class="main-header-row">
                   <div class="main-header-left">
-                    <h1 class="main-title" id="mainTitle">Filtra Banca Dati</h1>
+                    <h1 class="main-title" id="mainTitle">Banca Dati</h1>
                     <span
                       class="pill"
                       id="mailingListCountPill"
                       style="display: none"
                     ></span>
                     <a href="#" class="testata-link" id="chooseDatabaseLink"
-                      >banca dati</a
+                      >configura</a
                     >
                     <div
                       class="mailing-list-actions"
@@ -887,7 +893,51 @@
           <main class="main">
             <div class="main-header">
               <div>
-                <h1 class="main-title">Mailing lists</h1>
+                <h1 class="main-title">Liste</h1>
+              </div>
+            </div>
+            <div class="muted">placeholder</div>
+          </main>
+        </div>
+
+        <div class="app-view" data-view="comunicati" id="viewComunicati">
+          <main class="main">
+            <div class="main-header">
+              <div>
+                <h1 class="main-title">Comunicati</h1>
+              </div>
+            </div>
+            <div class="muted">placeholder</div>
+          </main>
+        </div>
+
+        <div class="app-view" data-view="spedizioni" id="viewSpedizioni">
+          <main class="main">
+            <div class="main-header">
+              <div>
+                <h1 class="main-title">Spedizioni</h1>
+              </div>
+            </div>
+            <div class="muted">placeholder</div>
+          </main>
+        </div>
+
+        <div class="app-view" data-view="progetti" id="viewProgetti">
+          <main class="main">
+            <div class="main-header">
+              <div>
+                <h1 class="main-title">Progetti</h1>
+              </div>
+            </div>
+            <div class="muted">placeholder</div>
+          </main>
+        </div>
+
+        <div class="app-view" data-view="todos" id="viewTodos">
+          <main class="main">
+            <div class="main-header">
+              <div>
+                <h1 class="main-title">Todos</h1>
               </div>
             </div>
             <div class="muted">placeholder</div>
@@ -1298,6 +1348,10 @@
         "mailing-list",
         "dashboard",
         "mailing-lists",
+        "comunicati",
+        "spedizioni",
+        "progetti",
+        "todos",
       ]);
 
       function normalizeViewId(value) {
@@ -6756,7 +6810,7 @@
           if (isMailingListView && activeList) {
             mainTitleEl.textContent = activeList.name;
           } else {
-            mainTitleEl.textContent = "Filtra Banca Dati";
+            mainTitleEl.textContent = "Banca Dati";
           }
         }
 

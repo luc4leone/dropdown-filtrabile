@@ -12,19 +12,19 @@
   --white: #ffffff;
   --transparent: transparent;
 
-  --grey-050: #fcfcfd; /* #fafafa; */
-  --grey-080: #f8fafc; /* #f9f9f9; */
-  --grey-100: #f1f5f9; /* #f7f7f7; */
-  --grey-200: #e2e8f0; /* #e6e6e6; */
-  --grey-300: #cbd5e1; /* #cfcfcf; */
-  --grey-500: #94a3b8; /* #aaa; */
-  --grey-750: #64708b; /* #666; */
-  --grey-800: #475569; /* #555; */
-  --grey-900: #334155; /* #333; */
-  --grey-950: #1e293b; /* #111; */
+  --grey-050: hsl(219 20% 99%);
+  --grey-080: hsl(219 40% 98%);
+  --grey-100: hsl(219 40% 96%);
+  --grey-200: hsl(219 32% 91%);
+  --grey-300: hsl(219 27% 84%);
+  --grey-500: hsl(219 20% 65%);
+  --grey-750: hsl(219 16% 47%);
+  --grey-800: hsl(219 19% 35%);
+  --grey-900: hsl(219 25% 27%);
+  --grey-950: hsl(219 33% 17%);
 
-  --blue-500: #0c53d4; /*#0255d9; /* #007bff; */
-  --blue-800: #263756;
+  --blue-500: hsl(219 89% 44%);
+  --blue-800: hsl(219 39% 24%);
   --red-600: #c62828;
   --yellow-200: #fff79c;
 
@@ -51,6 +51,13 @@ body {
 .page {
   display: flex;
   min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: inherit;
 }
 
 .views {
@@ -408,7 +415,7 @@ body {
   gap: 12px;
   padding: 10px 12px;
   border: 1px solid var(--grey-200);
-  border-radius: 10px;
+  border-radius: var(--border-radius-xs);
   background: var(--white);
 }
 
@@ -605,7 +612,7 @@ body {
   align-items: center;
   gap: 8px;
   border: 1px solid var(--grey-200);
-  border-radius: 6px;
+  border-radius: var(--border-radius-xs);
   background: var(--white);
   padding: 5px 28px 5px 10px;
   line-height: 1.1;
@@ -639,6 +646,7 @@ body {
   top: calc(100% + 6px);
   min-width: 220px;
   z-index: 50;
+  border-radius: var(--border-radius-xs);
 }
 
 .dropdown-list.c-sort-select__menu .dropdown-item {
@@ -668,20 +676,31 @@ body {
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 14px !important;
+  row-gap: 14px !important;
+  column-gap: 14px !important;
   align-items: stretch;
 }
 
+#cardsGrid {
+  display: grid !important;
+  gap: 14px !important;
+  row-gap: 14px !important;
+  column-gap: 14px !important;
+}
+
 body.selection-panel-open .cards-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
 }
 
 .card {
   border: 1px solid var(--grey-200);
   border-radius: var(--border-radius-xs);
+  box-sizing: border-box;
   padding: 14px 9px;
   background: var(--white);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
   position: relative;
 }
 
@@ -697,6 +716,20 @@ body.selection-panel-open .cards-grid {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
   user-select: none;
   line-height: 1;
+}
+
+body[data-active-view="mailing-list"] .card-remove-from-list {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+body[data-active-view="mailing-list"] .card:hover .card-remove-from-list,
+body[data-active-view="mailing-list"]
+  .card:focus-within
+  .card-remove-from-list {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 body[data-active-view="filtra"] .card-remove-from-list {
@@ -766,6 +799,7 @@ body[data-active-view="filtra"] .card-remove-from-list {
   text-overflow: ellipsis;
   line-height: 1.25;
   min-height: calc(2 * 1.25em);
+  color: var(--grey-950);
 }
 
 .card-journalists {
@@ -826,12 +860,16 @@ body[data-active-view="filtra"] .card-remove-from-list {
 }
 
 .card-value {
-  color: var(--grey-900);
+  color: var(--grey-950);
   word-break: break-word;
 }
 
 .muted {
   color: var(--grey-750);
+}
+
+.card-note.muted {
+  color: var(--grey-950);
 }
 
 .highlight {
@@ -1503,13 +1541,13 @@ body[data-active-view="filtra"] .card-remove-from-list {
 
 .c-split-button__main {
   border-right: 0;
-  border-radius: 6px 0px 0px 6px;
+  border-radius: var(--border-radius-xs) 0px 0px var(--border-radius-xs);
   font-weight: 500;
   color: var(--blue-500);
 }
 
 .c-split-button__toggle {
-  border-radius: 0 6px 6px 0;
+  border-radius: 0 var(--border-radius-xs) var(--border-radius-xs) 0;
   padding: 5px 10px;
 }
 
@@ -1607,7 +1645,7 @@ body[data-active-view="filtra"] .card-remove-from-list {
   gap: 10px;
   padding: 8px 10px;
   border: 1px solid var(--grey-200);
-  border-radius: 10px;
+  border-radius: var(--border-radius-xs);
   background: var(--grey-050);
 }
 

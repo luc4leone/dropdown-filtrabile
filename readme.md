@@ -10,17 +10,35 @@
 - [ ] *filtro sede giornalista*
 - [ ] *nuove statistiche proposte per dashboard*
 
+## 24 gennaio 2026
+
+- [x] **reso il layout più fluido**
+  - ora all'allargarsi dello screen le cards per riga non si allargano più a dismisura, si allargano finchè c'è spazio per aggiungere un'altra card
+- [x] **modificato nome "filtra banca dati" in nav bar**
+  - modificato anche titolo e nome link per modificare la banca dati
+- [x] **separati in nav bar comunicati e spedizioni**
+- [x] **modificata interaction "rimuovi card" in lista**
+  - x in card appare on mouse over 
+- [x] **allineata grafica a landing page marketing**
+  - squadrato split button
+  - squadrato dropdown ordinamento cards
+  - squadrato chips selezionati
+  - squadrato in dashboard chips giornalisti in lista mailing list
+  - sostituito h in hsl di tutta la scala di grigi
+- [x] **migliorata grafica**
+  - resi più scuri i testi dei valori dei campi (servizio giornalistico: mostre -> ora mostre è più scuro)
+  - fixato regressione su color card note value
+  - aggiunta ombreggiatura a cards
+
 ## 23 gennaio 2026
 
-- [x] **modificata grafica**
-  - obiettivo: allineamento tra app e landing page marketing
+- [x] **allineata grafica a landing page marketing**
   - sostituito type
   - modificato radius filtri e chips
   - modificato background color nav sidebar
   - modificato color active link nav sidebar
   - sostituito logo
   - modificato il blue dei link
-
 
 ## 21 gennaio 2026
 
