@@ -14,7 +14,7 @@
   - non ovvio: cmd/enter -> ok, esc -> cancel in editor note e in input servizio
   - finite sezioni header, note, servizi, contatti diretti
     - todos:
-      - [x] valuta apri / chiudi sezioni, in particolare sezione  "note"
+      - [ ] valuta apri / chiudi sezioni, in particolare sezione  "note"
       - [ ] da "ok" a "aggiungi"
       - [x] fix width input, select, textarea
       - [x] sposta nome in header (togli titolo "giornalista")
