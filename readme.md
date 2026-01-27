@@ -12,9 +12,11 @@
 - [ ] *completa scheda giornalista*
   - adeguamento a UI in https://luc4leone.github.io/mediaddress-grafica/examples/index.html
   - non ovvio: cmd/enter -> ok, esc -> cancel in editor note e in input servizio
+  - finite sezioni header, note, servizi, contatti diretti
     - todos:
+      - [x] valuta apri / chiudi sezioni, in particolare sezione  "note"
       - [ ] da "ok" a "aggiungi"
-      - [ ] fix width input, select, textarea
+      - [x] fix width input, select, textarea
       - [x] sposta nome in header (togli titolo "giornalista")
       - [x] sposta ok annulla su stessa riga input
       - [x] nuovo stile sotto-sezione contatti diretti
