@@ -1,14 +1,29 @@
 # UX / UI Design M\_\_
 
-## _in progress_
-
-- [ ] *completa scheda giornalista*
+## _todo_
 - [ ] *completa scheda testata*
 - [ ] *suggerimenti AI*
 - [ ] *disegnare Account*
 - [ ] *mobile app*
 - [ ] *filtro sede giornalista*
 - [ ] *nuove statistiche proposte per dashboard*
+
+## _in progress_
+- [ ] *completa scheda giornalista*
+  - adeguamento a UI in https://luc4leone.github.io/mediaddress-grafica/examples/index.html
+  - non ovvio: cmd/enter -> ok, esc -> cancel in editor note e in input servizio
+    - todos:
+      - [ ] da "ok" a "aggiungi"
+      - [ ] fix width input, select, textarea
+      - [x] sposta nome in header (togli titolo "giornalista")
+      - [x] sposta ok annulla su stessa riga input
+      - [x] nuovo stile sotto-sezione contatti diretti
+      - [x] aggiungi split button per aggiungi lista / spedizione
+
+
+## 27 gennaio 2026
+
+- [x] **aumentato padding verticale link in nav bar**
 
 ## 24 gennaio 2026
 

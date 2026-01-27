@@ -961,7 +961,12 @@
     <div class="testata-overlay" id="testataOverlay" aria-hidden="true"></div>
     <aside class="testata-panel" id="testataPanel" aria-hidden="true">
       <div class="testata-panel-header">
-        <p class="testata-panel-title" id="testataPanelTitle">Testata</p>
+        <div
+          class="testata-panel-header-content"
+          id="testataPanelHeaderContent"
+        >
+          <p class="testata-panel-title" id="testataPanelTitle">Testata</p>
+        </div>
         <button
           type="button"
           class="testata-panel-close"
@@ -3047,6 +3052,88 @@
         j.ruolo = normalizeRole(j.ruolo);
       }
 
+      const normalizeText = (v) => String(v ?? "").trim();
+
+      const makeSecondPhone = (primary) => {
+        const s = normalizeText(primary);
+        if (!s) return "";
+        const m = s.match(/^(.*?)(\d)(\D*)$/);
+        if (!m) return `${s} 2`;
+        const head = m[1] ?? "";
+        const digit = m[2] ?? "0";
+        const tail = m[3] ?? "";
+        const next = (Number(digit) + 1) % 10;
+        return `${head}${next}${tail}`;
+      };
+
+      const makeSecondEmail = (primary) => {
+        const s = normalizeText(primary);
+        if (!s || !s.includes("@")) return "";
+        const [local, domain] = s.split("@");
+        const baseLocal = String(local || "").trim();
+        const baseDomain = String(domain || "").trim();
+        if (!baseLocal || !baseDomain) return "";
+        const suffix = baseLocal.includes("+") ? "ufficio" : "redazione";
+        return `${baseLocal}+${suffix}@${baseDomain}`;
+      };
+
+      const ensureProgramContacts = (j) => {
+        const legacyPhone = normalizeText(j?.telefono);
+        const legacyEmail = normalizeText(j?.email);
+
+        if (!Array.isArray(j.programPhones) || j.programPhones.length < 2) {
+          const first = legacyPhone;
+          let second = makeSecondPhone(first);
+          if (!second || second === first) second = `${first} 2`;
+          j.programPhones = [
+            { number: first, type: "cellulare", isPrimary: true },
+            { number: second, type: "cellulare ufficio", isPrimary: false },
+          ].filter((x) => normalizeText(x?.number).length > 0);
+        }
+
+        if (!Array.isArray(j.programEmails) || j.programEmails.length < 2) {
+          const first = legacyEmail;
+          let second = makeSecondEmail(first);
+          if (!second || second === first) second = `${first}`;
+          j.programEmails = [
+            { email: first, type: "mail diretta", isDefault: true },
+            { email: second, type: "mail redazione", isDefault: false },
+          ].filter((x) => normalizeText(x?.email).length > 0);
+        }
+
+        const isValidPreferred = (kind, pref) => {
+          if (!pref || typeof pref !== "object") return false;
+          const origin = String(pref.origin || "")
+            .trim()
+            .toLowerCase();
+          const index = Number(pref.index);
+          if (!Number.isFinite(index) || index < 0) return false;
+
+          if (origin === "program") {
+            const items = kind === "phone" ? j.programPhones : j.programEmails;
+            return Array.isArray(items) && index < items.length;
+          }
+
+          if (origin === "custom") {
+            const items = kind === "phone" ? j.customPhones : j.customEmails;
+            return Array.isArray(items) && index < items.length;
+          }
+
+          return false;
+        };
+
+        if (!isValidPreferred("phone", j.preferredPhone)) {
+          j.preferredPhone = { origin: "program", index: 0 };
+        }
+        if (!isValidPreferred("email", j.preferredEmail)) {
+          j.preferredEmail = { origin: "program", index: 0 };
+        }
+      };
+
+      for (const j of journalists) {
+        ensureProgramContacts(j);
+      }
+
       function normalizeTestataKey(value) {
         return String(value || "")
           .trim()
@@ -3630,6 +3717,9 @@
       const addToListConfirm = document.getElementById("addToListConfirm");
       const addToListError = document.getElementById("addToListError");
 
+      let addToListTargetJids = null;
+      let addToShipmentTargetJids = null;
+
       const addToShipmentModalOverlay = document.getElementById(
         "addToShipmentModalOverlay",
       );
@@ -3931,9 +4021,42 @@
         if (addToShipmentError) addToShipmentError.style.display = "none";
       };
 
-      function openAddToListModal() {
+      const clearAddToShipmentForm = () => {
+        if (addToShipmentDropdown?.isOpen) {
+          addToShipmentDropdown.close();
+        }
+        if (addToShipmentError) addToShipmentError.style.display = "none";
+      };
+
+      const centerModalToAnchor = (modalEl, anchorEl) => {
+        if (!modalEl || !anchorEl) return;
+        const r = anchorEl.getBoundingClientRect();
+        const modalW = modalEl.getBoundingClientRect()?.width || 0;
+        const pad = 20;
+        const minX = modalW ? modalW / 2 + pad : pad;
+        const maxX = modalW
+          ? window.innerWidth - modalW / 2 - pad
+          : window.innerWidth - pad;
+        const x0 = r.left + r.width / 2;
+        const x = Math.max(minX, Math.min(maxX, x0));
+        modalEl.style.left = `${x}px`;
+        modalEl.style.transform = "translateX(-50%)";
+      };
+
+      function openAddToListModal(opts) {
         if (!addToListModal || !addToListModalOverlay) return;
-        if (selectedJournalistOrder.length === 0) return;
+        const targetJids = Array.isArray(opts?.journalistIds)
+          ? opts.journalistIds
+              .map((x) => String(x || "").trim())
+              .filter(Boolean)
+          : null;
+        if (
+          selectedJournalistOrder.length === 0 &&
+          (!targetJids || !targetJids.length)
+        ) {
+          return;
+        }
+        addToListTargetJids = targetJids;
 
         closeAllFilterableDropdowns();
 
@@ -3944,6 +4067,12 @@
 
         if (addToListError) {
           addToListError.style.display = "none";
+        }
+
+        addToListModal.style.left = "";
+        addToListModal.style.transform = "";
+        if (opts?.anchorEl) {
+          centerModalToAnchor(addToListModal, opts.anchorEl);
         }
 
         addToListModalOverlay.classList.add("show");
@@ -3961,6 +4090,7 @@
         if (addToListDropdown?.isOpen) {
           addToListDropdown.close();
         }
+        addToListTargetJids = null;
         addToListModalOverlay.classList.remove("show");
         addToListModal.classList.remove("show");
         addToListModalOverlay.setAttribute("aria-hidden", "true");
@@ -3971,9 +4101,20 @@
         }
       }
 
-      function openAddToShipmentModal() {
+      function openAddToShipmentModal(opts) {
         if (!addToShipmentModal || !addToShipmentModalOverlay) return;
-        if (selectedJournalistOrder.length === 0) return;
+        const targetJids = Array.isArray(opts?.journalistIds)
+          ? opts.journalistIds
+              .map((x) => String(x || "").trim())
+              .filter(Boolean)
+          : null;
+        if (
+          selectedJournalistOrder.length === 0 &&
+          (!targetJids || !targetJids.length)
+        ) {
+          return;
+        }
+        addToShipmentTargetJids = targetJids;
 
         closeAllFilterableDropdowns();
 
@@ -3984,6 +4125,12 @@
 
         if (addToShipmentError) {
           addToShipmentError.style.display = "none";
+        }
+
+        addToShipmentModal.style.left = "";
+        addToShipmentModal.style.transform = "";
+        if (opts?.anchorEl) {
+          centerModalToAnchor(addToShipmentModal, opts.anchorEl);
         }
 
         addToShipmentModalOverlay.classList.add("show");
@@ -4032,6 +4179,7 @@
         if (addToShipmentDropdown?.isOpen) {
           addToShipmentDropdown.close();
         }
+        addToShipmentTargetJids = null;
         addToShipmentModalOverlay.classList.remove("show");
         addToShipmentModal.classList.remove("show");
         addToShipmentModalOverlay.setAttribute("aria-hidden", "true");
@@ -4305,11 +4453,42 @@
       function normalizeNotes(note) {
         if (Array.isArray(note)) {
           return note
-            .map((x) => String(x ?? "").trim())
+            .map((x) =>
+              typeof x === "object" && x && "text" in x
+                ? String(x.text ?? "").trim()
+                : String(x ?? "").trim(),
+            )
             .filter((x) => x.length > 0);
         }
         const s = String(note ?? "").trim();
         return s ? [s] : [];
+      }
+
+      function normalizeNoteItems(note) {
+        if (Array.isArray(note)) {
+          return note
+            .map((x) => {
+              if (typeof x === "object" && x) {
+                return {
+                  text: String(x.text ?? "").trim(),
+                  updatedAt: x.updatedAt ? String(x.updatedAt) : "",
+                };
+              }
+              return { text: String(x ?? "").trim(), updatedAt: "" };
+            })
+            .filter((x) => x.text.length > 0);
+        }
+
+        const s = String(note ?? "").trim();
+        return s ? [{ text: s, updatedAt: "" }] : [];
+      }
+
+      function formatNoteDate(value) {
+        const raw = String(value || "").trim();
+        if (!raw) return "n/d";
+        const d = new Date(raw);
+        if (Number.isNaN(d.getTime())) return "n/d";
+        return d.toLocaleDateString("it-IT");
       }
 
       function combineNotes(notesArr) {
@@ -4574,6 +4753,119 @@
         card.dataset.servizio = j.servizio;
         card.dataset.ruolo = j.ruolo;
 
+        const normalizeText = (v) => String(v ?? "").trim();
+
+        const pickProgramPhone = () => {
+          const items = Array.isArray(j?.programPhones) ? j.programPhones : [];
+          for (const it of items) {
+            if (it && typeof it === "object" && it.isPrimary) {
+              const v = normalizeText(it.number ?? it.tel ?? it.value);
+              if (v) return v;
+            }
+          }
+          const first = items.length
+            ? normalizeText(
+                items[0]?.number ??
+                  items[0]?.tel ??
+                  items[0]?.value ??
+                  items[0],
+              )
+            : "";
+          return first || normalizeText(j?.telefono);
+        };
+
+        const pickProgramEmail = () => {
+          const items = Array.isArray(j?.programEmails) ? j.programEmails : [];
+          for (const it of items) {
+            if (it && typeof it === "object" && it.isDefault) {
+              const v = normalizeText(it.email ?? it.value);
+              if (v) return v;
+            }
+          }
+          const first = items.length
+            ? normalizeText(items[0]?.email ?? items[0]?.value ?? items[0])
+            : "";
+          return first || normalizeText(j?.email);
+        };
+
+        const cardPhone = (() => {
+          const custom = Array.isArray(j?.customPhones) ? j.customPhones : [];
+          const at = (idx) =>
+            normalizeText(
+              custom?.[idx]?.number ??
+                custom?.[idx]?.tel ??
+                custom?.[idx]?.value ??
+                custom?.[idx],
+            );
+          const pref = j?.preferredPhone;
+          if (pref && pref.origin === "custom" && Number.isFinite(pref.index)) {
+            const v = at(pref.index);
+            if (v) return v;
+          }
+          if (
+            pref &&
+            pref.origin === "program" &&
+            Number.isFinite(pref.index)
+          ) {
+            const items = Array.isArray(j?.programPhones)
+              ? j.programPhones
+              : [];
+            const v = normalizeText(
+              items?.[pref.index]?.number ??
+                items?.[pref.index]?.tel ??
+                items?.[pref.index]?.value ??
+                items?.[pref.index],
+            );
+            if (v) return v;
+          }
+          for (const it of custom) {
+            if (it && typeof it === "object" && it.isPrimary) {
+              const v = normalizeText(it.number ?? it.tel ?? it.value);
+              if (v) return v;
+            }
+          }
+          const program = pickProgramPhone();
+          if (program) return program;
+          return at(0);
+        })();
+
+        const cardEmail = (() => {
+          const custom = Array.isArray(j?.customEmails) ? j.customEmails : [];
+          const at = (idx) =>
+            normalizeText(
+              custom?.[idx]?.email ?? custom?.[idx]?.value ?? custom?.[idx],
+            );
+          const pref = j?.preferredEmail;
+          if (pref && pref.origin === "custom" && Number.isFinite(pref.index)) {
+            const v = at(pref.index);
+            if (v) return v;
+          }
+          if (
+            pref &&
+            pref.origin === "program" &&
+            Number.isFinite(pref.index)
+          ) {
+            const items = Array.isArray(j?.programEmails)
+              ? j.programEmails
+              : [];
+            const v = normalizeText(
+              items?.[pref.index]?.email ??
+                items?.[pref.index]?.value ??
+                items?.[pref.index],
+            );
+            if (v) return v;
+          }
+          for (const it of custom) {
+            if (it && typeof it === "object" && it.isDefault) {
+              const v = normalizeText(it.email ?? it.value);
+              if (v) return v;
+            }
+          }
+          const program = pickProgramEmail();
+          if (program) return program;
+          return at(0);
+        })();
+
         const jid = getJournalistId(j);
         card.dataset.jid = jid;
         const isSelected = selectedJournalistIds.has(jid);
@@ -4674,10 +4966,10 @@
             j.servizio
           }</div></div>
           <div class="card-row"><div class="card-label">Telefono</div><div class="card-value">${
-            j.telefono
+            cardPhone
           }</div></div>
           <div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${
-            j.email
+            cardEmail
           }</div></div>
           <div class="card-row"><div class="card-label"><span class="card-journalist-testate-label" data-jid="${jid}">Testate</span></div><div class="card-value card-testate">${testatePreviewHtml}</div></div>
           <div class="card-row"><div class="card-label">${
@@ -4802,6 +5094,9 @@
       const testataOverlay = document.getElementById("testataOverlay");
       const testataPanel = document.getElementById("testataPanel");
       const testataPanelTitle = document.getElementById("testataPanelTitle");
+      const testataPanelHeaderContent = document.getElementById(
+        "testataPanelHeaderContent",
+      );
       const testataPanelBody = document.getElementById("testataPanelBody");
       const testataPanelClose = document.getElementById("testataPanelClose");
 
@@ -4890,6 +5185,8 @@
       function initSplitButtons() {
         const splitButtons = document.querySelectorAll("[data-split-button]");
         for (const split of splitButtons) {
+          if (split.hasAttribute("data-split-initialized")) continue;
+          split.setAttribute("data-split-initialized", "");
           const toggle = split.querySelector("[data-split-toggle]");
           const menu = split.querySelector("[data-split-menu]");
           if (!toggle || !menu) continue;
@@ -5119,7 +5416,11 @@
               ? list.journalistIds.map((x) => String(x || "").trim())
               : [],
           );
-          for (const jid of selectedJournalistOrder) {
+          const targets =
+            Array.isArray(addToListTargetJids) && addToListTargetJids.length
+              ? addToListTargetJids
+              : selectedJournalistOrder;
+          for (const jid of targets) {
             current.add(String(jid || "").trim());
           }
           list.journalistIds = Array.from(current).filter(Boolean);
@@ -5127,10 +5428,14 @@
           saveAppState(appState);
           closeAddToListModal();
 
-          selectedJournalistIds.clear();
-          selectedJournalistOrder.length = 0;
-          renderSelectedPanelList();
-          closeSelectedPanel();
+          const usedSnapshot =
+            Array.isArray(targets) && targets !== selectedJournalistOrder;
+          if (!usedSnapshot) {
+            selectedJournalistIds.clear();
+            selectedJournalistOrder.length = 0;
+            renderSelectedPanelList();
+            closeSelectedPanel();
+          }
           scheduleRender();
 
           openMailingListById(list.id);
@@ -5163,7 +5468,12 @@
               ? shipment.journalistIds.map((x) => String(x || "").trim())
               : [],
           );
-          for (const jid of selectedJournalistOrder) {
+          const targets =
+            Array.isArray(addToShipmentTargetJids) &&
+            addToShipmentTargetJids.length
+              ? addToShipmentTargetJids
+              : selectedJournalistOrder;
+          for (const jid of targets) {
             current.add(String(jid || "").trim());
           }
           shipment.journalistIds = Array.from(current).filter(Boolean);
@@ -5171,10 +5481,14 @@
           saveAppState(appState);
           closeAddToShipmentModal();
 
-          selectedJournalistIds.clear();
-          selectedJournalistOrder.length = 0;
-          renderSelectedPanelList();
-          closeSelectedPanel();
+          const usedSnapshot =
+            Array.isArray(targets) && targets !== selectedJournalistOrder;
+          if (!usedSnapshot) {
+            selectedJournalistIds.clear();
+            selectedJournalistOrder.length = 0;
+            renderSelectedPanelList();
+            closeSelectedPanel();
+          }
           scheduleRender();
         });
       }
@@ -5364,7 +5678,12 @@
       }
 
       function openTestataPanel(testata) {
-        testataPanelTitle.textContent = "Testata";
+        if (testataPanelTitle) testataPanelTitle.textContent = "Testata";
+        if (testataPanelHeaderContent) {
+          testataPanelHeaderContent.innerHTML = "";
+          if (testataPanelTitle)
+            testataPanelHeaderContent.appendChild(testataPanelTitle);
+        }
         testataPanelBody.innerHTML = "";
 
         const raw = String(testata || "").trim();
@@ -5386,7 +5705,8 @@
         if (!t) {
           testataPanelBody.textContent = `testata: ${testata}`;
         } else {
-          testataPanelTitle.textContent = String(t?.nome || "Testata");
+          if (testataPanelTitle)
+            testataPanelTitle.textContent = String(t?.nome || "Testata");
 
           const addRow = (labelText, valueNode) => {
             const row = document.createElement("div");
@@ -5586,7 +5906,12 @@
       }
 
       function openBancaDatiPanel() {
-        testataPanelTitle.textContent = "Banca dati";
+        if (testataPanelTitle) testataPanelTitle.textContent = "Banca dati";
+        if (testataPanelHeaderContent) {
+          testataPanelHeaderContent.innerHTML = "";
+          if (testataPanelTitle)
+            testataPanelHeaderContent.appendChild(testataPanelTitle);
+        }
         testataPanelBody.innerHTML = "";
 
         const empty = document.createElement("em");
@@ -5601,7 +5926,7 @@
       }
 
       function openJournalistPanel(journalistName) {
-        testataPanelTitle.textContent = "Giornalista";
+        if (testataPanelTitle) testataPanelTitle.textContent = "Giornalista";
         testataPanelBody.innerHTML = "";
 
         const fullNameKey = String(journalistName || "")
@@ -5626,11 +5951,14 @@
             "_",
           )}`;
 
+          const sheet = document.createElement("div");
+          sheet.className = "journalist-sheet";
+
+          const header = document.createElement("div");
+          header.className = "journalist-sheet__header";
+
           const titleRow = document.createElement("div");
-          titleRow.style.display = "flex";
-          titleRow.style.alignItems = "center";
-          titleRow.style.gap = "10px";
-          titleRow.style.marginBottom = "12px";
+          titleRow.className = "journalist-sheet__title-row";
 
           const select = document.createElement("input");
           select.type = "checkbox";
@@ -5659,91 +5987,1172 @@
           });
 
           const title = document.createElement("label");
+          title.className = "journalist-sheet__title";
           title.setAttribute("for", checkboxId);
-          title.style.fontWeight = "800";
-          title.style.cursor = "pointer";
           title.textContent = `${j.nome} ${j.cognome}`;
 
           titleRow.appendChild(select);
           titleRow.appendChild(title);
-          testataPanelBody.appendChild(titleRow);
 
-          const addRow = (labelText, valueNode) => {
-            const row = document.createElement("div");
-            row.className = "card-row";
+          const titleActions = document.createElement("span");
+          titleActions.className = "journalist-sheet__title-actions";
 
-            const label = document.createElement("div");
-            label.className = "card-label";
-            label.textContent = labelText;
+          const split = document.createElement("span");
+          split.className = "c-split-button c-split-button--menu-left";
+          split.setAttribute("data-split-button", "");
 
-            const value = document.createElement("div");
-            value.className = "card-value";
-            if (valueNode) {
-              value.appendChild(valueNode);
+          const splitMain = document.createElement("button");
+          splitMain.type = "button";
+          splitMain.className = "c-split-button__main c-link c-link--nav";
+          splitMain.textContent = "aggiungi a lista";
+          splitMain.setAttribute("data-split-action", "add-to-list");
+
+          const splitToggle = document.createElement("button");
+          splitToggle.type = "button";
+          splitToggle.className = "c-split-button__toggle";
+          splitToggle.setAttribute("data-split-toggle", "");
+          splitToggle.setAttribute("aria-haspopup", "listbox");
+          splitToggle.setAttribute("aria-expanded", "false");
+          splitToggle.innerHTML =
+            '<span class="c-split-button__arrow" aria-hidden="true"></span>';
+
+          const splitMenu = document.createElement("div");
+          splitMenu.className = "dropdown-list c-split-button__menu";
+          splitMenu.setAttribute("data-split-menu", "");
+          splitMenu.setAttribute("role", "listbox");
+          splitMenu.setAttribute("aria-hidden", "true");
+
+          const results = document.createElement("div");
+          results.className = "dropdown-results";
+
+          const item = document.createElement("div");
+          item.className = "dropdown-item";
+          item.setAttribute("role", "option");
+
+          const opt = document.createElement("a");
+          opt.href = "#";
+          opt.className = "c-link c-link--nav";
+          opt.textContent = "aggiungi a spedizione";
+          opt.setAttribute("data-split-action", "add-to-shipment");
+
+          item.appendChild(opt);
+          results.appendChild(item);
+          splitMenu.appendChild(results);
+
+          split.appendChild(splitMain);
+          split.appendChild(splitToggle);
+          split.appendChild(splitMenu);
+
+          titleActions.appendChild(split);
+          titleRow.appendChild(titleActions);
+
+          header.appendChild(titleRow);
+
+          const meta = document.createElement("div");
+          meta.className = "journalist-sheet__meta";
+
+          const metaDate = document.createElement("span");
+          metaDate.className = "t-value";
+          metaDate.textContent = "25/7/2025";
+
+          const metaText = document.createElement("span");
+          metaText.className = "t-label";
+          metaText.textContent = "aggiornamento M_";
+
+          meta.appendChild(metaDate);
+          meta.appendChild(metaText);
+
+          if (testataPanelHeaderContent) {
+            testataPanelHeaderContent.innerHTML = "";
+            testataPanelHeaderContent.appendChild(header);
+            testataPanelHeaderContent.appendChild(meta);
+          }
+
+          const grid = document.createElement("div");
+          grid.className = "journalist-sheet__grid";
+
+          const mainCol = document.createElement("div");
+          mainCol.className = "journalist-section";
+
+          const topicsSection = document.createElement("section");
+          topicsSection.className = "journalist-section";
+
+          topicsSection.setAttribute("data-journalist-topics", "");
+          topicsSection.setAttribute("data-jid", jid);
+
+          const topicsHeader = document.createElement("div");
+          topicsHeader.className = "journalist-section__header";
+
+          const topicsTitle = document.createElement("div");
+          topicsTitle.className = "journalist-section__title";
+
+          const topicsHeading = document.createElement("h3");
+          topicsHeading.className = "journalist-section__heading";
+          topicsHeading.textContent = "SERVIZI";
+
+          topicsTitle.appendChild(topicsHeading);
+
+          const addTopic = document.createElement("a");
+          addTopic.href = "#";
+          addTopic.className = "c-link c-link--action";
+          addTopic.textContent = "aggiungi servizio";
+          addTopic.setAttribute("data-topic-action", "add");
+
+          topicsTitle.appendChild(addTopic);
+          topicsHeader.appendChild(topicsTitle);
+
+          const topicsEditor = document.createElement("div");
+          topicsEditor.className = "journalist-topic-editor";
+          topicsEditor.setAttribute("data-topic-editor", "");
+          topicsEditor.hidden = true;
+
+          const topicsInput = document.createElement("input");
+          topicsInput.type = "text";
+          topicsInput.className = "journalist-topic-input";
+          topicsInput.placeholder = "servizio";
+          topicsInput.setAttribute("data-topic-input", "");
+          topicsInput.autocomplete = "off";
+
+          const topicsEditorActions = document.createElement("div");
+          topicsEditorActions.className = "journalist-topic-editor-actions";
+
+          const topicsOk = document.createElement("a");
+          topicsOk.href = "#";
+          topicsOk.className = "c-link c-link--action";
+          topicsOk.textContent = "ok";
+          topicsOk.setAttribute("data-topic-action", "ok");
+
+          const topicsCancel = document.createElement("a");
+          topicsCancel.href = "#";
+          topicsCancel.className = "c-link c-link--action";
+          topicsCancel.textContent = "annulla";
+          topicsCancel.setAttribute("data-topic-action", "cancel");
+
+          topicsEditorActions.appendChild(topicsOk);
+          topicsEditorActions.appendChild(topicsCancel);
+
+          topicsEditor.appendChild(topicsInput);
+          topicsEditor.appendChild(topicsEditorActions);
+
+          const topicsList = document.createElement("ul");
+          topicsList.className = "journalist-topic-list";
+          topicsList.setAttribute("data-topic-list", "");
+
+          const normalizeCustomServices = (v) => {
+            if (Array.isArray(v)) {
+              return v
+                .map((x) => {
+                  if (typeof x === "object" && x) {
+                    return {
+                      name: String(
+                        x.name ?? x.servizio ?? x.value ?? "",
+                      ).trim(),
+                    };
+                  }
+                  return { name: String(x ?? "").trim() };
+                })
+                .filter((x) => x.name.length > 0);
             }
-
-            row.appendChild(label);
-            row.appendChild(value);
-            testataPanelBody.appendChild(row);
+            return [];
           };
 
-          const ruolo = document.createElement("span");
-          ruolo.textContent = String(j.ruolo || "");
-          addRow("Ruolo", ruolo);
+          const renderTopics = () => {
+            topicsList.innerHTML = "";
 
-          const servizio = document.createElement("span");
-          servizio.textContent = String(j.servizio || "");
-          addRow("Servizio giornalistico", servizio);
-
-          const telefono = document.createElement("span");
-          telefono.textContent = String(j.telefono || "");
-          addRow("Telefono", telefono);
-
-          const email = document.createElement("span");
-          email.textContent = String(j.email || "");
-          addRow("E-mail", email);
-
-          const testateWrap = document.createElement("div");
-          const testate = getJournalistTestate(j);
-          if (!testate.length) {
-            const empty = document.createElement("span");
-            empty.className = "muted";
-            empty.textContent = "n/d";
-            testateWrap.appendChild(empty);
-          } else {
-            for (let i = 0; i < testate.length; i++) {
-              const tname = testate[i];
-              const a = document.createElement("a");
-              a.href = "#";
-              a.className = "testata-link";
-              a.textContent = tname;
-              a.setAttribute("data-testata", tname);
-              testateWrap.appendChild(a);
-              if (i < testate.length - 1) {
-                testateWrap.appendChild(document.createTextNode(" • "));
-              }
-            }
-          }
-          addRow("Testate", testateWrap);
-
-          const notesArr = normalizeNotes(j.note);
-          const notesWrap = document.createElement("div");
-          if (!notesArr.length) {
-            const empty = document.createElement("div");
-            empty.className = "muted";
-            empty.textContent = "nessuna nota";
-            notesWrap.appendChild(empty);
-          } else {
-            const ul = document.createElement("ul");
-            ul.className = "notes-modal-list";
-            for (const n of notesArr) {
+            const baseService = String(j?.servizio || "").trim();
+            const custom = normalizeCustomServices(j?.customServices);
+            for (let i = 0; i < custom.length; i++) {
+              const item = custom[i];
               const li = document.createElement("li");
-              li.textContent = String(n || "");
-              ul.appendChild(li);
+              li.className = "journalist-topic-item";
+              li.setAttribute("data-topic-index", String(i));
+
+              const row = document.createElement("div");
+              row.className = "journalist-topic-row";
+
+              const name = document.createElement("span");
+              name.textContent = item.name;
+
+              const actions = document.createElement("span");
+              actions.className = "journalist-topic-actions";
+
+              const edit = document.createElement("a");
+              edit.href = "#";
+              edit.className = "c-link c-link--action";
+              edit.textContent = "modifica";
+              edit.setAttribute("data-topic-action", "edit");
+
+              const remove = document.createElement("a");
+              remove.href = "#";
+              remove.className = "c-link c-link--action";
+              remove.textContent = "rimuovi";
+              remove.setAttribute("data-topic-action", "remove");
+
+              actions.appendChild(edit);
+              actions.appendChild(remove);
+
+              row.appendChild(name);
+              row.appendChild(actions);
+
+              li.appendChild(row);
+              topicsList.appendChild(li);
             }
-            notesWrap.appendChild(ul);
+
+            if (baseService) {
+              const li = document.createElement("li");
+              li.className = "journalist-topic-item";
+
+              const row = document.createElement("div");
+              row.className = "journalist-topic-row";
+
+              const name = document.createElement("span");
+              name.textContent = baseService;
+
+              const inText = document.createElement("span");
+              inText.textContent = "in";
+
+              const testataName = String(j?.testata || "").trim();
+              if (testataName) {
+                const link = document.createElement("a");
+                link.href = "#";
+                link.className = "c-link c-link--nav testata-link";
+                link.textContent = testataName;
+                link.setAttribute("data-testata", testataName);
+
+                row.appendChild(name);
+                row.appendChild(inText);
+                row.appendChild(link);
+              } else {
+                row.appendChild(name);
+              }
+
+              li.appendChild(row);
+              topicsList.appendChild(li);
+            }
+
+            if (!baseService && custom.length === 0) {
+              const li = document.createElement("li");
+              li.className = "journalist-topic-item";
+              li.innerHTML = '<span class="muted">n/d</span>';
+              topicsList.appendChild(li);
+            }
+          };
+
+          renderTopics();
+
+          topicsSection.appendChild(topicsHeader);
+          topicsSection.appendChild(topicsEditor);
+          topicsSection.appendChild(topicsList);
+
+          const contactsSection = document.createElement("section");
+          contactsSection.className = "journalist-section";
+
+          contactsSection.setAttribute("data-journalist-contacts", "");
+          contactsSection.setAttribute("data-jid", jid);
+
+          const contactsHeader = document.createElement("div");
+          contactsHeader.className = "journalist-section__header";
+
+          const contactsHeading = document.createElement("h3");
+          contactsHeading.className = "journalist-section__heading";
+          contactsHeading.textContent = "CONTATTI DIRETTI";
+
+          contactsHeader.appendChild(contactsHeading);
+
+          const contactsGroups = document.createElement("div");
+          contactsGroups.className = "journalist-contacts";
+
+          const makeGroupHeader = (labelText, actionText, kind) => {
+            const h = document.createElement("div");
+            h.className = "journalist-contact-group__header";
+
+            const label = document.createElement("span");
+            label.className = "journalist-contact-group__label";
+            label.textContent = labelText;
+
+            const add = document.createElement("a");
+            add.href = "#";
+            add.className = "c-link c-link--action";
+            add.textContent = actionText;
+            add.setAttribute("data-contact-action", "add");
+            add.setAttribute("data-contact-kind", kind);
+
+            h.appendChild(label);
+            h.appendChild(add);
+            return h;
+          };
+
+          const makeEditorActions = (kind) => {
+            const actions = document.createElement("div");
+            actions.className = "journalist-contact-editor-actions";
+
+            const ok = document.createElement("a");
+            ok.href = "#";
+            ok.className = "c-link c-link--action";
+            ok.textContent = "ok";
+            ok.setAttribute("data-contact-action", "ok");
+            ok.setAttribute("data-contact-kind", kind);
+
+            const cancel = document.createElement("a");
+            cancel.href = "#";
+            cancel.className = "c-link c-link--action";
+            cancel.textContent = "annulla";
+            cancel.setAttribute("data-contact-action", "cancel");
+            cancel.setAttribute("data-contact-kind", kind);
+
+            actions.appendChild(ok);
+            actions.appendChild(cancel);
+            return actions;
+          };
+
+          const normalizeArr = (v) => (Array.isArray(v) ? v : []);
+          const normalizeText = (v) => String(v ?? "").trim();
+
+          const isPreferred = (kind, origin, index) => {
+            const pref =
+              kind === "phone" ? j?.preferredPhone : j?.preferredEmail;
+            return (
+              pref &&
+              pref.origin === origin &&
+              Number.isFinite(pref.index) &&
+              pref.index === index
+            );
+          };
+
+          const makeTestataLink = () => {
+            const testataName = normalizeText(j?.testata);
+            if (!testataName) return null;
+            const link = document.createElement("a");
+            link.href = "#";
+            link.className = "c-link c-link--nav testata-link";
+            link.textContent = testataName;
+            link.setAttribute("data-testata", testataName);
+            return link;
+          };
+
+          const telGroup = document.createElement("div");
+          telGroup.className = "journalist-contact-group";
+          telGroup.setAttribute("data-contact-group-kind", "phone");
+
+          const telEditor = document.createElement("div");
+          telEditor.className = "journalist-contact-editor";
+          telEditor.hidden = true;
+          telEditor.setAttribute("data-contact-editor", "");
+          telEditor.setAttribute("data-contact-kind", "phone");
+
+          const telType = document.createElement("select");
+          telType.className = "journalist-contact-select";
+          telType.setAttribute("data-contact-select", "");
+          telType.setAttribute("data-contact-kind", "phone");
+          for (const opt of [
+            "cellulare",
+            "cellulare ufficio",
+            "fisso",
+            "fisso ufficio",
+          ]) {
+            const o = document.createElement("option");
+            o.value = opt;
+            o.textContent = opt;
+            telType.appendChild(o);
           }
-          addRow("Note", notesWrap);
+
+          const telInput = document.createElement("input");
+          telInput.type = "text";
+          telInput.className = "journalist-contact-input";
+          telInput.placeholder = "telefono";
+          telInput.autocomplete = "off";
+          telInput.setAttribute("data-contact-input", "");
+          telInput.setAttribute("data-contact-kind", "phone");
+
+          telEditor.appendChild(telType);
+          telEditor.appendChild(telInput);
+          telEditor.appendChild(makeEditorActions("phone"));
+
+          const telList = document.createElement("table");
+          telList.className = "journalist-contact-table";
+          telList.setAttribute("data-contact-list", "");
+          telList.setAttribute("data-contact-kind", "phone");
+
+          const renderTel = () => {
+            telList.innerHTML = "";
+            const colgroup = document.createElement("colgroup");
+            const col1 = document.createElement("col");
+            col1.style.width = "16ch";
+            const col2 = document.createElement("col");
+            col2.style.width = "16ch";
+            const col3 = document.createElement("col");
+            col3.style.width = "16ch";
+            const col4 = document.createElement("col");
+            col4.style.width = "12ch";
+            colgroup.appendChild(col1);
+            colgroup.appendChild(col2);
+            colgroup.appendChild(col3);
+            colgroup.appendChild(col4);
+            telList.appendChild(colgroup);
+            const tbody = document.createElement("tbody");
+            telList.appendChild(tbody);
+            const custom = normalizeArr(j.customPhones)
+              .map((x) => ({
+                number: normalizeText(x?.number ?? x?.tel ?? x?.value ?? x),
+                type: normalizeText(x?.type ?? x?.kind ?? ""),
+                isPrimary: Boolean(x?.isPrimary),
+              }))
+              .filter((x) => x.number.length > 0);
+
+            for (let i = 0; i < custom.length; i++) {
+              const it = custom[i];
+              const tr = document.createElement("tr");
+              tr.setAttribute("data-contact-kind", "phone");
+              tr.setAttribute("data-contact-index", String(i));
+
+              const tdNumber = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-value";
+                s.textContent = it.number;
+                tdNumber.appendChild(s);
+              }
+
+              const tdType = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-label";
+                s.textContent = it.type || "cellulare";
+                tdType.appendChild(s);
+              }
+
+              const tdTestata = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-text";
+                s.textContent = "";
+                tdTestata.appendChild(s);
+              }
+
+              const preferred = document.createElement("a");
+              preferred.href = "#";
+              preferred.className = `journalist-contact-preferred c-link c-link--action${
+                isPreferred("phone", "custom", i) ? " is-active" : ""
+              }`;
+              preferred.textContent = "predefinito";
+              preferred.setAttribute("data-contact-action", "set-primary");
+              preferred.setAttribute("data-contact-kind", "phone");
+              preferred.setAttribute("data-contact-origin", "custom");
+
+              const edit = document.createElement("a");
+              edit.href = "#";
+              edit.className = "c-link c-link--action";
+              edit.textContent = "modifica";
+              edit.setAttribute("data-contact-action", "edit");
+              edit.setAttribute("data-contact-kind", "phone");
+
+              const remove = document.createElement("a");
+              remove.href = "#";
+              remove.className = "c-link c-link--action";
+              remove.textContent = "rimuovi";
+              remove.setAttribute("data-contact-action", "remove");
+              remove.setAttribute("data-contact-kind", "phone");
+
+              const tdPreferred = document.createElement("td");
+              tdPreferred.appendChild(preferred);
+
+              const actions = document.createElement("span");
+              actions.className = "journalist-contact-row-actions";
+              actions.appendChild(edit);
+              actions.appendChild(remove);
+              tdPreferred.appendChild(actions);
+
+              tr.appendChild(tdNumber);
+              tr.appendChild(tdType);
+              tr.appendChild(tdTestata);
+              tr.appendChild(tdPreferred);
+              tbody.appendChild(tr);
+            }
+
+            const programItemsRaw = normalizeArr(j?.programPhones);
+            const programItems = programItemsRaw
+              .map((x) => ({
+                number: normalizeText(x?.number ?? x?.tel ?? x?.value ?? x),
+                type: normalizeText(x?.type ?? x?.kind ?? ""),
+              }))
+              .filter((x) => x.number.length > 0);
+            if (programItems.length === 0) {
+              const v = normalizeText(j?.telefono);
+              if (v) programItems.push({ number: v, type: "cellulare" });
+            }
+            for (let pi = 0; pi < programItems.length; pi++) {
+              const it = programItems[pi];
+              const tr = document.createElement("tr");
+
+              const tdNumber = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-value";
+                s.textContent = it.number;
+                tdNumber.appendChild(s);
+              }
+
+              const tdType = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-label";
+                s.textContent = it.type || "cellulare";
+                tdType.appendChild(s);
+              }
+
+              const preferred = document.createElement("a");
+              preferred.href = "#";
+              preferred.className = `journalist-contact-preferred c-link c-link--action${
+                isPreferred("phone", "program", pi) ? " is-active" : ""
+              }`;
+              preferred.textContent = "predefinito";
+              preferred.setAttribute("data-contact-action", "set-primary");
+              preferred.setAttribute("data-contact-kind", "phone");
+              preferred.setAttribute("data-contact-origin", "program");
+              preferred.setAttribute("data-contact-program-index", String(pi));
+
+              const tdTestata = document.createElement("td");
+              const link = makeTestataLink();
+              if (link) {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-text";
+                s.appendChild(link);
+                tdTestata.appendChild(s);
+              } else {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-text";
+                s.textContent = "";
+                tdTestata.appendChild(s);
+              }
+              const tdPreferred = document.createElement("td");
+              tdPreferred.appendChild(preferred);
+
+              tr.appendChild(tdNumber);
+              tr.appendChild(tdType);
+              tr.appendChild(tdTestata);
+              tr.appendChild(tdPreferred);
+              tbody.appendChild(tr);
+            }
+
+            if (programItems.length === 0 && custom.length === 0) {
+              const tr = document.createElement("tr");
+              const td = document.createElement("td");
+              td.colSpan = 4;
+              td.innerHTML = '<span class="muted">n/d</span>';
+              tr.appendChild(td);
+              tbody.appendChild(tr);
+            }
+
+            j.customPhones = custom;
+          };
+
+          renderTel();
+
+          telGroup.appendChild(makeGroupHeader("Tel", "aggiungi tel", "phone"));
+          telGroup.appendChild(telEditor);
+          telGroup.appendChild(telList);
+
+          const emailGroup = document.createElement("div");
+          emailGroup.className = "journalist-contact-group";
+          emailGroup.setAttribute("data-contact-group-kind", "email");
+
+          const emailEditor = document.createElement("div");
+          emailEditor.className = "journalist-contact-editor";
+          emailEditor.hidden = true;
+          emailEditor.setAttribute("data-contact-editor", "");
+          emailEditor.setAttribute("data-contact-kind", "email");
+
+          const emailInput = document.createElement("input");
+          emailInput.type = "text";
+          emailInput.className = "journalist-contact-input";
+          emailInput.placeholder = "email";
+          emailInput.autocomplete = "off";
+          emailInput.setAttribute("data-contact-input", "");
+          emailInput.setAttribute("data-contact-kind", "email");
+
+          emailEditor.appendChild(emailInput);
+          emailEditor.appendChild(makeEditorActions("email"));
+
+          const emailList = document.createElement("table");
+          emailList.className = "journalist-contact-table";
+          emailList.setAttribute("data-contact-list", "");
+          emailList.setAttribute("data-contact-kind", "email");
+
+          const renderEmail = () => {
+            emailList.innerHTML = "";
+            const colgroup = document.createElement("colgroup");
+            const col1 = document.createElement("col");
+            col1.style.width = "18ch";
+            const col2 = document.createElement("col");
+            col2.style.width = "16ch";
+            const col3 = document.createElement("col");
+            col3.style.width = "16ch";
+            const col4 = document.createElement("col");
+            col4.style.width = "12ch";
+            colgroup.appendChild(col1);
+            colgroup.appendChild(col2);
+            colgroup.appendChild(col3);
+            colgroup.appendChild(col4);
+            emailList.appendChild(colgroup);
+            const tbody = document.createElement("tbody");
+            emailList.appendChild(tbody);
+            const custom = normalizeArr(j.customEmails)
+              .map((x) => ({
+                email: normalizeText(x?.email ?? x?.value ?? x),
+                type: normalizeText(x?.type ?? ""),
+                isDefault: Boolean(x?.isDefault),
+              }))
+              .filter((x) => x.email.length > 0);
+
+            for (let i = 0; i < custom.length; i++) {
+              const it = custom[i];
+              const tr = document.createElement("tr");
+              tr.setAttribute("data-contact-kind", "email");
+              tr.setAttribute("data-contact-index", String(i));
+
+              const tdEmail = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-value";
+                s.textContent = it.email;
+                tdEmail.appendChild(s);
+              }
+
+              const tdType = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-label";
+                s.textContent = it.type || "mail diretta";
+                tdType.appendChild(s);
+              }
+
+              const tdTestata = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-text";
+                s.textContent = "";
+                tdTestata.appendChild(s);
+              }
+
+              const preferred = document.createElement("a");
+              preferred.href = "#";
+              preferred.className = `journalist-contact-preferred c-link c-link--action${
+                isPreferred("email", "custom", i) ? " is-active" : ""
+              }`;
+              preferred.textContent = "predefinito";
+              preferred.setAttribute("data-contact-action", "set-default");
+              preferred.setAttribute("data-contact-kind", "email");
+              preferred.setAttribute("data-contact-origin", "custom");
+
+              const edit = document.createElement("a");
+              edit.href = "#";
+              edit.className = "c-link c-link--action";
+              edit.textContent = "modifica";
+              edit.setAttribute("data-contact-action", "edit");
+              edit.setAttribute("data-contact-kind", "email");
+
+              const remove = document.createElement("a");
+              remove.href = "#";
+              remove.className = "c-link c-link--action";
+              remove.textContent = "rimuovi";
+              remove.setAttribute("data-contact-action", "remove");
+              remove.setAttribute("data-contact-kind", "email");
+
+              const tdPreferred = document.createElement("td");
+              tdPreferred.appendChild(preferred);
+
+              const actions = document.createElement("span");
+              actions.className = "journalist-contact-row-actions";
+              actions.appendChild(edit);
+              actions.appendChild(remove);
+              tdPreferred.appendChild(actions);
+
+              tr.appendChild(tdEmail);
+              tr.appendChild(tdType);
+              tr.appendChild(tdTestata);
+              tr.appendChild(tdPreferred);
+              tbody.appendChild(tr);
+            }
+
+            const programItemsRaw = normalizeArr(j?.programEmails);
+            const programItems = programItemsRaw
+              .map((x) => ({
+                email: normalizeText(x?.email ?? x?.value ?? x),
+                type: normalizeText(x?.type ?? ""),
+              }))
+              .filter((x) => x.email.length > 0);
+            if (programItems.length === 0) {
+              const v = normalizeText(j?.email);
+              if (v) programItems.push({ email: v, type: "mail diretta" });
+            }
+            for (let pi = 0; pi < programItems.length; pi++) {
+              const it = programItems[pi];
+              const tr = document.createElement("tr");
+
+              const tdEmail = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-value";
+                s.textContent = it.email;
+                tdEmail.appendChild(s);
+              }
+
+              const tdType = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-label";
+                s.textContent = it.type || "mail diretta";
+                tdType.appendChild(s);
+              }
+
+              const preferred = document.createElement("a");
+              preferred.href = "#";
+              preferred.className = `journalist-contact-preferred c-link c-link--action${
+                isPreferred("email", "program", pi) ? " is-active" : ""
+              }`;
+              preferred.textContent = "predefinito";
+              preferred.setAttribute("data-contact-action", "set-default");
+              preferred.setAttribute("data-contact-kind", "email");
+              preferred.setAttribute("data-contact-origin", "program");
+              preferred.setAttribute("data-contact-program-index", String(pi));
+
+              const tdTestata = document.createElement("td");
+              const link = makeTestataLink();
+              if (link) {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-text";
+                s.appendChild(link);
+                tdTestata.appendChild(s);
+              } else {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-text";
+                s.textContent = "";
+                tdTestata.appendChild(s);
+              }
+              const tdPreferred = document.createElement("td");
+              tdPreferred.appendChild(preferred);
+
+              tr.appendChild(tdEmail);
+              tr.appendChild(tdType);
+              tr.appendChild(tdTestata);
+              tr.appendChild(tdPreferred);
+              tbody.appendChild(tr);
+            }
+
+            if (programItems.length === 0 && custom.length === 0) {
+              const tr = document.createElement("tr");
+              const td = document.createElement("td");
+              td.colSpan = 4;
+              td.innerHTML = '<span class="muted">n/d</span>';
+              tr.appendChild(td);
+              tbody.appendChild(tr);
+            }
+
+            j.customEmails = custom;
+          };
+
+          renderEmail();
+
+          emailGroup.appendChild(
+            makeGroupHeader("Email", "aggiungi email", "email"),
+          );
+          emailGroup.appendChild(emailEditor);
+          emailGroup.appendChild(emailList);
+
+          const socialGroup = document.createElement("div");
+          socialGroup.className = "journalist-contact-group";
+          socialGroup.setAttribute("data-contact-group-kind", "social");
+
+          const socialEditor = document.createElement("div");
+          socialEditor.className = "journalist-contact-editor";
+          socialEditor.hidden = true;
+          socialEditor.setAttribute("data-contact-editor", "");
+          socialEditor.setAttribute("data-contact-kind", "social");
+
+          const socialType = document.createElement("select");
+          socialType.className = "journalist-contact-select";
+          socialType.setAttribute("data-contact-select", "");
+          socialType.setAttribute("data-contact-kind", "social");
+          for (const opt of ["facebook", "x", "instagram"]) {
+            const o = document.createElement("option");
+            o.value = opt;
+            o.textContent = opt;
+            socialType.appendChild(o);
+          }
+
+          const socialInput = document.createElement("input");
+          socialInput.type = "text";
+          socialInput.className = "journalist-contact-input";
+          socialInput.placeholder = "social";
+          socialInput.autocomplete = "off";
+          socialInput.setAttribute("data-contact-input", "");
+          socialInput.setAttribute("data-contact-kind", "social");
+
+          socialEditor.appendChild(socialType);
+          socialEditor.appendChild(socialInput);
+          socialEditor.appendChild(makeEditorActions("social"));
+
+          const socialList = document.createElement("table");
+          socialList.className = "journalist-contact-table";
+          socialList.setAttribute("data-contact-list", "");
+          socialList.setAttribute("data-contact-kind", "social");
+
+          const renderSocial = () => {
+            socialList.innerHTML = "";
+            const tbody = document.createElement("tbody");
+            socialList.appendChild(tbody);
+            const custom = normalizeArr(j.customSocials)
+              .map((x) => ({
+                url: normalizeText(x?.url ?? x?.value ?? x),
+                type: normalizeText(x?.type ?? ""),
+              }))
+              .filter((x) => x.url.length > 0);
+
+            for (let i = 0; i < custom.length; i++) {
+              const it = custom[i];
+              const tr = document.createElement("tr");
+              tr.setAttribute("data-contact-kind", "social");
+              tr.setAttribute("data-contact-index", String(i));
+
+              const tdUrl = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-value";
+                s.textContent = it.url;
+                tdUrl.appendChild(s);
+              }
+              const tdType = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-label";
+                s.textContent = it.type || "x";
+                tdType.appendChild(s);
+              }
+
+              const edit = document.createElement("a");
+              edit.href = "#";
+              edit.className = "c-link c-link--action";
+              edit.textContent = "modifica";
+              edit.setAttribute("data-contact-action", "edit");
+              edit.setAttribute("data-contact-kind", "social");
+
+              const remove = document.createElement("a");
+              remove.href = "#";
+              remove.className = "c-link c-link--action";
+              remove.textContent = "rimuovi";
+              remove.setAttribute("data-contact-action", "remove");
+              remove.setAttribute("data-contact-kind", "social");
+
+              const actions = document.createElement("span");
+              actions.className = "journalist-contact-row-actions";
+              actions.appendChild(edit);
+              actions.appendChild(remove);
+              tdUrl.appendChild(actions);
+
+              tr.appendChild(tdUrl);
+              tr.appendChild(tdType);
+              tbody.appendChild(tr);
+            }
+
+            const program = normalizeText(j?.social);
+            if (program) {
+              const tr = document.createElement("tr");
+              const tdUrl = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-value";
+                s.textContent = program;
+                tdUrl.appendChild(s);
+              }
+              const tdType = document.createElement("td");
+              {
+                const s = document.createElement("span");
+                s.className = "journalist-contact-cell t-label";
+                s.textContent = "x";
+                tdType.appendChild(s);
+              }
+              tr.appendChild(tdUrl);
+              tr.appendChild(tdType);
+              tbody.appendChild(tr);
+            }
+
+            if (!program && custom.length === 0) {
+              const tr = document.createElement("tr");
+              const td = document.createElement("td");
+              td.colSpan = 2;
+              td.innerHTML = '<span class="muted">n/d</span>';
+              tr.appendChild(td);
+              tbody.appendChild(tr);
+            }
+
+            j.customSocials = custom;
+          };
+
+          renderSocial();
+
+          socialGroup.appendChild(
+            makeGroupHeader("Social", "aggiungi social", "social"),
+          );
+          socialGroup.appendChild(socialEditor);
+          socialGroup.appendChild(socialList);
+
+          contactsGroups.appendChild(telGroup);
+          contactsGroups.appendChild(emailGroup);
+          contactsGroups.appendChild(socialGroup);
+
+          contactsSection.appendChild(contactsHeader);
+          contactsSection.appendChild(contactsGroups);
+
+          const redazioniSection = document.createElement("section");
+          redazioniSection.className = "journalist-section";
+          redazioniSection.innerHTML = `
+            <div class="journalist-section__header">
+              <div class="journalist-section__title">
+                <h3 class="journalist-section__heading">REDAZIONI</h3>
+                <span class="muted">con cui collabora</span>
+                <a href="#" class="c-link c-link--action">aggiungi redazione</a>
+              </div>
+            </div>
+            <ul class="journalist-list">
+              <li>
+                <a href="#" class="testata-link journalist-list__title">Corriere Motori</a>
+                <div class="muted">Redattore — Motori, Auto/Automotive, Moto</div>
+                <div class="muted">tel redazione: 02 3423123</div>
+              </li>
+              <li>
+                <a href="#" class="testata-link journalist-list__title">Auto oggi</a>
+                <div class="muted">Redattore — Design, Auto/Automotive</div>
+                <div class="muted">tel redazione: 06 3423123</div>
+              </li>
+            </ul>
+          `;
+
+          const articlesSection = document.createElement("section");
+          articlesSection.className = "journalist-section";
+          articlesSection.innerHTML = `
+            <div class="journalist-section__header">
+              <h3 class="journalist-section__heading">ARTICOLI</h3>
+              <a href="#" class="c-link c-link--action">frequenza</a>
+            </div>
+            <ul class="journalist-list">
+              <li>
+                <a href="#" class="c-link c-link--nav journalist-list__title">Auto elettriche: il mercato italiano cresce del 30% nel 2024</a>
+                <div class="muted">31/12/2024</div>
+              </li>
+              <li>
+                <a href="#" class="c-link c-link--nav journalist-list__title">Nuova mobilità elettrica: la sfida delle batterie al litio</a>
+                <div class="muted">15/11/2024</div>
+              </li>
+            </ul>
+          `;
+
+          const mailingSection = document.createElement("section");
+          mailingSection.className = "journalist-section";
+          mailingSection.innerHTML = `
+            <div class="journalist-section__header">
+              <div class="journalist-section__title">
+                <h3 class="journalist-section__heading">MAILING LISTS</h3>
+                <span class="muted">a cui appartiene</span>
+              </div>
+            </div>
+            <ul class="journalist-list">
+              <li>
+                <a href="#" class="testata-link journalist-list__title">Automotive e mobilità sostenibile</a>
+                <div class="journalist-list__meta-row">
+                  <span class="muted">modificata il 19-5-2025</span>
+                  <span class="muted">877 giornalisti / 134 testate</span>
+                </div>
+              </li>
+              <li>
+                <a href="#" class="testata-link journalist-list__title">Innovazione tecnologica - settore auto</a>
+                <div class="journalist-list__meta-row">
+                  <span class="muted">modificata il 2-5-2025</span>
+                  <span class="muted">542 giornalisti / 89 testate</span>
+                </div>
+              </li>
+            </ul>
+          `;
+
+          const shipmentsSection = document.createElement("section");
+          shipmentsSection.className = "journalist-section";
+          shipmentsSection.innerHTML = `
+            <div class="journalist-section__header">
+              <h3 class="journalist-section__heading">SPEDIZIONI RICEVUTE</h3>
+            </div>
+            <ul class="journalist-list">
+              <li>
+                <a href="#" class="c-link c-link--nav journalist-list__title">CS - Lancio nuova gamma SUV elettrici premium</a>
+                <div class="journalist-list__meta-row">
+                  <span class="muted">Spedita il 8-5-2025</span>
+                  <span class="c-pill">aperta</span>
+                </div>
+              </li>
+              <li>
+                <a href="#" class="c-link c-link--nav journalist-list__title">CS - Record vendite auto ibride nel primo trimestre 2025</a>
+                <div class="journalist-list__meta-row">
+                  <span class="muted">Spedita il 15-3-2025</span>
+                  <span class="c-pill">chiusa</span>
+                </div>
+              </li>
+            </ul>
+          `;
+
+          const notesSection = document.createElement("section");
+          notesSection.className = "journalist-section";
+
+          notesSection.setAttribute("data-journalist-notes", "");
+          notesSection.setAttribute("data-jid", jid);
+
+          const notesHeader = document.createElement("div");
+          notesHeader.className = "journalist-section__header";
+
+          const notesTitle = document.createElement("div");
+          notesTitle.className = "journalist-section__title";
+
+          const notesHeading = document.createElement("h3");
+          notesHeading.className = "journalist-section__heading";
+          notesHeading.textContent = "NOTE";
+
+          notesTitle.appendChild(notesHeading);
+
+          const addNote = document.createElement("a");
+          addNote.href = "#";
+          addNote.className = "c-link c-link--action";
+          addNote.textContent = "aggiungi nota";
+          addNote.setAttribute("data-note-action", "add");
+
+          notesTitle.appendChild(addNote);
+          notesHeader.appendChild(notesTitle);
+
+          const notesList = document.createElement("div");
+          notesList.className = "journalist-notes";
+          notesList.setAttribute("data-note-list", "");
+
+          const notesEditor = document.createElement("div");
+          notesEditor.className = "journalist-note-editor";
+          notesEditor.setAttribute("data-note-editor", "");
+          notesEditor.hidden = true;
+
+          const notesTextarea = document.createElement("textarea");
+          notesTextarea.className = "journalist-note-textarea";
+          notesTextarea.setAttribute("data-note-textarea", "");
+
+          const notesEditorActions = document.createElement("div");
+          notesEditorActions.className = "journalist-note-editor-actions";
+
+          const notesOk = document.createElement("a");
+          notesOk.href = "#";
+          notesOk.className = "c-link c-link--action";
+          notesOk.textContent = "ok";
+          notesOk.setAttribute("data-note-action", "ok");
+
+          const notesCancel = document.createElement("a");
+          notesCancel.href = "#";
+          notesCancel.className = "c-link c-link--action";
+          notesCancel.textContent = "annulla";
+          notesCancel.setAttribute("data-note-action", "cancel");
+
+          notesEditorActions.appendChild(notesOk);
+          notesEditorActions.appendChild(notesCancel);
+
+          notesEditor.appendChild(notesTextarea);
+          notesEditor.appendChild(notesEditorActions);
+
+          const renderNotesList = (arr) => {
+            notesList.innerHTML = "";
+            const items = normalizeNoteItems(arr);
+            if (!items.length) {
+              const empty = document.createElement("div");
+              empty.className = "muted";
+              empty.textContent = "nessuna nota";
+              notesList.appendChild(empty);
+              return;
+            }
+
+            for (let i = 0; i < items.length; i++) {
+              const itemText = items[i]?.text;
+              const itemDate = items[i]?.updatedAt;
+              const item = document.createElement("div");
+              item.className = "journalist-note-item";
+              item.setAttribute("data-note-index", String(i));
+
+              const text = document.createElement("div");
+              text.className = "journalist-note-text t-value";
+              text.textContent = itemText;
+
+              const footer = document.createElement("div");
+              footer.className = "journalist-note-footer";
+
+              const date = document.createElement("span");
+              date.className = "t-value";
+              date.textContent = formatNoteDate(itemDate);
+
+              const edit = document.createElement("a");
+              edit.href = "#";
+              edit.className = "c-link c-link--action";
+              edit.textContent = "modifica";
+              edit.setAttribute("data-note-action", "edit");
+
+              const remove = document.createElement("a");
+              remove.href = "#";
+              remove.className = "c-link c-link--action";
+              remove.textContent = "rimuovi";
+              remove.setAttribute("data-note-action", "remove");
+
+              footer.appendChild(date);
+              footer.appendChild(edit);
+              footer.appendChild(remove);
+
+              item.appendChild(text);
+              item.appendChild(footer);
+
+              notesList.appendChild(item);
+            }
+          };
+
+          renderNotesList(j?.note);
+
+          notesSection.appendChild(notesHeader);
+          notesSection.appendChild(notesEditor);
+          notesSection.appendChild(notesList);
+
+          mainCol.appendChild(notesSection);
+          mainCol.appendChild(topicsSection);
+          mainCol.appendChild(contactsSection);
+          mainCol.appendChild(redazioniSection);
+          mainCol.appendChild(articlesSection);
+          mainCol.appendChild(mailingSection);
+          mainCol.appendChild(shipmentsSection);
+
+          grid.appendChild(mainCol);
+
+          sheet.appendChild(grid);
+
+          testataPanelBody.appendChild(sheet);
+
+          initSplitButtons();
+          split.addEventListener(
+            "split-button-action",
+            (e) => {
+              const action = e?.detail?.action;
+              if (!action) return;
+              if (action === "add-to-list") {
+                openAddToListModal({
+                  anchorEl: testataPanel,
+                  journalistIds: [jid],
+                });
+                return;
+              }
+              if (action === "add-to-shipment") {
+                openAddToShipmentModal({
+                  anchorEl: testataPanel,
+                  journalistIds: [jid],
+                });
+                return;
+              }
+            },
+            true,
+          );
         }
 
         testataOverlay.classList.add("show");
@@ -5774,7 +7183,7 @@
         notesModalTitle.textContent = `Note — ${titleName}`;
         notesModalBody.innerHTML = "";
 
-        const notesArr = normalizeNotes(j?.note);
+        const notesArr = normalizeNoteItems(j?.note);
         const list = document.createElement("ul");
         list.className = "notes-modal-list";
 
@@ -5785,7 +7194,7 @@
         } else {
           for (const n of notesArr) {
             const li = document.createElement("li");
-            li.textContent = n;
+            li.textContent = n.text;
             list.appendChild(li);
           }
         }
@@ -5955,7 +7364,7 @@
         notesModalTitle.textContent = `Note — ${titleName}`;
         notesModalBody.innerHTML = "";
 
-        const notesArr = normalizeNotes(t?.note);
+        const notesArr = normalizeNoteItems(t?.note);
         const list = document.createElement("ul");
         list.className = "notes-modal-list";
 
@@ -5966,7 +7375,7 @@
         } else {
           for (const n of notesArr) {
             const li = document.createElement("li");
-            li.textContent = n;
+            li.textContent = n.text;
             list.appendChild(li);
           }
         }
@@ -6396,6 +7805,1234 @@
 
       if (testataPanelBody) {
         testataPanelBody.addEventListener("click", (e) => {
+          const noteActionEl = e.target?.closest?.("[data-note-action]");
+          if (noteActionEl) {
+            const notesSection = noteActionEl.closest(
+              "[data-journalist-notes]",
+            );
+            if (notesSection) {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const action = String(
+                noteActionEl.getAttribute("data-note-action") || "",
+              )
+                .trim()
+                .toLowerCase();
+              const jid = String(
+                notesSection.getAttribute("data-jid") || "",
+              ).trim();
+              if (!jid) return;
+
+              const j = (journalists || []).find(
+                (x) => getJournalistId(x) === jid,
+              );
+              if (!j) return;
+
+              const editor = notesSection.querySelector("[data-note-editor]");
+              const textarea = notesSection.querySelector(
+                "[data-note-textarea]",
+              );
+              const list = notesSection.querySelector("[data-note-list]");
+              if (!editor || !textarea || !list) return;
+
+              const getNoteItems = () => normalizeNoteItems(j.note);
+              const setNoteItems = (arr) => {
+                const clean = (arr || [])
+                  .map((x) => ({
+                    text: String(x?.text ?? "").trim(),
+                    updatedAt: x?.updatedAt ? String(x.updatedAt) : "",
+                  }))
+                  .filter((x) => x.text.length > 0);
+                j.note = clean;
+              };
+
+              const renderList = () => {
+                const items = getNoteItems();
+                list.innerHTML = "";
+                if (!items.length) {
+                  const empty = document.createElement("div");
+                  empty.className = "muted";
+                  empty.textContent = "nessuna nota";
+                  list.appendChild(empty);
+                  return;
+                }
+
+                for (let i = 0; i < items.length; i++) {
+                  const itemText = items[i]?.text;
+                  const itemDate = items[i]?.updatedAt;
+                  const item = document.createElement("div");
+                  item.className = "journalist-note-item";
+                  item.setAttribute("data-note-index", String(i));
+
+                  const text = document.createElement("div");
+                  text.className = "journalist-note-text t-value";
+                  text.textContent = itemText;
+
+                  const footer = document.createElement("div");
+                  footer.className = "journalist-note-footer";
+
+                  const date = document.createElement("span");
+                  date.className = "t-value";
+                  date.textContent = formatNoteDate(itemDate);
+
+                  const edit = document.createElement("a");
+                  edit.href = "#";
+                  edit.className = "c-link c-link--action";
+                  edit.textContent = "modifica";
+                  edit.setAttribute("data-note-action", "edit");
+
+                  const remove = document.createElement("a");
+                  remove.href = "#";
+                  remove.className = "c-link c-link--action";
+                  remove.textContent = "rimuovi";
+                  remove.setAttribute("data-note-action", "remove");
+
+                  footer.appendChild(date);
+                  footer.appendChild(edit);
+                  footer.appendChild(remove);
+
+                  item.appendChild(text);
+                  item.appendChild(footer);
+
+                  list.appendChild(item);
+                }
+              };
+
+              const showEditor = (mode, index, value) => {
+                editor.hidden = false;
+                editor.setAttribute("data-note-mode", mode);
+                if (typeof index === "number") {
+                  editor.setAttribute("data-note-edit-index", String(index));
+                } else {
+                  editor.removeAttribute("data-note-edit-index");
+                }
+                textarea.value = String(value ?? "");
+                textarea.focus();
+              };
+
+              const hideEditor = () => {
+                editor.hidden = true;
+                editor.removeAttribute("data-note-mode");
+                editor.removeAttribute("data-note-edit-index");
+                textarea.value = "";
+              };
+
+              if (action === "add") {
+                showEditor("add", null, "");
+                return;
+              }
+
+              const noteItem = noteActionEl.closest("[data-note-index]");
+              const indexRaw = noteItem?.getAttribute?.("data-note-index");
+              const index = indexRaw != null ? Number(indexRaw) : NaN;
+
+              if (action === "edit") {
+                if (!Number.isFinite(index)) return;
+                const items = getNoteItems();
+                showEditor("edit", index, items[index]?.text ?? "");
+                return;
+              }
+
+              if (action === "remove") {
+                if (!Number.isFinite(index)) return;
+                const items = getNoteItems();
+                items.splice(index, 1);
+                setNoteItems(items);
+                hideEditor();
+                renderList();
+                return;
+              }
+
+              if (action === "cancel") {
+                hideEditor();
+                return;
+              }
+
+              if (action === "ok") {
+                const value = String(textarea.value ?? "").trim();
+                if (!value) {
+                  hideEditor();
+                  return;
+                }
+
+                const mode = String(editor.getAttribute("data-note-mode") || "")
+                  .trim()
+                  .toLowerCase();
+                const items = getNoteItems();
+                const nowIso = new Date().toISOString();
+
+                if (mode === "edit") {
+                  const editIndex = Number(
+                    editor.getAttribute("data-note-edit-index"),
+                  );
+                  if (Number.isFinite(editIndex) && editIndex >= 0) {
+                    const prev = items[editIndex] || {
+                      text: "",
+                      updatedAt: "",
+                    };
+                    items[editIndex] = {
+                      text: value,
+                      updatedAt: nowIso || prev.updatedAt,
+                    };
+                  }
+                } else {
+                  items.unshift({ text: value, updatedAt: nowIso });
+                }
+
+                setNoteItems(items);
+                hideEditor();
+                renderList();
+                return;
+              }
+            }
+          }
+
+          const topicActionEl = e.target?.closest?.("[data-topic-action]");
+          if (topicActionEl) {
+            const topicsSection = topicActionEl.closest(
+              "[data-journalist-topics]",
+            );
+            if (topicsSection) {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const action = String(
+                topicActionEl.getAttribute("data-topic-action") || "",
+              )
+                .trim()
+                .toLowerCase();
+              const jid = String(
+                topicsSection.getAttribute("data-jid") || "",
+              ).trim();
+              if (!jid) return;
+
+              const j = (journalists || []).find(
+                (x) => getJournalistId(x) === jid,
+              );
+              if (!j) return;
+
+              const editor = topicsSection.querySelector("[data-topic-editor]");
+              const input = topicsSection.querySelector("[data-topic-input]");
+              const list = topicsSection.querySelector("[data-topic-list]");
+              if (!editor || !input || !list) return;
+
+              const normalizeCustom = (v) => {
+                if (!Array.isArray(v)) return [];
+                return v
+                  .map((x) => {
+                    if (typeof x === "object" && x) {
+                      return {
+                        name: String(
+                          x.name ?? x.servizio ?? x.value ?? "",
+                        ).trim(),
+                      };
+                    }
+                    return { name: String(x ?? "").trim() };
+                  })
+                  .filter((x) => x.name.length > 0);
+              };
+
+              const setCustom = (arr) => {
+                const clean = (arr || [])
+                  .map((x) => ({ name: String(x?.name ?? "").trim() }))
+                  .filter((x) => x.name.length > 0);
+                j.customServices = clean;
+              };
+
+              const renderList = () => {
+                const baseService = String(j?.servizio || "").trim();
+                const custom = normalizeCustom(j?.customServices);
+                list.innerHTML = "";
+
+                for (let i = 0; i < custom.length; i++) {
+                  const item = custom[i];
+                  const li = document.createElement("li");
+                  li.className = "journalist-topic-item";
+                  li.setAttribute("data-topic-index", String(i));
+
+                  const row = document.createElement("div");
+                  row.className = "journalist-topic-row";
+
+                  const name = document.createElement("span");
+                  name.textContent = item.name;
+
+                  const actions = document.createElement("span");
+                  actions.className = "journalist-topic-actions";
+
+                  const edit = document.createElement("a");
+                  edit.href = "#";
+                  edit.className = "c-link c-link--action";
+                  edit.textContent = "modifica";
+                  edit.setAttribute("data-topic-action", "edit");
+
+                  const remove = document.createElement("a");
+                  remove.href = "#";
+                  remove.className = "c-link c-link--action";
+                  remove.textContent = "rimuovi";
+                  remove.setAttribute("data-topic-action", "remove");
+
+                  actions.appendChild(edit);
+                  actions.appendChild(remove);
+
+                  row.appendChild(name);
+                  row.appendChild(actions);
+
+                  li.appendChild(row);
+                  list.appendChild(li);
+                }
+
+                if (baseService) {
+                  const li = document.createElement("li");
+                  li.className = "journalist-topic-item";
+
+                  const row = document.createElement("div");
+                  row.className = "journalist-topic-row";
+
+                  const name = document.createElement("span");
+                  name.textContent = baseService;
+
+                  const inText = document.createElement("span");
+                  inText.textContent = "in";
+
+                  const testataName = String(j?.testata || "").trim();
+                  if (testataName) {
+                    const link = document.createElement("a");
+                    link.href = "#";
+                    link.className = "c-link c-link--nav testata-link";
+                    link.textContent = testataName;
+                    link.setAttribute("data-testata", testataName);
+
+                    row.appendChild(name);
+                    row.appendChild(inText);
+                    row.appendChild(link);
+                  } else {
+                    row.appendChild(name);
+                  }
+
+                  li.appendChild(row);
+                  list.appendChild(li);
+                }
+
+                if (!baseService && custom.length === 0) {
+                  const li = document.createElement("li");
+                  li.className = "journalist-topic-item";
+                  li.innerHTML = '<span class="muted">n/d</span>';
+                  list.appendChild(li);
+                }
+              };
+
+              const showEditor = (mode, index, value) => {
+                editor.hidden = false;
+                editor.setAttribute("data-topic-mode", mode);
+                if (typeof index === "number") {
+                  editor.setAttribute("data-topic-edit-index", String(index));
+                } else {
+                  editor.removeAttribute("data-topic-edit-index");
+                }
+                input.value = String(value ?? "");
+                input.focus();
+              };
+
+              const hideEditor = () => {
+                editor.hidden = true;
+                editor.removeAttribute("data-topic-mode");
+                editor.removeAttribute("data-topic-edit-index");
+                input.value = "";
+              };
+
+              if (action === "add") {
+                showEditor("add", null, "");
+                return;
+              }
+
+              const topicItem = topicActionEl.closest("[data-topic-index]");
+              const indexRaw = topicItem?.getAttribute?.("data-topic-index");
+              const index = indexRaw != null ? Number(indexRaw) : NaN;
+
+              if (action === "edit") {
+                if (!Number.isFinite(index)) return;
+                const custom = normalizeCustom(j?.customServices);
+                showEditor("edit", index, custom[index]?.name ?? "");
+                return;
+              }
+
+              if (action === "remove") {
+                if (!Number.isFinite(index)) return;
+                const custom = normalizeCustom(j?.customServices);
+                custom.splice(index, 1);
+                setCustom(custom);
+                hideEditor();
+                renderList();
+                return;
+              }
+
+              if (action === "cancel") {
+                hideEditor();
+                return;
+              }
+
+              if (action === "ok") {
+                const value = String(input.value ?? "").trim();
+                if (!value) {
+                  hideEditor();
+                  return;
+                }
+
+                const mode = String(
+                  editor.getAttribute("data-topic-mode") || "",
+                )
+                  .trim()
+                  .toLowerCase();
+                const custom = normalizeCustom(j?.customServices);
+
+                if (mode === "edit") {
+                  const editIndex = Number(
+                    editor.getAttribute("data-topic-edit-index"),
+                  );
+                  if (Number.isFinite(editIndex) && editIndex >= 0) {
+                    custom[editIndex] = { name: value };
+                  }
+                } else {
+                  custom.unshift({ name: value });
+                }
+
+                setCustom(custom);
+                hideEditor();
+                renderList();
+                return;
+              }
+            }
+          }
+
+          const contactActionEl = e.target?.closest?.("[data-contact-action]");
+          if (contactActionEl) {
+            const contactsSection = contactActionEl.closest(
+              "[data-journalist-contacts]",
+            );
+            if (contactsSection) {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const action = String(
+                contactActionEl.getAttribute("data-contact-action") || "",
+              )
+                .trim()
+                .toLowerCase();
+              const kind = String(
+                contactActionEl.getAttribute("data-contact-kind") || "",
+              )
+                .trim()
+                .toLowerCase();
+              const jid = String(
+                contactsSection.getAttribute("data-jid") || "",
+              ).trim();
+              if (!jid || !kind) return;
+
+              const j = (journalists || []).find(
+                (x) => getJournalistId(x) === jid,
+              );
+              if (!j) return;
+
+              const group = contactsSection.querySelector(
+                `[data-contact-group-kind="${kind}"]`,
+              );
+              if (!group) return;
+
+              const editor = group.querySelector(
+                `[data-contact-editor][data-contact-kind="${kind}"]`,
+              );
+              const list = group.querySelector(
+                `[data-contact-list][data-contact-kind="${kind}"]`,
+              );
+              if (!editor || !list) return;
+
+              const input = editor.querySelector(
+                `[data-contact-input][data-contact-kind="${kind}"]`,
+              );
+              const select = editor.querySelector(
+                `[data-contact-select][data-contact-kind="${kind}"]`,
+              );
+              const testataName = String(j?.testata || "").trim();
+
+              const normalizeText = (v) => String(v ?? "").trim();
+
+              const setPreferred = (origin, index) => {
+                if (kind === "phone") {
+                  const items = Array.isArray(j.customPhones)
+                    ? j.customPhones
+                    : [];
+                  for (let i = 0; i < items.length; i++) {
+                    const it = items[i];
+                    if (it && typeof it === "object") it.isPrimary = false;
+                  }
+                  if (origin === "custom" && Number.isFinite(index)) {
+                    if (items[index] && typeof items[index] === "object") {
+                      items[index].isPrimary = true;
+                    }
+                  }
+                  j.customPhones = items;
+                  j.preferredPhone = { origin, index };
+                  return;
+                }
+                if (kind === "email") {
+                  const items = Array.isArray(j.customEmails)
+                    ? j.customEmails
+                    : [];
+                  for (let i = 0; i < items.length; i++) {
+                    const it = items[i];
+                    if (it && typeof it === "object") it.isDefault = false;
+                  }
+                  if (origin === "custom" && Number.isFinite(index)) {
+                    if (items[index] && typeof items[index] === "object") {
+                      items[index].isDefault = true;
+                    }
+                  }
+                  j.customEmails = items;
+                  j.preferredEmail = { origin, index };
+                }
+              };
+
+              const render = () => {
+                list.innerHTML = "";
+
+                const makeColGroup = () => {
+                  const colgroup = document.createElement("colgroup");
+                  const c1 = document.createElement("col");
+                  const c2 = document.createElement("col");
+                  const c3 = document.createElement("col");
+                  const c4 = document.createElement("col");
+                  if (kind === "phone") {
+                    c1.style.width = "16ch";
+                    c2.style.width = "16ch";
+                    c3.style.width = "16ch";
+                    c4.style.width = "12ch";
+                  } else if (kind === "email") {
+                    c1.style.width = "18ch";
+                    c2.style.width = "16ch";
+                    c3.style.width = "16ch";
+                    c4.style.width = "12ch";
+                  }
+                  colgroup.appendChild(c1);
+                  colgroup.appendChild(c2);
+                  colgroup.appendChild(c3);
+                  colgroup.appendChild(c4);
+                  return colgroup;
+                };
+
+                if (kind === "phone" || kind === "email") {
+                  list.appendChild(makeColGroup());
+                }
+
+                const makeTestataLink = () => {
+                  if (!testataName) return null;
+                  const link = document.createElement("a");
+                  link.href = "#";
+                  link.className = "c-link c-link--nav testata-link";
+                  link.textContent = testataName;
+                  link.setAttribute("data-testata", testataName);
+                  return link;
+                };
+
+                if (kind === "phone") {
+                  const custom = (
+                    Array.isArray(j.customPhones) ? j.customPhones : []
+                  )
+                    .map((x) => ({
+                      number: normalizeText(
+                        x?.number ?? x?.tel ?? x?.value ?? x,
+                      ),
+                      type: normalizeText(x?.type ?? x?.kind ?? ""),
+                      isPrimary: Boolean(x?.isPrimary),
+                    }))
+                    .filter((x) => x.number.length > 0);
+                  j.customPhones = custom;
+
+                  const tbody = document.createElement("tbody");
+                  list.appendChild(tbody);
+
+                  for (let i = 0; i < custom.length; i++) {
+                    const it = custom[i];
+                    const tr = document.createElement("tr");
+                    tr.setAttribute("data-contact-kind", "phone");
+                    tr.setAttribute("data-contact-index", String(i));
+
+                    const tdNumber = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-value";
+                      s.textContent = it.number;
+                      tdNumber.appendChild(s);
+                    }
+                    const tdType = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-label";
+                      s.textContent = it.type || "cellulare";
+                      tdType.appendChild(s);
+                    }
+                    const tdTestata = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-text";
+                      s.textContent = "";
+                      tdTestata.appendChild(s);
+                    }
+
+                    const preferred = document.createElement("a");
+                    preferred.href = "#";
+                    preferred.className = `journalist-contact-preferred c-link c-link--action${
+                      j?.preferredPhone?.origin === "custom" &&
+                      j?.preferredPhone?.index === i
+                        ? " is-active"
+                        : ""
+                    }`;
+                    preferred.textContent = "predefinito";
+                    preferred.setAttribute(
+                      "data-contact-action",
+                      "set-primary",
+                    );
+                    preferred.setAttribute("data-contact-kind", "phone");
+                    preferred.setAttribute("data-contact-origin", "custom");
+
+                    const edit = document.createElement("a");
+                    edit.href = "#";
+                    edit.className = "c-link c-link--action";
+                    edit.textContent = "modifica";
+                    edit.setAttribute("data-contact-action", "edit");
+                    edit.setAttribute("data-contact-kind", "phone");
+
+                    const remove = document.createElement("a");
+                    remove.href = "#";
+                    remove.className = "c-link c-link--action";
+                    remove.textContent = "rimuovi";
+                    remove.setAttribute("data-contact-action", "remove");
+                    remove.setAttribute("data-contact-kind", "phone");
+
+                    const tdPreferred = document.createElement("td");
+                    tdPreferred.appendChild(preferred);
+
+                    const actions = document.createElement("span");
+                    actions.className = "journalist-contact-row-actions";
+                    actions.appendChild(edit);
+                    actions.appendChild(remove);
+                    tdPreferred.appendChild(actions);
+
+                    tr.appendChild(tdNumber);
+                    tr.appendChild(tdType);
+                    tr.appendChild(tdTestata);
+                    tr.appendChild(tdPreferred);
+                    tbody.appendChild(tr);
+                  }
+
+                  const programItemsRaw = Array.isArray(j?.programPhones)
+                    ? j.programPhones
+                    : [];
+                  const programItems = programItemsRaw
+                    .map((x) => ({
+                      number: normalizeText(
+                        x?.number ?? x?.tel ?? x?.value ?? x,
+                      ),
+                      type: normalizeText(x?.type ?? x?.kind ?? ""),
+                    }))
+                    .filter((x) => x.number.length > 0);
+                  if (programItems.length === 0) {
+                    const v = normalizeText(j?.telefono);
+                    if (v) programItems.push({ number: v, type: "cellulare" });
+                  }
+                  for (let pi = 0; pi < programItems.length; pi++) {
+                    const it = programItems[pi];
+                    const tr = document.createElement("tr");
+
+                    const tdNumber = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-value";
+                      s.textContent = it.number;
+                      tdNumber.appendChild(s);
+                    }
+                    const tdType = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-label";
+                      s.textContent = it.type || "cellulare";
+                      tdType.appendChild(s);
+                    }
+                    const tdTestata = document.createElement("td");
+
+                    const preferred = document.createElement("a");
+                    preferred.href = "#";
+                    preferred.className = `journalist-contact-preferred c-link c-link--action${
+                      j?.preferredPhone?.origin === "program" &&
+                      j?.preferredPhone?.index === pi
+                        ? " is-active"
+                        : ""
+                    }`;
+                    preferred.textContent = "predefinito";
+                    preferred.setAttribute(
+                      "data-contact-action",
+                      "set-primary",
+                    );
+                    preferred.setAttribute("data-contact-kind", "phone");
+                    preferred.setAttribute("data-contact-origin", "program");
+                    preferred.setAttribute(
+                      "data-contact-program-index",
+                      String(pi),
+                    );
+                    const link = makeTestataLink();
+                    if (link) {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-text";
+                      s.appendChild(link);
+                      tdTestata.appendChild(s);
+                    } else {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-text";
+                      s.textContent = "";
+                      tdTestata.appendChild(s);
+                    }
+                    const tdPreferred = document.createElement("td");
+                    tdPreferred.appendChild(preferred);
+
+                    tr.appendChild(tdNumber);
+                    tr.appendChild(tdType);
+                    tr.appendChild(tdTestata);
+                    tr.appendChild(tdPreferred);
+                    tbody.appendChild(tr);
+                  }
+
+                  if (programItems.length === 0 && custom.length === 0) {
+                    const tr = document.createElement("tr");
+                    const td = document.createElement("td");
+                    td.colSpan = 4;
+                    td.innerHTML = '<span class="muted">n/d</span>';
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                  }
+                  return;
+                }
+
+                if (kind === "email") {
+                  const custom = (
+                    Array.isArray(j.customEmails) ? j.customEmails : []
+                  )
+                    .map((x) => ({
+                      email: normalizeText(x?.email ?? x?.value ?? x),
+                      type: normalizeText(x?.type ?? ""),
+                      isDefault: Boolean(x?.isDefault),
+                    }))
+                    .filter((x) => x.email.length > 0);
+                  j.customEmails = custom;
+
+                  const tbody = document.createElement("tbody");
+                  list.appendChild(tbody);
+
+                  for (let i = 0; i < custom.length; i++) {
+                    const it = custom[i];
+                    const tr = document.createElement("tr");
+                    tr.setAttribute("data-contact-kind", "email");
+                    tr.setAttribute("data-contact-index", String(i));
+
+                    const tdEmail = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-value";
+                      s.textContent = it.email;
+                      tdEmail.appendChild(s);
+                    }
+                    const tdType = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-label";
+                      s.textContent = it.type || "mail diretta";
+                      tdType.appendChild(s);
+                    }
+                    const tdTestata = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-text";
+                      s.textContent = "";
+                      tdTestata.appendChild(s);
+                    }
+
+                    const preferred = document.createElement("a");
+                    preferred.href = "#";
+                    preferred.className = `journalist-contact-preferred c-link c-link--action${
+                      j?.preferredEmail?.origin === "custom" &&
+                      j?.preferredEmail?.index === i
+                        ? " is-active"
+                        : ""
+                    }`;
+                    preferred.textContent = "predefinito";
+                    preferred.setAttribute(
+                      "data-contact-action",
+                      "set-default",
+                    );
+                    preferred.setAttribute("data-contact-kind", "email");
+                    preferred.setAttribute("data-contact-origin", "custom");
+
+                    const edit = document.createElement("a");
+                    edit.href = "#";
+                    edit.className = "c-link c-link--action";
+                    edit.textContent = "modifica";
+                    edit.setAttribute("data-contact-action", "edit");
+                    edit.setAttribute("data-contact-kind", "email");
+
+                    const remove = document.createElement("a");
+                    remove.href = "#";
+                    remove.className = "c-link c-link--action";
+                    remove.textContent = "rimuovi";
+                    remove.setAttribute("data-contact-action", "remove");
+                    remove.setAttribute("data-contact-kind", "email");
+
+                    const tdPreferred = document.createElement("td");
+                    tdPreferred.appendChild(preferred);
+
+                    const actions = document.createElement("span");
+                    actions.className = "journalist-contact-row-actions";
+                    actions.appendChild(edit);
+                    actions.appendChild(remove);
+                    tdPreferred.appendChild(actions);
+
+                    tr.appendChild(tdEmail);
+                    tr.appendChild(tdType);
+                    tr.appendChild(tdTestata);
+                    tr.appendChild(tdPreferred);
+                    tbody.appendChild(tr);
+                  }
+
+                  const programItemsRaw = Array.isArray(j?.programEmails)
+                    ? j.programEmails
+                    : [];
+                  const programItems = programItemsRaw
+                    .map((x) => ({
+                      email: normalizeText(x?.email ?? x?.value ?? x),
+                      type: normalizeText(x?.type ?? ""),
+                    }))
+                    .filter((x) => x.email.length > 0);
+                  if (programItems.length === 0) {
+                    const v = normalizeText(j?.email);
+                    if (v)
+                      programItems.push({ email: v, type: "mail diretta" });
+                  }
+                  for (let pi = 0; pi < programItems.length; pi++) {
+                    const it = programItems[pi];
+                    const tr = document.createElement("tr");
+
+                    const tdEmail = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-value";
+                      s.textContent = it.email;
+                      tdEmail.appendChild(s);
+                    }
+                    const tdType = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-label";
+                      s.textContent = it.type || "mail diretta";
+                      tdType.appendChild(s);
+                    }
+                    const tdTestata = document.createElement("td");
+
+                    const preferred = document.createElement("a");
+                    preferred.href = "#";
+                    preferred.className = `journalist-contact-preferred c-link c-link--action${
+                      j?.preferredEmail?.origin === "program" &&
+                      j?.preferredEmail?.index === pi
+                        ? " is-active"
+                        : ""
+                    }`;
+                    preferred.textContent = "predefinito";
+                    preferred.setAttribute(
+                      "data-contact-action",
+                      "set-default",
+                    );
+                    preferred.setAttribute("data-contact-kind", "email");
+                    preferred.setAttribute("data-contact-origin", "program");
+                    preferred.setAttribute(
+                      "data-contact-program-index",
+                      String(pi),
+                    );
+                    const link = makeTestataLink();
+                    if (link) {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-text";
+                      s.appendChild(link);
+                      tdTestata.appendChild(s);
+                    } else {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-text";
+                      s.textContent = "";
+                      tdTestata.appendChild(s);
+                    }
+                    const tdPreferred = document.createElement("td");
+                    tdPreferred.appendChild(preferred);
+
+                    tr.appendChild(tdEmail);
+                    tr.appendChild(tdType);
+                    tr.appendChild(tdTestata);
+                    tr.appendChild(tdPreferred);
+                    tbody.appendChild(tr);
+                  }
+
+                  if (programItems.length === 0 && custom.length === 0) {
+                    const tr = document.createElement("tr");
+                    const td = document.createElement("td");
+                    td.colSpan = 4;
+                    td.innerHTML = '<span class="muted">n/d</span>';
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                  }
+                  return;
+                }
+
+                if (kind === "social") {
+                  const custom = (
+                    Array.isArray(j.customSocials) ? j.customSocials : []
+                  )
+                    .map((x) => ({
+                      url: normalizeText(x?.url ?? x?.value ?? x),
+                      type: normalizeText(x?.type ?? ""),
+                    }))
+                    .filter((x) => x.url.length > 0);
+                  j.customSocials = custom;
+
+                  list.innerHTML = "";
+                  const tbody = document.createElement("tbody");
+                  list.appendChild(tbody);
+
+                  for (let i = 0; i < custom.length; i++) {
+                    const it = custom[i];
+                    const tr = document.createElement("tr");
+                    tr.setAttribute("data-contact-kind", "social");
+                    tr.setAttribute("data-contact-index", String(i));
+
+                    const tdUrl = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-value";
+                      s.textContent = it.url;
+                      tdUrl.appendChild(s);
+                    }
+                    const tdType = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-label";
+                      s.textContent = it.type || "x";
+                      tdType.appendChild(s);
+                    }
+
+                    const edit = document.createElement("a");
+                    edit.href = "#";
+                    edit.className = "c-link c-link--action";
+                    edit.textContent = "modifica";
+                    edit.setAttribute("data-contact-action", "edit");
+                    edit.setAttribute("data-contact-kind", "social");
+
+                    const remove = document.createElement("a");
+                    remove.href = "#";
+                    remove.className = "c-link c-link--action";
+                    remove.textContent = "rimuovi";
+                    remove.setAttribute("data-contact-action", "remove");
+                    remove.setAttribute("data-contact-kind", "social");
+
+                    const actions = document.createElement("span");
+                    actions.className = "journalist-contact-row-actions";
+                    actions.appendChild(edit);
+                    actions.appendChild(remove);
+                    tdUrl.appendChild(actions);
+
+                    tr.appendChild(tdUrl);
+                    tr.appendChild(tdType);
+                    tbody.appendChild(tr);
+                  }
+
+                  const program = normalizeText(j?.social);
+                  if (program) {
+                    const tr = document.createElement("tr");
+                    const tdUrl = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-value";
+                      s.textContent = program;
+                      tdUrl.appendChild(s);
+                    }
+                    const tdType = document.createElement("td");
+                    {
+                      const s = document.createElement("span");
+                      s.className = "journalist-contact-cell t-label";
+                      s.textContent = "x";
+                      tdType.appendChild(s);
+                    }
+                    tr.appendChild(tdUrl);
+                    tr.appendChild(tdType);
+                    tbody.appendChild(tr);
+                  }
+
+                  if (!program && custom.length === 0) {
+                    const tr = document.createElement("tr");
+                    const td = document.createElement("td");
+                    td.colSpan = 2;
+                    td.innerHTML = '<span class="muted">n/d</span>';
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                  }
+                }
+              };
+
+              const showEditor = (mode, index, value, type) => {
+                editor.hidden = false;
+                editor.setAttribute("data-contact-mode", mode);
+                if (typeof index === "number") {
+                  editor.setAttribute("data-contact-edit-index", String(index));
+                } else {
+                  editor.removeAttribute("data-contact-edit-index");
+                }
+                if (input) input.value = String(value ?? "");
+                if (select) select.value = String(type ?? select.value ?? "");
+                input?.focus?.();
+              };
+
+              const hideEditor = () => {
+                editor.hidden = true;
+                editor.removeAttribute("data-contact-mode");
+                editor.removeAttribute("data-contact-edit-index");
+                if (input) input.value = "";
+              };
+
+              if (action === "add") {
+                showEditor(
+                  "add",
+                  null,
+                  "",
+                  kind === "social" ? "x" : "cellulare",
+                );
+                return;
+              }
+
+              if (action === "set-primary" || action === "set-default") {
+                const origin = String(
+                  contactActionEl.getAttribute("data-contact-origin") ||
+                    "custom",
+                )
+                  .trim()
+                  .toLowerCase();
+                const programIndex = Number(
+                  contactActionEl.getAttribute("data-contact-program-index"),
+                );
+                const itemEl = contactActionEl.closest("[data-contact-index]");
+                const idxRaw = itemEl?.getAttribute?.("data-contact-index");
+                const idx = idxRaw != null ? Number(idxRaw) : NaN;
+                if (origin === "program") {
+                  setPreferred("program", programIndex);
+                } else {
+                  setPreferred("custom", idx);
+                }
+                render();
+                scheduleRender();
+                return;
+              }
+
+              const itemEl = contactActionEl.closest("[data-contact-index]");
+              const idxRaw = itemEl?.getAttribute?.("data-contact-index");
+              const idx = idxRaw != null ? Number(idxRaw) : NaN;
+
+              if (action === "edit") {
+                if (!Number.isFinite(idx)) return;
+                if (kind === "phone") {
+                  const items = Array.isArray(j.customPhones)
+                    ? j.customPhones
+                    : [];
+                  showEditor(
+                    "edit",
+                    idx,
+                    items[idx]?.number ??
+                      items[idx]?.tel ??
+                      items[idx]?.value ??
+                      "",
+                    items[idx]?.type ?? items[idx]?.kind ?? "cellulare",
+                  );
+                  return;
+                }
+                if (kind === "email") {
+                  const items = Array.isArray(j.customEmails)
+                    ? j.customEmails
+                    : [];
+                  showEditor(
+                    "edit",
+                    idx,
+                    items[idx]?.email ?? items[idx]?.value ?? "",
+                    null,
+                  );
+                  return;
+                }
+                if (kind === "social") {
+                  const items = Array.isArray(j.customSocials)
+                    ? j.customSocials
+                    : [];
+                  showEditor(
+                    "edit",
+                    idx,
+                    items[idx]?.url ?? items[idx]?.value ?? "",
+                    items[idx]?.type ?? "x",
+                  );
+                  return;
+                }
+              }
+
+              if (action === "remove") {
+                if (!Number.isFinite(idx)) return;
+                if (kind === "phone") {
+                  const items = Array.isArray(j.customPhones)
+                    ? j.customPhones
+                    : [];
+                  if (
+                    j?.preferredPhone?.origin === "custom" &&
+                    Number.isFinite(j?.preferredPhone?.index)
+                  ) {
+                    if (j.preferredPhone.index === idx) {
+                      j.preferredPhone = { origin: "program", index: 0 };
+                    } else if (j.preferredPhone.index > idx) {
+                      j.preferredPhone.index -= 1;
+                    }
+                  }
+                  items.splice(idx, 1);
+                  j.customPhones = items;
+                  hideEditor();
+                  render();
+                  scheduleRender();
+                  return;
+                }
+                if (kind === "email") {
+                  const items = Array.isArray(j.customEmails)
+                    ? j.customEmails
+                    : [];
+                  if (
+                    j?.preferredEmail?.origin === "custom" &&
+                    Number.isFinite(j?.preferredEmail?.index)
+                  ) {
+                    if (j.preferredEmail.index === idx) {
+                      j.preferredEmail = { origin: "program", index: 0 };
+                    } else if (j.preferredEmail.index > idx) {
+                      j.preferredEmail.index -= 1;
+                    }
+                  }
+                  items.splice(idx, 1);
+                  j.customEmails = items;
+                  hideEditor();
+                  render();
+                  scheduleRender();
+                  return;
+                }
+                if (kind === "social") {
+                  const items = Array.isArray(j.customSocials)
+                    ? j.customSocials
+                    : [];
+                  items.splice(idx, 1);
+                  j.customSocials = items;
+                  hideEditor();
+                  render();
+                  return;
+                }
+              }
+
+              if (action === "cancel") {
+                hideEditor();
+                return;
+              }
+
+              if (action === "ok") {
+                const value = String(input?.value ?? "").trim();
+                if (!value) {
+                  hideEditor();
+                  return;
+                }
+
+                const mode = String(
+                  editor.getAttribute("data-contact-mode") || "",
+                )
+                  .trim()
+                  .toLowerCase();
+                const editIndex = Number(
+                  editor.getAttribute("data-contact-edit-index"),
+                );
+
+                if (kind === "phone") {
+                  const items = Array.isArray(j.customPhones)
+                    ? [...j.customPhones]
+                    : [];
+                  const obj = {
+                    number: value,
+                    type: String(select?.value ?? "cellulare").trim(),
+                    isPrimary:
+                      mode === "edit" &&
+                      Number.isFinite(editIndex) &&
+                      items[editIndex] &&
+                      typeof items[editIndex] === "object"
+                        ? Boolean(items[editIndex]?.isPrimary)
+                        : false,
+                  };
+                  if (mode === "edit" && Number.isFinite(editIndex)) {
+                    items[editIndex] = obj;
+                  } else {
+                    items.unshift(obj);
+                  }
+                  j.customPhones = items;
+                  hideEditor();
+                  render();
+                  scheduleRender();
+                  return;
+                }
+
+                if (kind === "email") {
+                  const items = Array.isArray(j.customEmails)
+                    ? [...j.customEmails]
+                    : [];
+                  const obj = {
+                    email: value,
+                    isDefault:
+                      mode === "edit" &&
+                      Number.isFinite(editIndex) &&
+                      items[editIndex] &&
+                      typeof items[editIndex] === "object"
+                        ? Boolean(items[editIndex]?.isDefault)
+                        : false,
+                  };
+                  if (mode === "edit" && Number.isFinite(editIndex)) {
+                    items[editIndex] = obj;
+                  } else {
+                    items.unshift(obj);
+                  }
+                  j.customEmails = items;
+                  hideEditor();
+                  render();
+                  scheduleRender();
+                  return;
+                }
+
+                if (kind === "social") {
+                  const items = Array.isArray(j.customSocials)
+                    ? [...j.customSocials]
+                    : [];
+                  const obj = {
+                    url: value,
+                    type: String(select?.value ?? "x").trim(),
+                  };
+                  if (mode === "edit" && Number.isFinite(editIndex)) {
+                    items[editIndex] = obj;
+                  } else {
+                    items.unshift(obj);
+                  }
+                  j.customSocials = items;
+                  hideEditor();
+                  render();
+                  return;
+                }
+              }
+            }
+          }
+
           const journalistLink = e.target?.closest?.(".journalist-link");
           if (journalistLink) {
             e.preventDefault();
@@ -6421,6 +9058,81 @@
       document.addEventListener(
         "keydown",
         (e) => {
+          const testataOpen = testataPanel?.classList?.contains("show");
+
+          if (testataOpen && e.key === "Escape") {
+            const cancel = testataPanelBody?.querySelector(
+              '[data-note-editor]:not([hidden]) [data-note-action="cancel"]',
+            );
+            if (cancel) {
+              e.preventDefault();
+              e.stopPropagation();
+              cancel.click();
+              return;
+            }
+
+            const topicCancel = testataPanelBody?.querySelector(
+              '[data-topic-editor]:not([hidden]) [data-topic-action="cancel"]',
+            );
+            if (topicCancel) {
+              e.preventDefault();
+              e.stopPropagation();
+              topicCancel.click();
+              return;
+            }
+
+            const contactCancel = testataPanelBody?.querySelector(
+              '[data-contact-editor]:not([hidden]) [data-contact-action="cancel"]',
+            );
+            if (contactCancel) {
+              e.preventDefault();
+              e.stopPropagation();
+              contactCancel.click();
+              return;
+            }
+          }
+
+          if (testataOpen && e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            const active = document.activeElement;
+            if (active?.matches?.("[data-note-textarea]")) {
+              const ok = testataPanelBody?.querySelector(
+                '[data-note-editor]:not([hidden]) [data-note-action="ok"]',
+              );
+              if (ok) {
+                e.preventDefault();
+                e.stopPropagation();
+                ok.click();
+                return;
+              }
+            }
+
+            if (active?.matches?.("[data-topic-input]")) {
+              const ok = testataPanelBody?.querySelector(
+                '[data-topic-editor]:not([hidden]) [data-topic-action="ok"]',
+              );
+              if (ok) {
+                e.preventDefault();
+                e.stopPropagation();
+                ok.click();
+                return;
+              }
+            }
+
+            if (
+              active?.matches?.("[data-contact-input]") ||
+              active?.matches?.("[data-contact-select]")
+            ) {
+              const editor = active?.closest?.("[data-contact-editor]");
+              const ok = editor?.querySelector?.('[data-contact-action="ok"]');
+              if (ok) {
+                e.preventDefault();
+                e.stopPropagation();
+                ok.click();
+                return;
+              }
+            }
+          }
+
           if (e.key !== "Escape") return;
           if (addToShipmentModal?.classList?.contains("show")) {
             e.preventDefault();
