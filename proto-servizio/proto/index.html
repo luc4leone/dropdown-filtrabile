@@ -1314,6 +1314,41 @@
         appState.activeMailingListId = "";
       }
 
+      if (!appState.ui || typeof appState.ui !== "object") {
+        appState.ui = {};
+      }
+
+      if (
+        !appState.ui.sectionOpen ||
+        typeof appState.ui.sectionOpen !== "object"
+      ) {
+        appState.ui.sectionOpen = {};
+      }
+
+      if (
+        typeof appState.ui.sectionOpen.notes !== "boolean" &&
+        typeof appState.ui.notesOpen === "boolean"
+      ) {
+        appState.ui.sectionOpen.notes = appState.ui.notesOpen;
+      }
+
+      if (typeof appState.ui.sectionOpen.notes !== "boolean") {
+        appState.ui.sectionOpen.notes = false;
+      }
+
+      for (const k of [
+        "topics",
+        "contacts",
+        "redazioni",
+        "articles",
+        "mailing",
+        "shipments",
+      ]) {
+        if (typeof appState.ui.sectionOpen[k] !== "boolean") {
+          appState.ui.sectionOpen[k] = true;
+        }
+      }
+
       if (typeof appState.sortMode !== "string") {
         appState.sortMode = "name-asc";
       }
@@ -6044,6 +6079,123 @@
           split.appendChild(splitMenu);
 
           titleActions.appendChild(split);
+
+          const normalizeArrHeader = (v) => (Array.isArray(v) ? v : []);
+          const normalizeTextHeader = (v) => String(v ?? "").trim();
+
+          const getPreferredContact = ({
+            customItems,
+            programItems,
+            preferred,
+            fallbackItem,
+          }) => {
+            const custom = customItems.filter(
+              (x) => normalizeTextHeader(x.value).length > 0,
+            );
+            const program = programItems.filter(
+              (x) => normalizeTextHeader(x.value).length > 0,
+            );
+
+            if (program.length === 0 && fallbackItem) {
+              const v = normalizeTextHeader(fallbackItem.value);
+              if (v) program.push({ value: v, label: fallbackItem.label });
+            }
+
+            if (preferred && typeof preferred === "object") {
+              const origin = normalizeTextHeader(
+                preferred.origin,
+              ).toLowerCase();
+              const idx = preferred.index;
+              if (origin === "custom" && Number.isFinite(idx) && custom[idx]) {
+                return { ...custom[idx] };
+              }
+              if (
+                origin === "program" &&
+                Number.isFinite(idx) &&
+                program[idx]
+              ) {
+                return { ...program[idx] };
+              }
+            }
+
+            if (custom[0]) return { ...custom[0] };
+            if (program[0]) return { ...program[0] };
+            return null;
+          };
+
+          const preferredPhone = getPreferredContact({
+            customItems: normalizeArrHeader(j.customPhones).map((x) => ({
+              value: normalizeTextHeader(x?.number ?? x?.tel ?? x?.value ?? x),
+              label:
+                normalizeTextHeader(x?.type ?? x?.kind ?? "") || "cellulare",
+            })),
+            programItems: normalizeArrHeader(j?.programPhones).map((x) => ({
+              value: normalizeTextHeader(x?.number ?? x?.tel ?? x?.value ?? x),
+              label:
+                normalizeTextHeader(x?.type ?? x?.kind ?? "") || "cellulare",
+            })),
+            preferred: j?.preferredPhone,
+            fallbackItem: { value: j?.tel, label: "cellulare" },
+          });
+
+          const preferredEmail = getPreferredContact({
+            customItems: normalizeArrHeader(j.customEmails).map((x) => ({
+              value: normalizeTextHeader(x?.email ?? x?.value ?? x),
+              label: normalizeTextHeader(x?.type ?? "") || "mail diretta",
+            })),
+            programItems: normalizeArrHeader(j?.programEmails).map((x) => ({
+              value: normalizeTextHeader(x?.email ?? x?.value ?? x),
+              label: normalizeTextHeader(x?.type ?? "") || "mail diretta",
+            })),
+            preferred: j?.preferredEmail,
+            fallbackItem: { value: j?.email, label: "mail diretta" },
+          });
+
+          const contactsSummary = document.createElement("table");
+          contactsSummary.className = "journalist-contact-table";
+          contactsSummary.setAttribute("data-journalist-header-contacts", "");
+          {
+            const colgroup = document.createElement("colgroup");
+            const col1 = document.createElement("col");
+            col1.style.width = "24ch";
+            const col2 = document.createElement("col");
+            col2.style.width = "16ch";
+            colgroup.appendChild(col1);
+            colgroup.appendChild(col2);
+            contactsSummary.appendChild(colgroup);
+
+            const tbody = document.createElement("tbody");
+            contactsSummary.appendChild(tbody);
+
+            const makeRow = (key, value, label) => {
+              const tr = document.createElement("tr");
+
+              const tdValue = document.createElement("td");
+              const sValue = document.createElement("span");
+              sValue.className = "journalist-contact-cell t-value";
+              sValue.setAttribute("data-header-contact", `${key}-value`);
+              sValue.textContent = normalizeTextHeader(value) || "n/d";
+              tdValue.appendChild(sValue);
+
+              const tdLabel = document.createElement("td");
+              const sLabel = document.createElement("span");
+              sLabel.className = "journalist-contact-cell t-label";
+              sLabel.setAttribute("data-header-contact", `${key}-label`);
+              sLabel.textContent = normalizeTextHeader(label) || "";
+              tdLabel.appendChild(sLabel);
+
+              tr.appendChild(tdValue);
+              tr.appendChild(tdLabel);
+              return tr;
+            };
+
+            tbody.appendChild(
+              makeRow("phone", preferredPhone?.value, preferredPhone?.label),
+            );
+            tbody.appendChild(
+              makeRow("email", preferredEmail?.value, preferredEmail?.label),
+            );
+          }
           titleRow.appendChild(titleActions);
 
           header.appendChild(titleRow);
@@ -6068,11 +6220,43 @@
             testataPanelHeaderContent.appendChild(meta);
           }
 
+          {
+            const panelHeaderEl = testataPanelHeaderContent?.closest?.(
+              ".testata-panel-header",
+            );
+            if (panelHeaderEl && testataPanelClose) {
+              const existing = panelHeaderEl.querySelector(
+                "[data-journalist-header-contacts]",
+              );
+              if (existing) existing.remove();
+              panelHeaderEl.insertBefore(contactsSummary, testataPanelClose);
+            }
+          }
+
           const grid = document.createElement("div");
           grid.className = "journalist-sheet__grid";
 
           const mainCol = document.createElement("div");
           mainCol.className = "journalist-section";
+
+          const getSectionOpen = (key, defaultOpen) => {
+            const v = appState?.ui?.sectionOpen?.[key];
+            return typeof v === "boolean" ? v : !!defaultOpen;
+          };
+
+          const setSectionOpen = (key, open) => {
+            if (!appState.ui || typeof appState.ui !== "object") {
+              appState.ui = {};
+            }
+            if (
+              !appState.ui.sectionOpen ||
+              typeof appState.ui.sectionOpen !== "object"
+            ) {
+              appState.ui.sectionOpen = {};
+            }
+            appState.ui.sectionOpen[key] = !!open;
+            saveAppState(appState);
+          };
 
           const topicsSection = document.createElement("section");
           topicsSection.className = "journalist-section";
@@ -6081,7 +6265,11 @@
           topicsSection.setAttribute("data-jid", jid);
 
           const topicsHeader = document.createElement("div");
-          topicsHeader.className = "journalist-section__header";
+          topicsHeader.className =
+            "journalist-section__header journalist-section__header--collapsible";
+          topicsHeader.setAttribute("data-section-toggle", "topics");
+          topicsHeader.setAttribute("role", "button");
+          topicsHeader.setAttribute("tabindex", "0");
 
           const topicsTitle = document.createElement("div");
           topicsTitle.className = "journalist-section__title";
@@ -6100,6 +6288,18 @@
 
           topicsTitle.appendChild(addTopic);
           topicsHeader.appendChild(topicsTitle);
+
+          const topicsOpen = getSectionOpen("topics", true);
+          topicsHeader.setAttribute(
+            "aria-expanded",
+            topicsOpen ? "true" : "false",
+          );
+
+          const topicsToggle = document.createElement("span");
+          topicsToggle.className = "journalist-section__toggle";
+          topicsToggle.textContent = topicsOpen ? "-" : "+";
+          topicsToggle.setAttribute("aria-hidden", "true");
+          topicsHeader.appendChild(topicsToggle);
 
           const topicsEditor = document.createElement("div");
           topicsEditor.className = "journalist-topic-editor";
@@ -6240,9 +6440,15 @@
 
           renderTopics();
 
+          const topicsBody = document.createElement("div");
+          topicsBody.className = "journalist-section__body";
+          topicsBody.setAttribute("data-section-body", "");
+          topicsBody.hidden = !topicsOpen;
+          topicsBody.appendChild(topicsEditor);
+          topicsBody.appendChild(topicsList);
+
           topicsSection.appendChild(topicsHeader);
-          topicsSection.appendChild(topicsEditor);
-          topicsSection.appendChild(topicsList);
+          topicsSection.appendChild(topicsBody);
 
           const contactsSection = document.createElement("section");
           contactsSection.className = "journalist-section";
@@ -6251,13 +6457,29 @@
           contactsSection.setAttribute("data-jid", jid);
 
           const contactsHeader = document.createElement("div");
-          contactsHeader.className = "journalist-section__header";
+          contactsHeader.className =
+            "journalist-section__header journalist-section__header--collapsible";
+          contactsHeader.setAttribute("data-section-toggle", "contacts");
+          contactsHeader.setAttribute("role", "button");
+          contactsHeader.setAttribute("tabindex", "0");
 
           const contactsHeading = document.createElement("h3");
           contactsHeading.className = "journalist-section__heading";
           contactsHeading.textContent = "CONTATTI DIRETTI";
 
           contactsHeader.appendChild(contactsHeading);
+
+          const contactsOpen = getSectionOpen("contacts", true);
+          contactsHeader.setAttribute(
+            "aria-expanded",
+            contactsOpen ? "true" : "false",
+          );
+
+          const contactsToggle = document.createElement("span");
+          contactsToggle.className = "journalist-section__toggle";
+          contactsToggle.textContent = contactsOpen ? "-" : "+";
+          contactsToggle.setAttribute("aria-hidden", "true");
+          contactsHeader.appendChild(contactsToggle);
 
           const contactsGroups = document.createElement("div");
           contactsGroups.className = "journalist-contacts";
@@ -6900,20 +7122,61 @@
           contactsGroups.appendChild(emailGroup);
           contactsGroups.appendChild(socialGroup);
 
+          const contactsBody = document.createElement("div");
+          contactsBody.className = "journalist-section__body";
+          contactsBody.setAttribute("data-section-body", "");
+          contactsBody.hidden = !contactsOpen;
+          contactsBody.appendChild(contactsGroups);
+
           contactsSection.appendChild(contactsHeader);
-          contactsSection.appendChild(contactsGroups);
+          contactsSection.appendChild(contactsBody);
 
           const redazioniSection = document.createElement("section");
           redazioniSection.className = "journalist-section";
-          redazioniSection.innerHTML = `
-            <div class="journalist-section__header">
-              <div class="journalist-section__title">
-                <h3 class="journalist-section__heading">REDAZIONI</h3>
-                <span class="muted">con cui collabora</span>
-                <a href="#" class="c-link c-link--action">aggiungi redazione</a>
-              </div>
-            </div>
-            <ul class="journalist-list">
+
+          const redazioniOpen = getSectionOpen("redazioni", true);
+
+          const redazioniHeader = document.createElement("div");
+          redazioniHeader.className =
+            "journalist-section__header journalist-section__header--collapsible";
+          redazioniHeader.setAttribute("data-section-toggle", "redazioni");
+          redazioniHeader.setAttribute("role", "button");
+          redazioniHeader.setAttribute("tabindex", "0");
+          redazioniHeader.setAttribute(
+            "aria-expanded",
+            redazioniOpen ? "true" : "false",
+          );
+
+          const redazioniTitle = document.createElement("div");
+          redazioniTitle.className = "journalist-section__title";
+
+          const redazioniHeading = document.createElement("h3");
+          redazioniHeading.className = "journalist-section__heading";
+          redazioniHeading.textContent = "REDAZIONI";
+
+          const redazioniMeta = document.createElement("span");
+          redazioniMeta.className = "muted";
+          redazioniMeta.textContent = "con cui collabora";
+
+          const redazioniAdd = document.createElement("a");
+          redazioniAdd.href = "#";
+          redazioniAdd.className = "c-link c-link--action";
+          redazioniAdd.textContent = "aggiungi redazione";
+
+          redazioniTitle.appendChild(redazioniHeading);
+          redazioniTitle.appendChild(redazioniMeta);
+          redazioniTitle.appendChild(redazioniAdd);
+          redazioniHeader.appendChild(redazioniTitle);
+
+          const redazioniToggle = document.createElement("span");
+          redazioniToggle.className = "journalist-section__toggle";
+          redazioniToggle.textContent = redazioniOpen ? "-" : "+";
+          redazioniToggle.setAttribute("aria-hidden", "true");
+          redazioniHeader.appendChild(redazioniToggle);
+
+          const redazioniList = document.createElement("ul");
+          redazioniList.className = "journalist-list";
+          redazioniList.innerHTML = `
               <li>
                 <a href="#" class="testata-link journalist-list__title">Corriere Motori</a>
                 <div class="muted">Redattore — Motori, Auto/Automotive, Moto</div>
@@ -6924,17 +7187,63 @@
                 <div class="muted">Redattore — Design, Auto/Automotive</div>
                 <div class="muted">tel redazione: 06 3423123</div>
               </li>
-            </ul>
           `;
+
+          const redazioniBody = document.createElement("div");
+          redazioniBody.className = "journalist-section__body";
+          redazioniBody.setAttribute("data-section-body", "");
+          redazioniBody.hidden = !redazioniOpen;
+          redazioniBody.appendChild(redazioniList);
+
+          redazioniSection.appendChild(redazioniHeader);
+          redazioniSection.appendChild(redazioniBody);
 
           const articlesSection = document.createElement("section");
           articlesSection.className = "journalist-section";
-          articlesSection.innerHTML = `
-            <div class="journalist-section__header">
-              <h3 class="journalist-section__heading">ARTICOLI</h3>
-              <a href="#" class="c-link c-link--action">frequenza</a>
-            </div>
-            <ul class="journalist-list">
+
+          const articlesOpen = getSectionOpen("articles", true);
+
+          const articlesHeader = document.createElement("div");
+          articlesHeader.className =
+            "journalist-section__header journalist-section__header--collapsible";
+          articlesHeader.setAttribute("data-section-toggle", "articles");
+          articlesHeader.setAttribute("role", "button");
+          articlesHeader.setAttribute("tabindex", "0");
+          articlesHeader.setAttribute(
+            "aria-expanded",
+            articlesOpen ? "true" : "false",
+          );
+
+          const articlesHeading = document.createElement("h3");
+          articlesHeading.className = "journalist-section__heading";
+          articlesHeading.textContent = "ARTICOLI";
+
+          const articlesTitle = document.createElement("div");
+          articlesTitle.className = "journalist-section__title";
+
+          const articlesMeta = document.createElement("span");
+          articlesMeta.className = "c-text";
+          articlesMeta.textContent = "che ha scritto";
+
+          const articlesLink = document.createElement("a");
+          articlesLink.href = "#";
+          articlesLink.className = "c-link c-link--action";
+          articlesLink.textContent = "termini ricorrenti";
+
+          articlesTitle.appendChild(articlesHeading);
+          articlesTitle.appendChild(articlesMeta);
+          articlesTitle.appendChild(articlesLink);
+          articlesHeader.appendChild(articlesTitle);
+
+          const articlesToggle = document.createElement("span");
+          articlesToggle.className = "journalist-section__toggle";
+          articlesToggle.textContent = articlesOpen ? "-" : "+";
+          articlesToggle.setAttribute("aria-hidden", "true");
+          articlesHeader.appendChild(articlesToggle);
+
+          const articlesList = document.createElement("ul");
+          articlesList.className = "journalist-list";
+          articlesList.innerHTML = `
               <li>
                 <a href="#" class="c-link c-link--nav journalist-list__title">Auto elettriche: il mercato italiano cresce del 30% nel 2024</a>
                 <div class="muted">31/12/2024</div>
@@ -6943,19 +7252,57 @@
                 <a href="#" class="c-link c-link--nav journalist-list__title">Nuova mobilità elettrica: la sfida delle batterie al litio</a>
                 <div class="muted">15/11/2024</div>
               </li>
-            </ul>
           `;
+
+          const articlesBody = document.createElement("div");
+          articlesBody.className = "journalist-section__body";
+          articlesBody.setAttribute("data-section-body", "");
+          articlesBody.hidden = !articlesOpen;
+          articlesBody.appendChild(articlesList);
+
+          articlesSection.appendChild(articlesHeader);
+          articlesSection.appendChild(articlesBody);
 
           const mailingSection = document.createElement("section");
           mailingSection.className = "journalist-section";
-          mailingSection.innerHTML = `
-            <div class="journalist-section__header">
-              <div class="journalist-section__title">
-                <h3 class="journalist-section__heading">MAILING LISTS</h3>
-                <span class="muted">a cui appartiene</span>
-              </div>
-            </div>
-            <ul class="journalist-list">
+
+          const mailingOpen = getSectionOpen("mailing", true);
+
+          const mailingHeader = document.createElement("div");
+          mailingHeader.className =
+            "journalist-section__header journalist-section__header--collapsible";
+          mailingHeader.setAttribute("data-section-toggle", "mailing");
+          mailingHeader.setAttribute("role", "button");
+          mailingHeader.setAttribute("tabindex", "0");
+          mailingHeader.setAttribute(
+            "aria-expanded",
+            mailingOpen ? "true" : "false",
+          );
+
+          const mailingTitle = document.createElement("div");
+          mailingTitle.className = "journalist-section__title";
+
+          const mailingHeading = document.createElement("h3");
+          mailingHeading.className = "journalist-section__heading";
+          mailingHeading.textContent = "MAILING LISTS";
+
+          const mailingMeta = document.createElement("span");
+          mailingMeta.className = "muted";
+          mailingMeta.textContent = "a cui appartiene";
+
+          mailingTitle.appendChild(mailingHeading);
+          mailingTitle.appendChild(mailingMeta);
+          mailingHeader.appendChild(mailingTitle);
+
+          const mailingToggle = document.createElement("span");
+          mailingToggle.className = "journalist-section__toggle";
+          mailingToggle.textContent = mailingOpen ? "-" : "+";
+          mailingToggle.setAttribute("aria-hidden", "true");
+          mailingHeader.appendChild(mailingToggle);
+
+          const mailingList = document.createElement("ul");
+          mailingList.className = "journalist-list";
+          mailingList.innerHTML = `
               <li>
                 <a href="#" class="testata-link journalist-list__title">Automotive e mobilità sostenibile</a>
                 <div class="journalist-list__meta-row">
@@ -6970,16 +7317,58 @@
                   <span class="muted">542 giornalisti / 89 testate</span>
                 </div>
               </li>
-            </ul>
           `;
+
+          const mailingBody = document.createElement("div");
+          mailingBody.className = "journalist-section__body";
+          mailingBody.setAttribute("data-section-body", "");
+          mailingBody.hidden = !mailingOpen;
+          mailingBody.appendChild(mailingList);
+
+          mailingSection.appendChild(mailingHeader);
+          mailingSection.appendChild(mailingBody);
 
           const shipmentsSection = document.createElement("section");
           shipmentsSection.className = "journalist-section";
-          shipmentsSection.innerHTML = `
-            <div class="journalist-section__header">
-              <h3 class="journalist-section__heading">SPEDIZIONI RICEVUTE</h3>
-            </div>
-            <ul class="journalist-list">
+
+          const shipmentsOpen = getSectionOpen("shipments", true);
+
+          const shipmentsHeader = document.createElement("div");
+          shipmentsHeader.className =
+            "journalist-section__header journalist-section__header--collapsible";
+          shipmentsHeader.setAttribute("data-section-toggle", "shipments");
+          shipmentsHeader.setAttribute("role", "button");
+          shipmentsHeader.setAttribute("tabindex", "0");
+          shipmentsHeader.setAttribute(
+            "aria-expanded",
+            shipmentsOpen ? "true" : "false",
+          );
+
+          const shipmentsHeading = document.createElement("h3");
+          shipmentsHeading.className = "journalist-section__heading";
+
+          const shipmentsTitle = document.createElement("div");
+          shipmentsTitle.className = "journalist-section__title";
+
+          const shipmentsMeta = document.createElement("span");
+          shipmentsMeta.className = "c-text";
+          shipmentsMeta.textContent = "ricevute";
+
+          shipmentsHeading.textContent = "SPEDIZIONI";
+
+          shipmentsTitle.appendChild(shipmentsHeading);
+          shipmentsTitle.appendChild(shipmentsMeta);
+          shipmentsHeader.appendChild(shipmentsTitle);
+
+          const shipmentsToggle = document.createElement("span");
+          shipmentsToggle.className = "journalist-section__toggle";
+          shipmentsToggle.textContent = shipmentsOpen ? "-" : "+";
+          shipmentsToggle.setAttribute("aria-hidden", "true");
+          shipmentsHeader.appendChild(shipmentsToggle);
+
+          const shipmentsList = document.createElement("ul");
+          shipmentsList.className = "journalist-list";
+          shipmentsList.innerHTML = `
               <li>
                 <a href="#" class="c-link c-link--nav journalist-list__title">CS - Lancio nuova gamma SUV elettrici premium</a>
                 <div class="journalist-list__meta-row">
@@ -6994,8 +7383,16 @@
                   <span class="c-pill">chiusa</span>
                 </div>
               </li>
-            </ul>
           `;
+
+          const shipmentsBody = document.createElement("div");
+          shipmentsBody.className = "journalist-section__body";
+          shipmentsBody.setAttribute("data-section-body", "");
+          shipmentsBody.hidden = !shipmentsOpen;
+          shipmentsBody.appendChild(shipmentsList);
+
+          shipmentsSection.appendChild(shipmentsHeader);
+          shipmentsSection.appendChild(shipmentsBody);
 
           const notesSection = document.createElement("section");
           notesSection.className = "journalist-section";
@@ -7004,7 +7401,11 @@
           notesSection.setAttribute("data-jid", jid);
 
           const notesHeader = document.createElement("div");
-          notesHeader.className = "journalist-section__header";
+          notesHeader.className =
+            "journalist-section__header journalist-section__header--collapsible";
+          notesHeader.setAttribute("data-section-toggle", "notes");
+          notesHeader.setAttribute("role", "button");
+          notesHeader.setAttribute("tabindex", "0");
 
           const notesTitle = document.createElement("div");
           notesTitle.className = "journalist-section__title";
@@ -7023,6 +7424,19 @@
 
           notesTitle.appendChild(addNote);
           notesHeader.appendChild(notesTitle);
+
+          const notesOpen = getSectionOpen("notes", false);
+
+          notesHeader.setAttribute(
+            "aria-expanded",
+            notesOpen ? "true" : "false",
+          );
+
+          const notesToggle = document.createElement("span");
+          notesToggle.className = "journalist-section__toggle";
+          notesToggle.textContent = notesOpen ? "-" : "+";
+          notesToggle.setAttribute("aria-hidden", "true");
+          notesHeader.appendChild(notesToggle);
 
           const notesList = document.createElement("div");
           notesList.className = "journalist-notes";
@@ -7112,9 +7526,15 @@
 
           renderNotesList(j?.note);
 
+          const notesBody = document.createElement("div");
+          notesBody.className = "journalist-section__body";
+          notesBody.setAttribute("data-section-body", "");
+          notesBody.hidden = !notesOpen;
+          notesBody.appendChild(notesEditor);
+          notesBody.appendChild(notesList);
+
           notesSection.appendChild(notesHeader);
-          notesSection.appendChild(notesEditor);
-          notesSection.appendChild(notesList);
+          notesSection.appendChild(notesBody);
 
           mainCol.appendChild(notesSection);
           mainCol.appendChild(topicsSection);
@@ -7805,6 +8225,47 @@
 
       if (testataPanelBody) {
         testataPanelBody.addEventListener("click", (e) => {
+          const sectionToggleEl = e.target?.closest?.("[data-section-toggle]");
+          if (sectionToggleEl) {
+            const key = String(
+              sectionToggleEl.getAttribute("data-section-toggle") || "",
+            )
+              .trim()
+              .toLowerCase();
+            if (!key) return;
+
+            const section = sectionToggleEl.closest("section");
+            if (!section) return;
+
+            const body = section.querySelector("[data-section-body]");
+            const indicator = section.querySelector(
+              ".journalist-section__toggle",
+            );
+            if (!body || !indicator) return;
+
+            if (e.target?.closest?.("a")) {
+              if (body.hidden) {
+                body.hidden = false;
+                indicator.textContent = "-";
+                sectionToggleEl.setAttribute("aria-expanded", "true");
+                setSectionOpen(key, true);
+              }
+            } else {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const nextOpen = !!body.hidden;
+              body.hidden = !nextOpen;
+              indicator.textContent = nextOpen ? "-" : "+";
+              sectionToggleEl.setAttribute(
+                "aria-expanded",
+                nextOpen ? "true" : "false",
+              );
+              setSectionOpen(key, nextOpen);
+              return;
+            }
+          }
+
           const noteActionEl = e.target?.closest?.("[data-note-action]");
           if (noteActionEl) {
             const notesSection = noteActionEl.closest(
@@ -7814,11 +8275,39 @@
               e.preventDefault();
               e.stopPropagation();
 
+              const notesBody = notesSection.querySelector(
+                "[data-section-body]",
+              );
+              const notesHeader = notesSection.querySelector(
+                '[data-section-toggle="notes"]',
+              );
+              const notesIndicator = notesSection.querySelector(
+                ".journalist-section__toggle",
+              );
+
+              const setNotesOpen = (open) => {
+                if (notesBody) notesBody.hidden = !open;
+                if (notesHeader) {
+                  notesHeader.setAttribute(
+                    "aria-expanded",
+                    open ? "true" : "false",
+                  );
+                }
+                if (notesIndicator) {
+                  notesIndicator.textContent = open ? "-" : "+";
+                }
+                setSectionOpen("notes", !!open);
+              };
+
               const action = String(
                 noteActionEl.getAttribute("data-note-action") || "",
               )
                 .trim()
                 .toLowerCase();
+
+              if (notesBody && notesBody.hidden) {
+                setNotesOpen(true);
+              }
               const jid = String(
                 notesSection.getAttribute("data-jid") || "",
               ).trim();
@@ -7996,6 +8485,34 @@
             if (topicsSection) {
               e.preventDefault();
               e.stopPropagation();
+
+              const topicsBody = topicsSection.querySelector(
+                "[data-section-body]",
+              );
+              const topicsHeader = topicsSection.querySelector(
+                '[data-section-toggle="topics"]',
+              );
+              const topicsIndicator = topicsSection.querySelector(
+                ".journalist-section__toggle",
+              );
+
+              const setTopicsOpen = (open) => {
+                if (topicsBody) topicsBody.hidden = !open;
+                if (topicsHeader) {
+                  topicsHeader.setAttribute(
+                    "aria-expanded",
+                    open ? "true" : "false",
+                  );
+                }
+                if (topicsIndicator) {
+                  topicsIndicator.textContent = open ? "-" : "+";
+                }
+                setSectionOpen("topics", !!open);
+              };
+
+              if (topicsBody && topicsBody.hidden) {
+                setTopicsOpen(true);
+              }
 
               const action = String(
                 topicActionEl.getAttribute("data-topic-action") || "",
@@ -8256,6 +8773,110 @@
               const testataName = String(j?.testata || "").trim();
 
               const normalizeText = (v) => String(v ?? "").trim();
+
+              const updateJournalistHeaderContacts = () => {
+                const table = document.querySelector(
+                  "[data-journalist-header-contacts]",
+                );
+                if (!table) return;
+
+                const getPreferredContact = ({
+                  customItems,
+                  programItems,
+                  preferred,
+                  fallbackItem,
+                }) => {
+                  const custom = customItems.filter(
+                    (x) => normalizeText(x.value).length > 0,
+                  );
+                  const program = programItems.filter(
+                    (x) => normalizeText(x.value).length > 0,
+                  );
+
+                  if (program.length === 0 && fallbackItem) {
+                    const v = normalizeText(fallbackItem.value);
+                    if (v)
+                      program.push({ value: v, label: fallbackItem.label });
+                  }
+
+                  if (preferred && typeof preferred === "object") {
+                    const origin = normalizeText(
+                      preferred.origin,
+                    ).toLowerCase();
+                    const idx = preferred.index;
+                    if (
+                      origin === "custom" &&
+                      Number.isFinite(idx) &&
+                      custom[idx]
+                    ) {
+                      return { ...custom[idx] };
+                    }
+                    if (
+                      origin === "program" &&
+                      Number.isFinite(idx) &&
+                      program[idx]
+                    ) {
+                      return { ...program[idx] };
+                    }
+                  }
+
+                  if (custom[0]) return { ...custom[0] };
+                  if (program[0]) return { ...program[0] };
+                  return null;
+                };
+
+                const phone = getPreferredContact({
+                  customItems: (Array.isArray(j.customPhones)
+                    ? j.customPhones
+                    : []
+                  ).map((x) => ({
+                    value: normalizeText(x?.number ?? x?.tel ?? x?.value ?? x),
+                    label:
+                      normalizeText(x?.type ?? x?.kind ?? "") || "cellulare",
+                  })),
+                  programItems: (Array.isArray(j?.programPhones)
+                    ? j.programPhones
+                    : []
+                  ).map((x) => ({
+                    value: normalizeText(x?.number ?? x?.tel ?? x?.value ?? x),
+                    label:
+                      normalizeText(x?.type ?? x?.kind ?? "") || "cellulare",
+                  })),
+                  preferred: j?.preferredPhone,
+                  fallbackItem: { value: j?.tel, label: "cellulare" },
+                });
+
+                const email = getPreferredContact({
+                  customItems: (Array.isArray(j.customEmails)
+                    ? j.customEmails
+                    : []
+                  ).map((x) => ({
+                    value: normalizeText(x?.email ?? x?.value ?? x),
+                    label: normalizeText(x?.type ?? "") || "mail diretta",
+                  })),
+                  programItems: (Array.isArray(j?.programEmails)
+                    ? j.programEmails
+                    : []
+                  ).map((x) => ({
+                    value: normalizeText(x?.email ?? x?.value ?? x),
+                    label: normalizeText(x?.type ?? "") || "mail diretta",
+                  })),
+                  preferred: j?.preferredEmail,
+                  fallbackItem: { value: j?.email, label: "mail diretta" },
+                });
+
+                const setCell = (key, text) => {
+                  const el = table.querySelector(
+                    `[data-header-contact="${key}"]`,
+                  );
+                  if (el) el.textContent = text;
+                };
+
+                setCell("phone-value", normalizeText(phone?.value) || "n/d");
+                setCell("phone-label", normalizeText(phone?.label) || "");
+                setCell("email-value", normalizeText(email?.value) || "n/d");
+                setCell("email-label", normalizeText(email?.label) || "");
+              };
 
               const setPreferred = (origin, index) => {
                 if (kind === "phone") {
@@ -8829,6 +9450,7 @@
                 } else {
                   setPreferred("custom", idx);
                 }
+                updateJournalistHeaderContacts();
                 render();
                 scheduleRender();
                 return;
@@ -10358,6 +10980,14 @@
               renderSelectedPanelList();
             }
           }
+        });
+
+        testataPanelBody.addEventListener("keydown", (e) => {
+          if (e.key !== "Enter" && e.key !== " ") return;
+          const toggleEl = e.target?.closest?.("[data-section-toggle]");
+          if (!toggleEl) return;
+          e.preventDefault();
+          toggleEl.click();
         });
       }
 

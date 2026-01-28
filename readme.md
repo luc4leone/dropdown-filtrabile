@@ -14,13 +14,14 @@
   - non ovvio: cmd/enter -> ok, esc -> cancel in editor note e in input servizio
   - finite sezioni header, note, servizi, contatti diretti
     - todos:
-      - [ ] valuta apri / chiudi sezioni, in particolare sezione  "note"
       - [ ] da "ok" a "aggiungi"
       - [x] fix width input, select, textarea
       - [x] sposta nome in header (togli titolo "giornalista")
       - [x] sposta ok annulla su stessa riga input
       - [x] nuovo stile sotto-sezione contatti diretti
       - [x] aggiungi split button per aggiungi lista / spedizione
+      - [x] tel e email preferiti in header panel
+      - [x] le sezioni ora si aprono / chiudono 
 
 
 ## 27 gennaio 2026
