@@ -3377,6 +3377,13 @@
         return "Milano";
       }
 
+      function inferRedazioneTel(nome) {
+        const city = inferRedazioneIndirizzo(nome);
+        if (city === "Roma") return "06 3423123";
+        if (city === "Torino") return "011 3423123";
+        return "02 3423123";
+      }
+
       function buildTestateFromJournalists(list) {
         const byKey = new Map();
 
@@ -3410,6 +3417,7 @@
                 redazione: {
                   giornalisti: [],
                   indirizzo: `${city} — sede redazione`,
+                  telRedazione: inferRedazioneTel(nome),
                 },
                 email: `redazione@${domain}`,
                 telefono:
@@ -6083,6 +6091,179 @@
           const normalizeArrHeader = (v) => (Array.isArray(v) ? v : []);
           const normalizeTextHeader = (v) => String(v ?? "").trim();
 
+          const getJournalistRoleForTestata = (j, testataName) => {
+            return String(j?.ruolo || "").trim();
+          };
+
+          const getJournalistServiceForTestata = (j, testataName) => {
+            return String(j?.servizio || "").trim();
+          };
+
+          const getWordCloudTermsForService = (service) => {
+            const s = String(service || "")
+              .trim()
+              .toLowerCase();
+
+            if (s.includes("agric")) {
+              return [
+                { text: "PAC", size: 24 },
+                { text: "filiera", size: 22 },
+                { text: "sostenibilità", size: 20 },
+                { text: "zootecnia", size: 18 },
+                { text: "irrigazione", size: 18 },
+                { text: "prezzi", size: 16 },
+                { text: "consorzi", size: 16 },
+                { text: "produzione", size: 15 },
+                { text: "fitofarmaci", size: 14 },
+                { text: "export", size: 14 },
+                { text: "raccolto", size: 13 },
+                { text: "dati", size: 12 },
+              ];
+            }
+
+            if (
+              s.includes("software") ||
+              s.includes("it") ||
+              s.includes("digit")
+            ) {
+              return [
+                { text: "cloud", size: 24 },
+                { text: "cybersecurity", size: 22 },
+                { text: "AI", size: 20 },
+                { text: "startup", size: 18 },
+                { text: "open source", size: 18 },
+                { text: "infrastrutture", size: 16 },
+                { text: "privacy", size: 16 },
+                { text: "API", size: 15 },
+                { text: "SaaS", size: 14 },
+                { text: "performance", size: 14 },
+                { text: "prodotti", size: 13 },
+                { text: "trend", size: 12 },
+              ];
+            }
+
+            if (
+              s.includes("cultura") ||
+              s.includes("libri") ||
+              s.includes("editoria")
+            ) {
+              return [
+                { text: "recensioni", size: 24 },
+                { text: "interviste", size: 22 },
+                { text: "autori", size: 20 },
+                { text: "festival", size: 18 },
+                { text: "novità", size: 18 },
+                { text: "librerie", size: 16 },
+                { text: "premi", size: 16 },
+                { text: "saggi", size: 15 },
+                { text: "narrativa", size: 14 },
+                { text: "rubriche", size: 14 },
+                { text: "agenda", size: 13 },
+                { text: "lettori", size: 12 },
+              ];
+            }
+
+            return [
+              { text: "attualità", size: 24 },
+              { text: "approfondimento", size: 22 },
+              { text: "intervista", size: 20 },
+              { text: "analisi", size: 18 },
+              { text: "mercato", size: 18 },
+              { text: "report", size: 16 },
+              { text: "dati", size: 16 },
+              { text: "trend", size: 14 },
+              { text: "aziende", size: 14 },
+              { text: "eventi", size: 13 },
+              { text: "territorio", size: 13 },
+              { text: "inchiesta", size: 12 },
+            ];
+          };
+
+          const getMockArticlesForService = (service) => {
+            const s = String(service || "")
+              .trim()
+              .toLowerCase();
+
+            if (s.includes("agric")) {
+              return [
+                {
+                  title:
+                    "PAC 2025: nuove misure e impatto su aziende agricole italiane",
+                  date: "12/01/2025",
+                },
+                {
+                  title:
+                    "Filiera corta e prezzi: cosa cambia tra GDO e mercati locali",
+                  date: "28/11/2024",
+                },
+                {
+                  title:
+                    "Siccità e irrigazione: strategie e investimenti nelle regioni del Centro",
+                  date: "04/10/2024",
+                },
+              ];
+            }
+
+            if (
+              s.includes("software") ||
+              s.includes("it") ||
+              s.includes("digit")
+            ) {
+              return [
+                {
+                  title: "Cloud sovrano: opportunità e rischi per le PMI",
+                  date: "19/12/2024",
+                },
+                {
+                  title:
+                    "Cybersecurity: attacchi in crescita e nuove best practice",
+                  date: "03/11/2024",
+                },
+                {
+                  title: "AI generativa in azienda: casi d'uso e governance",
+                  date: "22/09/2024",
+                },
+              ];
+            }
+
+            if (
+              s.includes("cultura") ||
+              s.includes("libri") ||
+              s.includes("editoria")
+            ) {
+              return [
+                {
+                  title: "Editoria 2025: trend di lettura e nuove collane",
+                  date: "07/01/2025",
+                },
+                {
+                  title:
+                    "Intervista all'autore: scrittura, ricerca e immaginario",
+                  date: "16/11/2024",
+                },
+                {
+                  title: "Festival letterari: calendario, temi e pubblico",
+                  date: "01/10/2024",
+                },
+              ];
+            }
+
+            return [
+              {
+                title: "Attualità: i temi che stanno ridisegnando il mercato",
+                date: "14/01/2025",
+              },
+              {
+                title: "Dati e trend: come leggere numeri e segnali deboli",
+                date: "20/11/2024",
+              },
+              {
+                title: "Intervista: voci dal territorio e casi emblematici",
+                date: "08/10/2024",
+              },
+            ];
+          };
+
           const getPreferredContact = ({
             customItems,
             programItems,
@@ -7176,18 +7357,86 @@
 
           const redazioniList = document.createElement("ul");
           redazioniList.className = "journalist-list";
-          redazioniList.innerHTML = `
-              <li>
-                <a href="#" class="testata-link journalist-list__title">Corriere Motori</a>
-                <div class="muted">Redattore — Motori, Auto/Automotive, Moto</div>
-                <div class="muted">tel redazione: 02 3423123</div>
-              </li>
-              <li>
-                <a href="#" class="testata-link journalist-list__title">Auto oggi</a>
-                <div class="muted">Redattore — Design, Auto/Automotive</div>
-                <div class="muted">tel redazione: 06 3423123</div>
-              </li>
-          `;
+
+          const makeRedazioneTable = (servizio, ruolo, telRedazione) => {
+            const wrap = document.createElement("div");
+            wrap.className = "journalist-list__table";
+
+            const table = document.createElement("table");
+            table.className = "journalist-contact-table";
+
+            const colgroup = document.createElement("colgroup");
+            const col1 = document.createElement("col");
+            col1.style.width = "24ch";
+            const col2 = document.createElement("col");
+            col2.style.width = "16ch";
+            colgroup.appendChild(col1);
+            colgroup.appendChild(col2);
+            table.appendChild(colgroup);
+
+            const tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+
+            const makeRow = (value, label) => {
+              const tr = document.createElement("tr");
+
+              const tdValue = document.createElement("td");
+              const sValue = document.createElement("span");
+              sValue.className = "journalist-contact-cell t-value";
+              sValue.textContent = String(value || "").trim() || "n/d";
+              tdValue.appendChild(sValue);
+
+              const tdLabel = document.createElement("td");
+              const sLabel = document.createElement("span");
+              sLabel.className = "journalist-contact-cell t-label";
+              sLabel.textContent = String(label || "").trim();
+              tdLabel.appendChild(sLabel);
+
+              tr.appendChild(tdValue);
+              tr.appendChild(tdLabel);
+              return tr;
+            };
+
+            tbody.appendChild(makeRow(servizio, "servizio"));
+            tbody.appendChild(makeRow(ruolo, "ruolo"));
+            tbody.appendChild(makeRow(telRedazione, "tel redazione"));
+
+            wrap.appendChild(table);
+            return wrap;
+          };
+
+          {
+            const journalistTestate = getJournalistTestate(j);
+            if (!journalistTestate.length) {
+              const li = document.createElement("li");
+              li.innerHTML = '<span class="muted">n/d</span>';
+              redazioniList.appendChild(li);
+            } else {
+              for (const tname of journalistTestate) {
+                const li = document.createElement("li");
+
+                const link = document.createElement("a");
+                link.href = "#";
+                link.className = "testata-link journalist-list__title";
+                link.textContent = tname;
+                link.setAttribute("data-testata", tname);
+                li.appendChild(link);
+
+                const role = getJournalistRoleForTestata(j, tname);
+                const servizio = getJournalistServiceForTestata(j, tname);
+                const tKey = normalizeTestataKey(tname);
+                const t = testateByKey.get(tKey);
+                const telRedazione = String(
+                  t?.redazione?.telRedazione || "",
+                ).trim();
+
+                li.appendChild(
+                  makeRedazioneTable(servizio, role, telRedazione),
+                );
+                redazioniList.appendChild(li);
+              }
+            }
+          }
 
           const redazioniBody = document.createElement("div");
           redazioniBody.className = "journalist-section__body";
@@ -7232,7 +7481,6 @@
 
           articlesTitle.appendChild(articlesHeading);
           articlesTitle.appendChild(articlesMeta);
-          articlesTitle.appendChild(articlesLink);
           articlesHeader.appendChild(articlesTitle);
 
           const articlesToggle = document.createElement("span");
@@ -7243,21 +7491,48 @@
 
           const articlesList = document.createElement("ul");
           articlesList.className = "journalist-list";
-          articlesList.innerHTML = `
-              <li>
-                <a href="#" class="c-link c-link--nav journalist-list__title">Auto elettriche: il mercato italiano cresce del 30% nel 2024</a>
-                <div class="muted">31/12/2024</div>
-              </li>
-              <li>
-                <a href="#" class="c-link c-link--nav journalist-list__title">Nuova mobilità elettrica: la sfida delle batterie al litio</a>
-                <div class="muted">15/11/2024</div>
-              </li>
-          `;
+          {
+            const items = getMockArticlesForService(j?.servizio);
+            for (const it of items) {
+              const li = document.createElement("li");
+
+              const a = document.createElement("a");
+              a.href = "#";
+              a.className = "c-link c-link--nav journalist-list__title";
+              a.textContent = String(it?.title || "");
+
+              const date = document.createElement("div");
+              date.className = "muted";
+              date.textContent = String(it?.date || "");
+
+              li.appendChild(a);
+              li.appendChild(date);
+              articlesList.appendChild(li);
+            }
+          }
+
+          const wordCloud = document.createElement("div");
+          wordCloud.className = "journalist-wordcloud";
+          wordCloud.setAttribute("data-wordcloud", "");
+          {
+            const terms = getWordCloudTermsForService(j?.servizio);
+            for (const t of terms) {
+              const w = document.createElement("span");
+              w.className = "journalist-wordcloud__word";
+              w.textContent = String(t?.text || "");
+              const fs = Number(t?.size || 0);
+              if (Number.isFinite(fs) && fs > 0) {
+                w.style.fontSize = `${fs}px`;
+              }
+              wordCloud.appendChild(w);
+            }
+          }
 
           const articlesBody = document.createElement("div");
           articlesBody.className = "journalist-section__body";
           articlesBody.setAttribute("data-section-body", "");
           articlesBody.hidden = !articlesOpen;
+          articlesBody.appendChild(wordCloud);
           articlesBody.appendChild(articlesList);
 
           articlesSection.appendChild(articlesHeader);
@@ -7302,22 +7577,92 @@
 
           const mailingList = document.createElement("ul");
           mailingList.className = "journalist-list";
-          mailingList.innerHTML = `
-              <li>
-                <a href="#" class="testata-link journalist-list__title">Automotive e mobilità sostenibile</a>
-                <div class="journalist-list__meta-row">
-                  <span class="muted">modificata il 19-5-2025</span>
-                  <span class="muted">877 giornalisti / 134 testate</span>
-                </div>
-              </li>
-              <li>
-                <a href="#" class="testata-link journalist-list__title">Innovazione tecnologica - settore auto</a>
-                <div class="journalist-list__meta-row">
-                  <span class="muted">modificata il 2-5-2025</span>
-                  <span class="muted">542 giornalisti / 89 testate</span>
-                </div>
-              </li>
-          `;
+          mailingList.classList.add("journalist-mailing-list");
+
+          const getTestateCountForJournalistIds = (journalistIds) => {
+            const ids = Array.isArray(journalistIds) ? journalistIds : [];
+            const keys = new Set();
+            for (const jid of ids) {
+              const id = String(jid || "").trim();
+              if (!id) continue;
+              const jx = (journalists || []).find(
+                (x) => getJournalistId(x) === id,
+              );
+              if (!jx) continue;
+              const testate = getJournalistTestate(jx);
+              for (const tname of testate) {
+                const k = normalizeTestataKey(tname);
+                if (k) keys.add(k);
+              }
+            }
+            return keys.size;
+          };
+
+          {
+            const jid = getJournalistId(j);
+            const allLists = Array.isArray(appState.mailingLists)
+              ? appState.mailingLists
+              : [];
+            const lists = allLists.filter((ml) => {
+              if (!ml || typeof ml !== "object") return false;
+              const ids = Array.isArray(ml.journalistIds)
+                ? ml.journalistIds
+                : [];
+              return ids.includes(jid);
+            });
+
+            if (!lists.length) {
+              const li = document.createElement("li");
+              li.innerHTML = '<span class="muted">n/d</span>';
+              mailingList.appendChild(li);
+            } else {
+              for (const ml of lists) {
+                const li = document.createElement("li");
+
+                const titleRow = document.createElement("div");
+                titleRow.className = "journalist-list__title-row";
+
+                const link = document.createElement("a");
+                link.href = "#";
+                link.className = "testata-link journalist-list__title";
+                link.textContent = String(ml?.name || "");
+                link.addEventListener("click", (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openMailingListById(String(ml?.id || ""));
+                });
+
+                const nJournalists = Array.isArray(ml?.journalistIds)
+                  ? ml.journalistIds.length
+                  : 0;
+                const nTestate = getTestateCountForJournalistIds(
+                  ml?.journalistIds,
+                );
+                const pill = document.createElement("span");
+                pill.className = "pill";
+                pill.textContent = `${nJournalists} giornalisti / ${nTestate} testate`;
+
+                titleRow.appendChild(link);
+                titleRow.appendChild(pill);
+
+                const metaRow = document.createElement("div");
+                metaRow.className = "journalist-list__meta-row";
+                const metaLeft = document.createElement("span");
+                metaLeft.className = "muted";
+                const createdAt = Number(ml?.createdAt || 0);
+                if (Number.isFinite(createdAt) && createdAt > 0) {
+                  metaLeft.textContent = `modificata il ${new Date(createdAt).toLocaleDateString("it-IT")}`;
+                } else {
+                  metaLeft.textContent = "";
+                }
+                metaRow.appendChild(metaLeft);
+
+                li.appendChild(titleRow);
+                if (metaLeft.textContent) li.appendChild(metaRow);
+                mailingList.appendChild(li);
+              }
+            }
+          }
 
           const mailingBody = document.createElement("div");
           mailingBody.className = "journalist-section__body";
@@ -7370,17 +7715,21 @@
           shipmentsList.className = "journalist-list";
           shipmentsList.innerHTML = `
               <li>
-                <a href="#" class="c-link c-link--nav journalist-list__title">CS - Lancio nuova gamma SUV elettrici premium</a>
+                <div class="journalist-list__title-row">
+                  <a href="#" class="c-link c-link--nav journalist-list__title">CS - Lancio nuova gamma SUV elettrici premium</a>
+                  <span class="c-pill">aperta</span>
+                </div>
                 <div class="journalist-list__meta-row">
                   <span class="muted">Spedita il 8-5-2025</span>
-                  <span class="c-pill">aperta</span>
                 </div>
               </li>
               <li>
-                <a href="#" class="c-link c-link--nav journalist-list__title">CS - Record vendite auto ibride nel primo trimestre 2025</a>
+                <div class="journalist-list__title-row">
+                  <a href="#" class="c-link c-link--nav journalist-list__title">CS - Record vendite auto ibride nel primo trimestre 2025</a>
+                  <span class="c-pill">chiusa</span>
+                </div>
                 <div class="journalist-list__meta-row">
                   <span class="muted">Spedita il 15-3-2025</span>
-                  <span class="c-pill">chiusa</span>
                 </div>
               </li>
           `;

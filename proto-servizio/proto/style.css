@@ -1657,11 +1657,32 @@ body[data-active-view="filtra"] .card-remove-from-list {
   margin-bottom: 4px;
 }
 
+.journalist-list__table {
+  display: block;
+}
+
 .journalist-list__meta-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+}
+
+.journalist-list__title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.journalist-list__title-row .journalist-list__title {
+  margin-bottom: 0;
+}
+
+.journalist-mailing-list > li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .journalist-notes {
@@ -1849,6 +1870,25 @@ body[data-active-view="filtra"] .card-remove-from-list {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.journalist-wordcloud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--border-radius-xs);
+  background: var(--grey-050);
+  max-width: 100%;
+}
+
+.journalist-wordcloud__word {
+  color: var(--grey-900);
+  line-height: 1.1;
   white-space: nowrap;
 }
 

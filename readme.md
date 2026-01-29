@@ -1,28 +1,24 @@
 # UX / UI Design M\_\_
 
 ## _todo_
-- [ ] *completa scheda testata*
 - [ ] *suggerimenti AI*
 - [ ] *disegnare Account*
 - [ ] *mobile app*
 - [ ] *filtro sede giornalista*
 - [ ] *nuove statistiche proposte per dashboard*
+- [ ] *scheda giornalista da "ok" a "aggiungi"*
 
 ## _in progress_
-- [ ] *completa scheda giornalista*
+- [ ] *completa scheda testata*
+
+## 29 gennaio 2026
+- [x] **completa scheda giornalista**
   - adeguamento a UI in https://luc4leone.github.io/mediaddress-grafica/examples/index.html
   - non ovvio: cmd/enter -> ok, esc -> cancel in editor note e in input servizio
-  - finite sezioni header, note, servizi, contatti diretti
-    - todos:
-      - [ ] da "ok" a "aggiungi"
-      - [x] fix width input, select, textarea
-      - [x] sposta nome in header (togli titolo "giornalista")
-      - [x] sposta ok annulla su stessa riga input
-      - [x] nuovo stile sotto-sezione contatti diretti
-      - [x] aggiungi split button per aggiungi lista / spedizione
-      - [x] tel e email preferiti in header panel
-      - [x] le sezioni ora si aprono / chiudono 
-
+  - note:
+    - il link "aggiungi redazione" è mockato
+    - le spedizioni sono mockate
+    - ruolo è unico, non ancora per redazione
 
 ## 27 gennaio 2026
 
