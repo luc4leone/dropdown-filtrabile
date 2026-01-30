@@ -35,6 +35,44 @@
   --black-alpha-18: rgba(0, 0, 0, 0.18);
   --black-alpha-22: rgba(0, 0, 0, 0.22);
   --black-alpha-35: rgba(0, 0, 0, 0.35);
+
+  --nav-bg: hsl(219 39% 24%);
+  --nav-link: hsl(219 40% 96%);
+  --nav-separator: rgba(255, 255, 255, 0.22);
+  --nav-hover-bg: rgba(255, 255, 255, 0.12);
+  --nav-active-bg: #fff79c;
+  --nav-active-fg: hsl(219 25% 27%);
+
+  --control-border: var(--grey-300);
+  --control-checkmark: #ffffff;
+}
+
+body[data-theme="dark"] {
+  --white: hsl(219 18% 10%);
+  --grey-050: hsl(219 18% 12%);
+  --grey-080: hsl(219 18% 13%);
+  --grey-100: hsl(219 18% 15%);
+  --grey-200: hsl(219 16% 22%);
+  --grey-300: hsl(219 14% 30%);
+  --grey-500: hsl(219 12% 58%);
+  --grey-750: hsl(219 12% 70%);
+  --grey-800: hsl(219 12% 78%);
+  --grey-900: hsl(219 18% 92%);
+  --grey-950: hsl(219 20% 96%);
+
+  --blue-500: hsl(219 90% 70%);
+  --blue-800: hsl(219 18% 12%);
+  --yellow-200: hsl(46 92% 62%);
+
+  --white-alpha-12: rgba(255, 255, 255, 0.08);
+  --white-alpha-22: rgba(255, 255, 255, 0.14);
+
+  --black-alpha-15: rgba(0, 0, 0, 0.35);
+  --black-alpha-18: rgba(0, 0, 0, 0.45);
+  --black-alpha-22: rgba(0, 0, 0, 0.55);
+  --black-alpha-35: rgba(0, 0, 0, 0.7);
+
+  --control-border: var(--grey-500);
 }
 
 body {
@@ -98,8 +136,7 @@ body {
 
 .nav-sidebar {
   width: 102px;
-  border-right: 1px solid var(--grey-200);
-  background: var(--blue-800);
+  background: var(--nav-bg);
   box-sizing: border-box;
   display: flex;
   height: 100vh;
@@ -122,7 +159,7 @@ body {
 
 .nav-sidebar .nav-separator {
   height: 1px;
-  background: var(--white-alpha-22);
+  background: var(--nav-separator);
   margin: 6px 10px;
   border-radius: 999px;
 }
@@ -137,7 +174,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  color: var(--grey-100);
+  color: var(--nav-link);
   text-decoration: none;
   font-size: var(--fs-md);
   font-weight: 500;
@@ -223,15 +260,23 @@ body {
   --nav-icon-url: url("icons/account.svg");
 }
 
+.nav-sidebar .nav-icon[data-icon="dark_mode"] {
+  --nav-icon-url: url("icons/dark_mode.svg");
+}
+
+.nav-sidebar .nav-icon[data-icon="light_mode"] {
+  --nav-icon-url: url("icons/light_mode.svg");
+}
+
 .nav-sidebar a.is-active {
   /*background: linear-gradient(90deg, #fff79c 24.74%, #334155 981.07%); */
-  background-color: var(--yellow-200);
-  color: var(--grey-900);
+  background-color: var(--nav-active-bg);
+  color: var(--nav-active-fg);
   font-weight: 600;
 }
 
 .nav-sidebar a:hover {
-  background: var(--white-alpha-12);
+  background: var(--nav-hover-bg);
 }
 
 .nav-sidebar a.is-active:hover {
@@ -966,6 +1011,10 @@ body[data-active-view="filtra"] .card-remove-from-list {
   box-sizing: border-box;
 }
 
+.sidebar .dropdown-input {
+  background: var(--transparent);
+}
+
 #chipContainer {
   display: flex;
   flex-wrap: wrap;
@@ -1005,6 +1054,51 @@ body[data-active-view="filtra"] .card-remove-from-list {
   min-width: 60px;
   flex: 1;
   padding: 4px 2px;
+}
+
+.sidebar .chip-text-input {
+  background: var(--transparent);
+  color: inherit;
+}
+
+.dropdown-checkbox,
+.card-select,
+.share-list-user input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--control-border);
+  border-radius: 3px;
+  background: var(--transparent);
+  display: inline-grid;
+  place-content: center;
+}
+
+.dropdown-checkbox:checked,
+.card-select:checked,
+.share-list-user input[type="checkbox"]:checked {
+  background: var(--blue-500);
+  border-color: var(--blue-500);
+}
+
+.dropdown-checkbox:checked::after,
+.card-select:checked::after,
+.share-list-user input[type="checkbox"]:checked::after {
+  content: "";
+  width: 7px;
+  height: 4px;
+  border-left: 2px solid var(--control-checkmark);
+  border-bottom: 2px solid var(--control-checkmark);
+  transform: rotate(-45deg);
+  margin-top: -1px;
+}
+
+.dropdown-checkbox:focus-visible,
+.card-select:focus-visible,
+.share-list-user input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--blue-500);
+  outline-offset: 2px;
 }
 
 .autocomplete-inline {

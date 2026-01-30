@@ -19,7 +19,7 @@
      - sezione articoli: manca rassegna
 
 ## 29 gennaio 2026
-- [x] **completata scheda giornalista**
+- [x] **completato 90% scheda giornalista**
   - adeguamento a UI in https://luc4leone.github.io/mediaddress-grafica/examples/index.html
   - non ovvio: cmd/enter -> ok, esc -> cancel in editor note e in input servizio
   - note:
