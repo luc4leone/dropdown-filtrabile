@@ -3,7 +3,7 @@
 ## _todo_
 - [ ] *suggerimenti AI*
 - [ ] *disegnare Account*
-- [ ] *mobile app*
+- [ ] *mobile view*
 - [ ] *filtro sede giornalista*
 - [ ] *nuove statistiche proposte per dashboard*
 - [ ] *scheda giornalista da "ok" a "aggiungi"*
@@ -12,6 +12,7 @@
 - [ ] *completa scheda testata*
 
 ## 30 gennaio 2026
+ - [x] **disegnato prima bozza dark mode**
  - [] **completata scheda giornalista**
    - sezione mailing lists aggiunto filtra e ordina
    - sezione spedizioni aggiunto filtra e ordina
