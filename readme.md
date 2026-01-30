@@ -11,8 +11,15 @@
 ## _in progress_
 - [ ] *completa scheda testata*
 
+## 30 gennaio 2026
+ - [] **completata scheda giornalista**
+   - sezione mailing lists aggiunto filtra e ordina
+   - sezione spedizioni aggiunto filtra e ordina
+   - note:
+     - sezione articoli: manca rassegna
+
 ## 29 gennaio 2026
-- [x] **completa scheda giornalista**
+- [x] **completata scheda giornalista**
   - adeguamento a UI in https://luc4leone.github.io/mediaddress-grafica/examples/index.html
   - non ovvio: cmd/enter -> ok, esc -> cancel in editor note e in input servizio
   - note:
@@ -22,7 +29,7 @@
 
 ## 27 gennaio 2026
 
-- [x] **aumentato padding verticale link in nav bar**
+- [x] **aumentato padding verticale tra i link in nav sidebar**
 
 ## 24 gennaio 2026
 

@@ -681,7 +681,7 @@ body {
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 420px));
   gap: 14px !important;
   row-gap: 14px !important;
   column-gap: 14px !important;
@@ -696,7 +696,7 @@ body {
 }
 
 body.selection-panel-open .cards-grid {
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 420px));
 }
 
 .card {
