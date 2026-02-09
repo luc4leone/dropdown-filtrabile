@@ -726,7 +726,7 @@ body {
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 420px));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 14px !important;
   row-gap: 14px !important;
   column-gap: 14px !important;
@@ -741,7 +741,7 @@ body {
 }
 
 body.selection-panel-open .cards-grid {
-  grid-template-columns: repeat(auto-fit, minmax(340px, 420px));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
 .card {
@@ -752,6 +752,7 @@ body.selection-panel-open .cards-grid {
   background: var(--white);
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
   position: relative;
+  container-type: inline-size;
 }
 
 .card.is-selected {
@@ -762,6 +763,7 @@ body.selection-panel-open .cards-grid {
   position: absolute;
   top: -10px;
   right: -10px;
+  display: none;
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
   user-select: none;
@@ -769,6 +771,7 @@ body.selection-panel-open .cards-grid {
 }
 
 body[data-active-view="mailing-list"] .card-remove-from-list {
+  display: inline-block;
   opacity: 0;
   pointer-events: none;
   transition: opacity 120ms ease;
@@ -793,8 +796,8 @@ body[data-active-view="filtra"] .card-remove-from-list {
 .card-top {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: nowrap;
   margin-bottom: 8px;
 }
 
@@ -802,6 +805,7 @@ body[data-active-view="filtra"] .card-remove-from-list {
   display: flex;
   align-items: baseline;
   gap: 10px;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
@@ -819,6 +823,31 @@ body[data-active-view="filtra"] .card-remove-from-list {
   text-overflow: ellipsis;
 }
 
+.card-name.card-name--person {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.card-name.card-name--person .card-first-name {
+  flex: 0 0 auto;
+}
+
+.card.card--hide-first-name .card-name.card-name--person .card-first-name {
+  display: none;
+}
+
+.card-name.card-name--person .card-last-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .card-name-label {
   cursor: pointer;
   min-width: 0;
@@ -828,13 +857,14 @@ body[data-active-view="filtra"] .card-remove-from-list {
   font-size: var(--fs-sm);
   color: var(--grey-750);
   margin: 0;
+  margin-left: auto;
   text-align: right;
   white-space: nowrap;
 }
 
 .card-row {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: 80px 1fr;
   gap: 10px;
   font-size: var(--fs-md);
   padding: 4px 0;
@@ -2390,7 +2420,7 @@ body[data-active-view="filtra"] .card-remove-from-list {
     width: 300px;
   }
   .cards-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 }
 

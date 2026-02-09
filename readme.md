@@ -11,9 +11,14 @@
 ## _in progress_
 - [ ] *completa scheda testata*
 
+## 9 febbraio 2026
+- [x] fix larghezza cards
+  - le cards devono occupare sempre tutto lo spazio della riga
+- fix regola troncatura nome e cognome in card
+
 ## 30 gennaio 2026
- - [x] **disegnato prima bozza dark mode**
- - [] **completata scheda giornalista**
+ - [x] disegnato prima bozza dark mode
+ - [] completata scheda giornalista
    - sezione mailing lists aggiunto filtra e ordina
    - sezione spedizioni aggiunto filtra e ordina
    - note:

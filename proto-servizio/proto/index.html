@@ -2942,7 +2942,7 @@
         },
         {
           nome: "Valentina",
-          cognome: "Costa",
+          cognome: "Costamagnadelgado",
           ruolo: "Collaboratrice",
           servizio: "Cultura",
           telefono: "+39 346 550 2011",
@@ -4854,6 +4854,11 @@
         card.dataset.servizio = j.servizio;
         card.dataset.ruolo = j.ruolo;
 
+        const rawFirstName = String(j?.nome || "").trim();
+        const rawLastName = String(j?.cognome || "").trim();
+        const fullName = `${rawFirstName} ${rawLastName}`.trim();
+        card.dataset.fullName = fullName;
+
         const normalizeText = (v) => String(v ?? "").trim();
 
         const pickProgramPhone = () => {
@@ -4977,8 +4982,12 @@
         const checkboxId = `card-select-${jid.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
 
         const activeTerms = getActiveTextTerms();
-        const highlightedName = highlightHtmlMulti(
-          `${j.nome} ${j.cognome}`,
+        const highlightedFirstName = highlightHtmlMulti(
+          rawFirstName,
+          activeTerms,
+        );
+        const highlightedLastName = highlightHtmlMulti(
+          rawLastName,
           activeTerms,
         );
         const testate = getJournalistTestate(j);
@@ -5051,7 +5060,7 @@
                 ${isSelected ? "checked" : ""}
               />
               <label class="card-name-label" for="${checkboxId}">
-                <h3 class="card-name">${highlightedName}</h3>
+                <h3 class="card-name card-name--person"><span class="card-first-name">${highlightedFirstName}</span><span class="card-last-name" title="${escapeHtml(fullName)}">${highlightedLastName}</span></h3>
               </label>
               <a
                 href="#"
@@ -5063,7 +5072,7 @@
             </div>
             <p class="card-role">${j.ruolo}</p>
           </div>
-          <div class="card-row"><div class="card-label">Servizio giornalistico</div><div class="card-value">${
+          <div class="card-row"><div class="card-label">Servizio</div><div class="card-value">${
             j.servizio
           }</div></div>
           <div class="card-row"><div class="card-label">Telefono</div><div class="card-value">${
@@ -5080,6 +5089,60 @@
           }</div><div class="card-value muted card-note">${highlightedNote}</div></div>
         `;
         return card;
+      }
+
+      const CARD_TOP_MIN_GAP_PX = 8;
+      let cardNameLayoutRaf = 0;
+      let cardsGridResizeObserver = null;
+
+      function updateCardNameLayout(card) {
+        if (!card) return;
+        const nameRow = card.querySelector(".card-top .card-name-row");
+        const roleEl = card.querySelector(".card-top .card-role");
+        const schedaLink = card.querySelector(
+          ".card-top .card-name-row .journalist-link",
+        );
+        const lastNameEl = card.querySelector(
+          ".card-name.card-name--person .card-last-name",
+        );
+        const fullName = String(card.dataset.fullName || "").trim();
+
+        if (lastNameEl && fullName) {
+          lastNameEl.setAttribute("title", fullName);
+        }
+
+        if (!nameRow || !roleEl || !schedaLink || !lastNameEl) return;
+
+        card.classList.remove("card--hide-first-name");
+
+        const gap = Math.round(
+          roleEl.getBoundingClientRect().left -
+            schedaLink.getBoundingClientRect().right,
+        );
+
+        const truncationDelta = Math.round(
+          lastNameEl.scrollWidth - lastNameEl.clientWidth,
+        );
+        const lastNameIsTruncated = truncationDelta > 2;
+
+        const shouldHideFirstName =
+          lastNameIsTruncated || gap < CARD_TOP_MIN_GAP_PX;
+
+        if (shouldHideFirstName) {
+          card.classList.add("card--hide-first-name");
+        }
+      }
+
+      function scheduleUpdateCardNameLayouts() {
+        if (cardNameLayoutRaf) return;
+        cardNameLayoutRaf = requestAnimationFrame(() => {
+          cardNameLayoutRaf = 0;
+          const grid = document.getElementById("cardsGrid");
+          if (!grid) return;
+          for (const card of grid.querySelectorAll(".card")) {
+            updateCardNameLayout(card);
+          }
+        });
       }
 
       function createTestataCard(t, activeTerms) {
@@ -11051,6 +11114,7 @@
 
         requestAnimationFrame(() => {
           updateJournalistTestateLabelLinks(grid);
+          scheduleUpdateCardNameLayouts();
         });
 
         if (!active) {
@@ -11264,6 +11328,17 @@
 
       const cardsGrid = document.getElementById("cardsGrid");
       if (cardsGrid) {
+        scheduleUpdateCardNameLayouts();
+
+        cardsGridResizeObserver = new ResizeObserver(() => {
+          scheduleUpdateCardNameLayouts();
+        });
+        cardsGridResizeObserver.observe(cardsGrid);
+
+        window.addEventListener("resize", () => {
+          scheduleUpdateCardNameLayouts();
+        });
+
         cardsGrid.addEventListener("click", (e) => {
           const removeFromListBtn = e.target?.closest?.(
             ".card-remove-from-list[data-remove-from-list-jid]",
