@@ -12,9 +12,10 @@
 - [ ] *completa scheda testata*
 
 ## 9 febbraio 2026
+- [ ] applicare stessa logica di troncatura nome giornalista in selezionati e scheda
 - [x] fix larghezza cards
   - le cards devono occupare sempre tutto lo spazio della riga
-- fix regola troncatura nome e cognome in card
+- [x] fix regola troncatura nome e cognome in card
 
 ## 30 gennaio 2026
  - [x] disegnato prima bozza dark mode

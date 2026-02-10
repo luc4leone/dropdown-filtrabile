@@ -1396,6 +1396,25 @@
         }
       }
 
+      function getSectionOpen(key, defaultOpen) {
+        const v = appState?.ui?.sectionOpen?.[key];
+        return typeof v === "boolean" ? v : !!defaultOpen;
+      }
+
+      function setSectionOpen(key, open) {
+        if (!appState.ui || typeof appState.ui !== "object") {
+          appState.ui = {};
+        }
+        if (
+          !appState.ui.sectionOpen ||
+          typeof appState.ui.sectionOpen !== "object"
+        ) {
+          appState.ui.sectionOpen = {};
+        }
+        appState.ui.sectionOpen[key] = !!open;
+        saveAppState(appState);
+      }
+
       if (typeof appState.sortMode !== "string") {
         appState.sortMode = "name-asc";
       }
@@ -2961,12 +2980,12 @@
           note: "Connettività e infrastrutture.",
         },
         {
-          nome: "Marta",
-          cognome: "Rizzo",
+          nome: "Marta María",
+          cognome: "Romero Rodríguez de Mondelo",
           ruolo: "Redattrice",
           servizio: "Letteratura",
           telefono: "+39 333 470 9981",
-          email: "m.rizzo@ilmanifesto.it",
+          email: "a.demonelo@ilmanifesto.it",
           testata: "il manifesto",
           note: "Interviste e approfondimenti.",
         },
@@ -3537,7 +3556,188 @@
         );
       }
 
+      function hashStringToUint(str) {
+        let h = 2166136261;
+        const s = String(str || "");
+        for (let i = 0; i < s.length; i++) {
+          h ^= s.charCodeAt(i);
+          h = Math.imul(h, 16777619) >>> 0;
+        }
+        return h >>> 0;
+      }
+
+      function pickSomeUnique(items, count, seedStr) {
+        const arr = Array.isArray(items) ? [...items] : [];
+        if (count <= 0 || arr.length === 0) return [];
+        let seed = hashStringToUint(seedStr);
+        for (let i = arr.length - 1; i > 0; i--) {
+          seed = (Math.imul(seed, 1103515245) + 12345) >>> 0;
+          const j = seed % (i + 1);
+          const tmp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = tmp;
+        }
+        return arr.slice(0, Math.min(count, arr.length));
+      }
+
+      function buildRedazioniCentraliFromTestate(testate) {
+        const CITY_META = {
+          Milano: {
+            address: "Via Dante, 12 - 20121 Milano",
+            phone: "02 123456",
+          },
+          Roma: {
+            address: "Via Roma, 1 - 00100 Roma",
+            phone: "06 123456",
+          },
+          Torino: {
+            address: "Corso Francia, 10 - 10138 Torino",
+            phone: "011 123456",
+          },
+        };
+
+        const TOPICS = [
+          "sport",
+          "economia",
+          "cronaca",
+          "politica",
+          "cultura",
+          "tecnologia",
+        ];
+
+        const LOCALI = [
+          "bologna",
+          "napoli",
+          "firenze",
+          "genova",
+          "palermo",
+          "bari",
+        ];
+
+        const ESTERE = [
+          "londra",
+          "new york",
+          "mosca",
+          "pechino",
+          "tokyo",
+          "parigi",
+        ];
+
+        const CITY_ADDRESSES = {
+          londra: "10 Downing Street, London",
+          "new york": "350 5th Ave, New York",
+          mosca: "ul. Tverskaya, Mosca",
+          pechino: "Chang'an Ave, Pechino",
+          tokyo: "Chiyoda, Tokyo",
+          parigi: "10 Rue de Rivoli, Paris",
+          bologna: "Via Indipendenza, 1 - Bologna",
+          napoli: "Via Toledo, 10 - Napoli",
+          firenze: "Via dei Calzaiuoli, 5 - Firenze",
+          genova: "Via XX Settembre, 20 - Genova",
+          palermo: "Via Maqueda, 12 - Palermo",
+          bari: "Corso Vittorio Emanuele, 9 - Bari",
+        };
+
+        const byId = new Map();
+
+        for (const t of testate || []) {
+          const city = inferRedazioneIndirizzo(t?.nome);
+          const id = `rc-${normalizeTestataKey(city)}`;
+          const email = String(t?.email || "").trim();
+          const domain = email.includes("@")
+            ? email.split("@")[1]
+            : "email.com";
+          const meta = CITY_META[city] || {
+            address: `${city} — sede redazione centrale`,
+            phone: inferRedazioneTel(city),
+          };
+
+          if (!byId.has(id)) {
+            const topicCount = 3 + (hashStringToUint(id) % 3);
+            const topics = pickSomeUnique(
+              TOPICS,
+              topicCount,
+              `${id}:topics`,
+            ).map((name) => {
+              const topicPhone =
+                city === "Roma"
+                  ? "06 123457"
+                  : city === "Torino"
+                    ? "011 123457"
+                    : "02 123457";
+              return {
+                id: `${id}:topic:${normalizeTestataKey(name)}`,
+                nome: name,
+                email: `${normalizeTestataKey(name)}@${domain}`,
+                telefono: topicPhone,
+              };
+            });
+
+            const localCount = hashStringToUint(`${id}:locali`) % 4;
+            const locali = pickSomeUnique(
+              LOCALI,
+              localCount,
+              `${id}:locali`,
+            ).map((citta) => ({
+              id: `${id}:local:${normalizeTestataKey(citta)}`,
+              citta,
+              indirizzo:
+                CITY_ADDRESSES[normalizeTestataKey(citta)] ||
+                `${citta} — sede locale`,
+              email: `${normalizeTestataKey(citta)}@${domain}`,
+              telefono: meta.phone,
+            }));
+
+            const estereCount = 2 + (hashStringToUint(`${id}:estere`) % 4);
+            const estere = pickSomeUnique(
+              ESTERE,
+              estereCount,
+              `${id}:estere`,
+            ).map((citta) => ({
+              id: `${id}:estera:${normalizeTestataKey(citta)}`,
+              citta,
+              indirizzo:
+                CITY_ADDRESSES[normalizeTestataKey(citta)] ||
+                `${citta} — sede estera`,
+              email: `${normalizeTestataKey(citta)}@${domain}`,
+              telefono:
+                citta === "londra" ? "+44 20 7946 0958" : "+1 212 555 0100",
+            }));
+
+            byId.set(id, {
+              id,
+              nome: "redazione centrale",
+              sede: city,
+              indirizzo: meta.address,
+              email: `redazione.centrale@${domain}`,
+              telefono: meta.phone,
+              argomenti: topics,
+              locali,
+              estere,
+            });
+          }
+
+          if (t) {
+            t.redazioneCentraleId = id;
+          }
+        }
+
+        return Array.from(byId.values()).sort((a, b) =>
+          String(a.sede || "").localeCompare(String(b.sede || ""), "it", {
+            sensitivity: "base",
+          }),
+        );
+      }
+
       const testate = buildTestateFromJournalists(journalists);
+
+      const redazioniCentrali = buildRedazioniCentraliFromTestate(testate);
+      const redazioniCentraliById = new Map();
+      for (const r of redazioniCentrali || []) {
+        const id = String(r?.id || "").trim();
+        if (!id) continue;
+        redazioniCentraliById.set(id, r);
+      }
 
       const testateByKey = new Map();
       for (const t of testate || []) {
@@ -5064,13 +5264,15 @@
               </label>
               <a
                 href="#"
-                class="testata-link journalist-link"
+                class="testata-link journalist-link card-open-link"
                 data-journalist="${j.nome} ${j.cognome}"
+                aria-label="apri scheda"
+                title="apri scheda"
               >
-                scheda
+                <span class="card-open-icon" aria-hidden="true"></span>
               </a>
+              <p class="card-role">${j.ruolo}</p>
             </div>
-            <p class="card-role">${j.ruolo}</p>
           </div>
           <div class="card-row"><div class="card-label">Servizio</div><div class="card-value">${
             j.servizio
@@ -5098,7 +5300,6 @@
       function updateCardNameLayout(card) {
         if (!card) return;
         const nameRow = card.querySelector(".card-top .card-name-row");
-        const roleEl = card.querySelector(".card-top .card-role");
         const schedaLink = card.querySelector(
           ".card-top .card-name-row .journalist-link",
         );
@@ -5111,22 +5312,14 @@
           lastNameEl.setAttribute("title", fullName);
         }
 
-        if (!nameRow || !roleEl || !schedaLink || !lastNameEl) return;
+        if (!nameRow || !schedaLink || !lastNameEl) return;
 
         card.classList.remove("card--hide-first-name");
 
-        const gap = Math.round(
-          roleEl.getBoundingClientRect().left -
-            schedaLink.getBoundingClientRect().right,
-        );
+        const lastNameIsTruncated =
+          lastNameEl.scrollWidth - lastNameEl.clientWidth > 0;
 
-        const truncationDelta = Math.round(
-          lastNameEl.scrollWidth - lastNameEl.clientWidth,
-        );
-        const lastNameIsTruncated = truncationDelta > 2;
-
-        const shouldHideFirstName =
-          lastNameIsTruncated || gap < CARD_TOP_MIN_GAP_PX;
+        const shouldHideFirstName = lastNameIsTruncated;
 
         if (shouldHideFirstName) {
           card.classList.add("card--hide-first-name");
@@ -5208,10 +5401,6 @@
           String(t?.nome || ""),
           activeTerms,
         );
-        const highlightedArgomento = highlightHtmlMulti(
-          String(t?.argomento || ""),
-          activeTerms,
-        );
         const highlightedTelefono = highlightHtmlMulti(
           String(t?.telefono || ""),
           activeTerms,
@@ -5239,17 +5428,9 @@
             </div>
             <p class="card-role">${escapeHtml(mediaLabel)}</p>
           </div>
-          <div class="card-row"><div class="card-label">Argomento testata</div><div class="card-value">${highlightedArgomento}</div></div>
           <div class="card-row"><div class="card-label">Telefono</div><div class="card-value">${highlightedTelefono}</div></div>
           <div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${highlightedEmail}</div></div>
           <div class="card-row"><div class="card-label">${testataJournalistsLabelHtml}</div><div class="card-value muted card-journalists">${highlightedJournalists}</div></div>
-          <div class="card-row"><div class="card-label">${
-            noteShowsEllipsis
-              ? `<a href="#" class="card-label-link card-notes-open" data-testata-key="${escapeHtml(
-                  String(t?.id || ""),
-                )}">Note</a>`
-              : "Note"
-          }</div><div class="card-value muted card-note">${highlightedNote}</div></div>
         `;
 
         return card;
@@ -5843,6 +6024,18 @@
 
       function openTestataPanel(testata) {
         if (testataPanelTitle) testataPanelTitle.textContent = "Testata";
+        {
+          const panelHeaderEl = testataPanelHeaderContent?.closest?.(
+            ".testata-panel-header",
+          );
+          if (panelHeaderEl) {
+            const existing = panelHeaderEl.querySelector(
+              "[data-journalist-header-contacts]",
+            );
+            if (existing) existing.remove();
+          }
+        }
+
         if (testataPanelHeaderContent) {
           testataPanelHeaderContent.innerHTML = "";
           if (testataPanelTitle)
@@ -5872,6 +6065,96 @@
           if (testataPanelTitle)
             testataPanelTitle.textContent = String(t?.nome || "Testata");
 
+          const normalizeTextHeader = (v) => String(v ?? "").trim();
+
+          const header = document.createElement("div");
+          header.className = "journalist-sheet__header";
+
+          const titleRow = document.createElement("div");
+          titleRow.className = "journalist-sheet__title-row";
+
+          const title = document.createElement("div");
+          title.className = "journalist-sheet__title";
+          title.textContent = String(t?.nome || "Testata");
+
+          titleRow.appendChild(title);
+          header.appendChild(titleRow);
+
+          const meta = document.createElement("div");
+          meta.className = "journalist-sheet__meta";
+
+          const metaDate = document.createElement("span");
+          metaDate.className = "t-value";
+          metaDate.textContent = "25/7/2025";
+
+          const metaText = document.createElement("span");
+          metaText.className = "t-label";
+          metaText.textContent = "aggiornamento M_";
+
+          meta.appendChild(metaDate);
+          meta.appendChild(metaText);
+
+          if (testataPanelHeaderContent) {
+            testataPanelHeaderContent.innerHTML = "";
+            testataPanelHeaderContent.appendChild(header);
+            testataPanelHeaderContent.appendChild(meta);
+          }
+
+          const contactsSummary = document.createElement("table");
+          contactsSummary.className = "journalist-contact-table";
+          contactsSummary.setAttribute("data-journalist-header-contacts", "");
+          {
+            const colgroup = document.createElement("colgroup");
+            const col1 = document.createElement("col");
+            col1.style.width = "24ch";
+            const col2 = document.createElement("col");
+            col2.style.width = "16ch";
+            colgroup.appendChild(col1);
+            colgroup.appendChild(col2);
+            contactsSummary.appendChild(colgroup);
+
+            const tbody = document.createElement("tbody");
+            contactsSummary.appendChild(tbody);
+
+            const makeRow = (key, value, label) => {
+              const tr = document.createElement("tr");
+
+              const tdValue = document.createElement("td");
+              const sValue = document.createElement("span");
+              sValue.className = "journalist-contact-cell t-value";
+              sValue.setAttribute("data-header-contact", `${key}-value`);
+              sValue.textContent = normalizeTextHeader(value) || "n/d";
+              tdValue.appendChild(sValue);
+
+              const tdLabel = document.createElement("td");
+              const sLabel = document.createElement("span");
+              sLabel.className = "journalist-contact-cell t-label";
+              sLabel.setAttribute("data-header-contact", `${key}-label`);
+              sLabel.textContent = normalizeTextHeader(label) || "";
+              tdLabel.appendChild(sLabel);
+
+              tr.appendChild(tdValue);
+              tr.appendChild(tdLabel);
+              return tr;
+            };
+
+            tbody.appendChild(makeRow("phone", t?.telefono, "telefono"));
+            tbody.appendChild(makeRow("email", t?.email, "mail"));
+          }
+
+          {
+            const panelHeaderEl = testataPanelHeaderContent?.closest?.(
+              ".testata-panel-header",
+            );
+            if (panelHeaderEl && testataPanelClose) {
+              const existing = panelHeaderEl.querySelector(
+                "[data-journalist-header-contacts]",
+              );
+              if (existing) existing.remove();
+              panelHeaderEl.insertBefore(contactsSummary, testataPanelClose);
+            }
+          }
+
           const addRow = (labelText, valueNode) => {
             const row = document.createElement("div");
             row.className = "card-row";
@@ -5891,35 +6174,472 @@
             testataPanelBody.appendChild(row);
           };
 
-          const argomento = document.createElement("span");
-          argomento.textContent = String(t?.argomento || "");
-          addRow("Argomento testata", argomento);
+          {
+            const notesSection = document.createElement("section");
+            notesSection.className = "journalist-section";
+            notesSection.setAttribute("data-testata-notes", "");
+            notesSection.setAttribute(
+              "data-testata-key",
+              String(t?.id || key || raw).trim(),
+            );
 
-          const direttore = document.createElement("span");
-          direttore.textContent = String(t?.direttore || "");
-          addRow("Direttore", direttore);
+            const notesHeader = document.createElement("div");
+            notesHeader.className =
+              "journalist-section__header journalist-section__header--collapsible";
+            notesHeader.setAttribute("data-section-toggle", "testata-notes");
+            notesHeader.setAttribute("role", "button");
+            notesHeader.setAttribute("tabindex", "0");
 
-          const tipoMedia = document.createElement("span");
-          const p = String(t?.tipoMedia?.parent || "").trim();
-          const c = String(t?.tipoMedia?.child || "").trim();
-          tipoMedia.textContent = p && c ? `${p} / ${c}` : p || c;
-          addRow("Tipo di media", tipoMedia);
+            const notesTitle = document.createElement("div");
+            notesTitle.className = "journalist-section__title";
 
-          const freq = document.createElement("span");
-          freq.textContent = String(t?.frequenzaPubblicazione || "");
-          addRow("Frequenza pubblicazione", freq);
+            const notesHeading = document.createElement("h3");
+            notesHeading.className = "journalist-section__heading";
+            notesHeading.textContent = "NOTE";
+            notesTitle.appendChild(notesHeading);
 
-          const diffusione = document.createElement("span");
-          diffusione.textContent = String(t?.diffusione || "");
-          addRow("Diffusione", diffusione);
+            const addNote = document.createElement("a");
+            addNote.href = "#";
+            addNote.className = "c-link c-link--action";
+            addNote.textContent = "aggiungi nota";
+            addNote.setAttribute("data-note-action", "add");
+            notesTitle.appendChild(addNote);
 
-          const tiratura = document.createElement("span");
-          tiratura.textContent = String(t?.tiratura || "");
-          addRow("Tiratura", tiratura);
+            notesHeader.appendChild(notesTitle);
 
-          const indirizzo = document.createElement("span");
-          indirizzo.textContent = String(t?.redazione?.indirizzo || "");
-          addRow("Redazione", indirizzo);
+            const notesOpen = getSectionOpen("testata-notes", false);
+            notesHeader.setAttribute(
+              "aria-expanded",
+              notesOpen ? "true" : "false",
+            );
+
+            const notesToggle = document.createElement("span");
+            notesToggle.className = "journalist-section__toggle";
+            notesToggle.textContent = notesOpen ? "-" : "+";
+            notesToggle.setAttribute("aria-hidden", "true");
+            notesHeader.appendChild(notesToggle);
+
+            const notesList = document.createElement("div");
+            notesList.className = "journalist-notes";
+            notesList.setAttribute("data-note-list", "");
+
+            const notesEditor = document.createElement("div");
+            notesEditor.className = "journalist-note-editor";
+            notesEditor.setAttribute("data-note-editor", "");
+            notesEditor.hidden = true;
+
+            const notesTextarea = document.createElement("textarea");
+            notesTextarea.className = "journalist-note-textarea";
+            notesTextarea.setAttribute("data-note-textarea", "");
+
+            const notesEditorActions = document.createElement("div");
+            notesEditorActions.className = "journalist-note-editor-actions";
+
+            const notesOk = document.createElement("a");
+            notesOk.href = "#";
+            notesOk.className = "c-link c-link--action";
+            notesOk.textContent = "ok";
+            notesOk.setAttribute("data-note-action", "ok");
+
+            const notesCancel = document.createElement("a");
+            notesCancel.href = "#";
+            notesCancel.className = "c-link c-link--action";
+            notesCancel.textContent = "annulla";
+            notesCancel.setAttribute("data-note-action", "cancel");
+
+            notesEditorActions.appendChild(notesOk);
+            notesEditorActions.appendChild(notesCancel);
+            notesEditor.appendChild(notesTextarea);
+            notesEditor.appendChild(notesEditorActions);
+
+            const renderNotesList = (arr) => {
+              notesList.innerHTML = "";
+              const items = normalizeNoteItems(arr);
+              if (!items.length) {
+                const empty = document.createElement("div");
+                empty.className = "muted";
+                empty.textContent = "nessuna nota";
+                notesList.appendChild(empty);
+                return;
+              }
+
+              for (let i = 0; i < items.length; i++) {
+                const itemText = items[i]?.text;
+                const itemDate = items[i]?.updatedAt;
+                const item = document.createElement("div");
+                item.className = "journalist-note-item";
+                item.setAttribute("data-note-index", String(i));
+
+                const text = document.createElement("div");
+                text.className = "journalist-note-text t-value";
+                text.textContent = itemText;
+
+                const footer = document.createElement("div");
+                footer.className = "journalist-note-footer";
+
+                const date = document.createElement("span");
+                date.className = "t-value";
+                date.textContent = formatNoteDate(itemDate);
+
+                const edit = document.createElement("a");
+                edit.href = "#";
+                edit.className = "c-link c-link--action";
+                edit.textContent = "modifica";
+                edit.setAttribute("data-note-action", "edit");
+
+                const remove = document.createElement("a");
+                remove.href = "#";
+                remove.className = "c-link c-link--action";
+                remove.textContent = "rimuovi";
+                remove.setAttribute("data-note-action", "remove");
+
+                footer.appendChild(date);
+                footer.appendChild(edit);
+                footer.appendChild(remove);
+
+                item.appendChild(text);
+                item.appendChild(footer);
+                notesList.appendChild(item);
+              }
+            };
+
+            renderNotesList(t?.note);
+
+            const notesBody = document.createElement("div");
+            notesBody.className = "journalist-section__body";
+            notesBody.setAttribute("data-section-body", "");
+            notesBody.hidden = !notesOpen;
+            notesBody.appendChild(notesEditor);
+            notesBody.appendChild(notesList);
+
+            notesSection.appendChild(notesHeader);
+            notesSection.appendChild(notesBody);
+            testataPanelBody.appendChild(notesSection);
+          }
+
+          {
+            const section = document.createElement("section");
+            section.className = "journalist-section";
+            section.setAttribute("data-testata-dati", "");
+
+            const sectionHeader = document.createElement("div");
+            sectionHeader.className =
+              "journalist-section__header journalist-section__header--collapsible";
+            sectionHeader.setAttribute("data-section-toggle", "testata-dati");
+            sectionHeader.setAttribute("role", "button");
+            sectionHeader.setAttribute("tabindex", "0");
+
+            const titleWrap = document.createElement("div");
+            titleWrap.className = "journalist-section__title";
+
+            const heading = document.createElement("h3");
+            heading.className = "journalist-section__heading";
+            heading.textContent = "DATI TESTATA";
+            titleWrap.appendChild(heading);
+
+            sectionHeader.appendChild(titleWrap);
+
+            const sectionOpen = getSectionOpen("testata-dati", false);
+            sectionHeader.setAttribute(
+              "aria-expanded",
+              sectionOpen ? "true" : "false",
+            );
+
+            const toggle = document.createElement("span");
+            toggle.className = "journalist-section__toggle";
+            toggle.textContent = sectionOpen ? "-" : "+";
+            toggle.setAttribute("aria-hidden", "true");
+            sectionHeader.appendChild(toggle);
+
+            const body = document.createElement("div");
+            body.className = "journalist-section__body";
+            body.setAttribute("data-section-body", "");
+            body.hidden = !sectionOpen;
+
+            const table = document.createElement("table");
+            table.className = "journalist-contact-table";
+            {
+              const colgroup = document.createElement("colgroup");
+              const col1 = document.createElement("col");
+              col1.style.width = "24ch";
+              const col2 = document.createElement("col");
+              col2.style.width = "48ch";
+              colgroup.appendChild(col1);
+              colgroup.appendChild(col2);
+              table.appendChild(colgroup);
+
+              const tbody = document.createElement("tbody");
+              table.appendChild(tbody);
+
+              const makeRow = (label, value) => {
+                const tr = document.createElement("tr");
+
+                const tdLabel = document.createElement("td");
+                const sLabel = document.createElement("span");
+                sLabel.className = "journalist-contact-cell t-label";
+                sLabel.textContent = normalizeTextHeader(label) || "";
+                tdLabel.appendChild(sLabel);
+
+                const tdValue = document.createElement("td");
+                const sValue = document.createElement("span");
+                sValue.className = "journalist-contact-cell t-value";
+                sValue.textContent = normalizeTextHeader(value) || "n/d";
+                tdValue.appendChild(sValue);
+
+                tr.appendChild(tdLabel);
+                tr.appendChild(tdValue);
+                return tr;
+              };
+
+              const p = String(t?.tipoMedia?.parent || "").trim();
+              const c = String(t?.tipoMedia?.child || "").trim();
+              const mediaText = p && c ? `${p} / ${c}` : p || c;
+
+              tbody.appendChild(makeRow("Editore", t?.editore));
+              tbody.appendChild(makeRow("Tipo di media", mediaText));
+              tbody.appendChild(
+                makeRow("frequenza", t?.frequenzaPubblicazione),
+              );
+              tbody.appendChild(makeRow("Argomento", t?.argomento));
+              tbody.appendChild(makeRow("Tiratura", t?.tiratura));
+              tbody.appendChild(makeRow("Diffusione", t?.diffusione));
+              tbody.appendChild(
+                makeRow("Dati pubblicitari", t?.datiPubblicitari),
+              );
+            }
+
+            body.appendChild(table);
+            section.appendChild(sectionHeader);
+            section.appendChild(body);
+            testataPanelBody.appendChild(section);
+          }
+
+          {
+            const redazioniSection = document.createElement("section");
+            redazioniSection.className = "journalist-section";
+            redazioniSection.setAttribute("data-testata-redazioni", "");
+
+            const redazioniHeader = document.createElement("div");
+            redazioniHeader.className =
+              "journalist-section__header journalist-section__header--collapsible";
+            redazioniHeader.setAttribute(
+              "data-section-toggle",
+              "testata-redazioni",
+            );
+            redazioniHeader.setAttribute("role", "button");
+            redazioniHeader.setAttribute("tabindex", "0");
+
+            const titleWrap = document.createElement("div");
+            titleWrap.className = "journalist-section__title";
+            {
+              const heading = document.createElement("h3");
+              heading.className = "journalist-section__heading";
+              heading.textContent = "REDAZIONI";
+              titleWrap.appendChild(heading);
+            }
+            redazioniHeader.appendChild(titleWrap);
+
+            const sectionOpen = getSectionOpen("testata-redazioni", false);
+            redazioniHeader.setAttribute(
+              "aria-expanded",
+              sectionOpen ? "true" : "false",
+            );
+
+            const toggle = document.createElement("span");
+            toggle.className = "journalist-section__toggle";
+            toggle.textContent = sectionOpen ? "-" : "+";
+            toggle.setAttribute("aria-hidden", "true");
+            redazioniHeader.appendChild(toggle);
+
+            const redazioniBody = document.createElement("div");
+            redazioniBody.className = "journalist-section__body";
+            redazioniBody.setAttribute("data-section-body", "");
+            redazioniBody.hidden = !sectionOpen;
+
+            const tree = document.createElement("div");
+            tree.className = "redazioni-tree";
+
+            const makePropsList = (rows) => {
+              const wrap = document.createElement("div");
+              wrap.className = "redazioni-props";
+
+              for (const [labelText, valueText] of rows || []) {
+                const row = document.createElement("div");
+                row.className = "card-row";
+
+                const label = document.createElement("div");
+                label.className = "card-label";
+                label.textContent = normalizeTextHeader(labelText) || "";
+
+                const value = document.createElement("div");
+                value.className = "card-value";
+                value.textContent = normalizeTextHeader(valueText) || "n/d";
+
+                row.appendChild(label);
+                row.appendChild(value);
+                wrap.appendChild(row);
+              }
+
+              return wrap;
+            };
+
+            const makeNode = (titleText, toggleKey, defaultOpen, contentEl) => {
+              const node = document.createElement("div");
+              node.className = "redazioni-node";
+              node.setAttribute("data-redazioni-node", "");
+
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "redazioni-node__toggle";
+              btn.setAttribute("data-redazioni-toggle", toggleKey);
+              const open = getSectionOpen(toggleKey, !!defaultOpen);
+              btn.setAttribute("aria-expanded", open ? "true" : "false");
+
+              const title = document.createElement("span");
+              title.className = "redazioni-node__title";
+              title.textContent = titleText;
+
+              const caret = document.createElement("span");
+              caret.className = "redazioni-caret";
+              caret.setAttribute("aria-hidden", "true");
+
+              btn.appendChild(title);
+              btn.appendChild(caret);
+
+              const body = document.createElement("div");
+              body.className = "redazioni-node__body";
+              body.setAttribute("data-redazioni-body", "");
+              body.hidden = !open;
+              if (contentEl) body.appendChild(contentEl);
+
+              node.appendChild(btn);
+              node.appendChild(body);
+              return node;
+            };
+
+            const rcId = String(t?.redazioneCentraleId || "").trim();
+            const rc = rcId ? redazioniCentraliById.get(rcId) : null;
+
+            if (!rc) {
+              const empty = document.createElement("div");
+              empty.className = "muted";
+              empty.textContent = "n/d";
+              tree.appendChild(empty);
+            } else {
+              {
+                const wrap = document.createElement("div");
+                wrap.className = "redazioni-node__content";
+                wrap.appendChild(
+                  makePropsList([
+                    ["indirizzo", rc.indirizzo],
+                    ["email", rc.email],
+                    ["telefono", rc.telefono],
+                  ]),
+                );
+
+                const topicsWrap = document.createElement("div");
+                topicsWrap.className = "redazioni-children";
+
+                for (const a of rc.argomenti || []) {
+                  const childWrap = document.createElement("div");
+                  childWrap.className = "redazioni-node__content";
+                  childWrap.appendChild(
+                    makePropsList([
+                      ["email", a?.email],
+                      ["telefono", a?.telefono],
+                    ]),
+                  );
+                  topicsWrap.appendChild(
+                    makeNode(
+                      String(a?.nome || "").trim(),
+                      `redazioni:${rc.id}:argomento:${String(a?.id || "").trim()}`,
+                      false,
+                      childWrap,
+                    ),
+                  );
+                }
+
+                wrap.appendChild(topicsWrap);
+                tree.appendChild(
+                  makeNode(
+                    "redazione centrale",
+                    `redazioni:${rc.id}:centrale`,
+                    true,
+                    wrap,
+                  ),
+                );
+              }
+
+              {
+                const groupWrap = document.createElement("div");
+                groupWrap.className = "redazioni-children";
+                for (const l of rc.locali || []) {
+                  const childWrap = document.createElement("div");
+                  childWrap.className = "redazioni-node__content";
+                  childWrap.appendChild(
+                    makePropsList([
+                      ["indirizzo", l?.indirizzo],
+                      ["email", l?.email],
+                      ["telefono", l?.telefono],
+                    ]),
+                  );
+                  groupWrap.appendChild(
+                    makeNode(
+                      String(l?.citta || "").trim(),
+                      `redazioni:${rc.id}:locale:${String(l?.id || "").trim()}`,
+                      false,
+                      childWrap,
+                    ),
+                  );
+                }
+                tree.appendChild(
+                  makeNode(
+                    "redazioni locali",
+                    `redazioni:${rc.id}:locali`,
+                    false,
+                    groupWrap,
+                  ),
+                );
+              }
+
+              {
+                const groupWrap = document.createElement("div");
+                groupWrap.className = "redazioni-children";
+                for (const x of rc.estere || []) {
+                  const childWrap = document.createElement("div");
+                  childWrap.className = "redazioni-node__content";
+                  childWrap.appendChild(
+                    makePropsList([
+                      ["indirizzo", x?.indirizzo],
+                      ["email", x?.email],
+                      ["telefono", x?.telefono],
+                    ]),
+                  );
+                  groupWrap.appendChild(
+                    makeNode(
+                      String(x?.citta || "").trim(),
+                      `redazioni:${rc.id}:estera:${String(x?.id || "").trim()}`,
+                      false,
+                      childWrap,
+                    ),
+                  );
+                }
+                tree.appendChild(
+                  makeNode(
+                    "redazioni estere",
+                    `redazioni:${rc.id}:estere`,
+                    false,
+                    groupWrap,
+                  ),
+                );
+              }
+            }
+
+            redazioniBody.appendChild(tree);
+            redazioniSection.appendChild(redazioniHeader);
+            redazioniSection.appendChild(redazioniBody);
+            testataPanelBody.appendChild(redazioniSection);
+          }
 
           const email = document.createElement("span");
           email.textContent = String(t?.email || "");
@@ -5928,18 +6648,6 @@
           const telefono = document.createElement("span");
           telefono.textContent = String(t?.telefono || "");
           addRow("Telefono", telefono);
-
-          const note = document.createElement("div");
-          const noteText = String(t?.note || "").trim();
-          if (!noteText) {
-            const empty = document.createElement("em");
-            empty.className = "muted";
-            empty.textContent = "nessuna nota";
-            note.appendChild(empty);
-          } else {
-            note.textContent = noteText;
-          }
-          addRow("Note", note);
 
           const listWrap = document.createElement("div");
           const jids = [...(t?.redazione?.giornalisti || [])].filter(Boolean);
@@ -6071,6 +6779,17 @@
 
       function openBancaDatiPanel() {
         if (testataPanelTitle) testataPanelTitle.textContent = "Banca dati";
+        {
+          const panelHeaderEl = testataPanelHeaderContent?.closest?.(
+            ".testata-panel-header",
+          );
+          if (panelHeaderEl) {
+            const existing = panelHeaderEl.querySelector(
+              "[data-journalist-header-contacts]",
+            );
+            if (existing) existing.remove();
+          }
+        }
         if (testataPanelHeaderContent) {
           testataPanelHeaderContent.innerHTML = "";
           if (testataPanelTitle)
@@ -8736,6 +9455,32 @@
             }
           }
 
+          const redazioniToggleEl = e.target?.closest?.(
+            "[data-redazioni-toggle]",
+          );
+          if (redazioniToggleEl) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const toggleKey = String(
+              redazioniToggleEl.getAttribute("data-redazioni-toggle") || "",
+            ).trim();
+            if (!toggleKey) return;
+
+            const node = redazioniToggleEl.closest("[data-redazioni-node]");
+            const body = node?.querySelector?.("[data-redazioni-body]");
+            if (!body) return;
+
+            const nextOpen = !!body.hidden;
+            body.hidden = !nextOpen;
+            redazioniToggleEl.setAttribute(
+              "aria-expanded",
+              nextOpen ? "true" : "false",
+            );
+            setSectionOpen(toggleKey, nextOpen);
+            return;
+          }
+
           const noteActionEl = e.target?.closest?.("[data-note-action]");
           if (noteActionEl) {
             const notesSection = noteActionEl.closest(
@@ -8854,6 +9599,214 @@
                   item.appendChild(text);
                   item.appendChild(footer);
 
+                  list.appendChild(item);
+                }
+              };
+
+              const showEditor = (mode, index, value) => {
+                editor.hidden = false;
+                editor.setAttribute("data-note-mode", mode);
+                if (typeof index === "number") {
+                  editor.setAttribute("data-note-edit-index", String(index));
+                } else {
+                  editor.removeAttribute("data-note-edit-index");
+                }
+                textarea.value = String(value ?? "");
+                textarea.focus();
+              };
+
+              const hideEditor = () => {
+                editor.hidden = true;
+                editor.removeAttribute("data-note-mode");
+                editor.removeAttribute("data-note-edit-index");
+                textarea.value = "";
+              };
+
+              if (action === "add") {
+                showEditor("add", null, "");
+                return;
+              }
+
+              const noteItem = noteActionEl.closest("[data-note-index]");
+              const indexRaw = noteItem?.getAttribute?.("data-note-index");
+              const index = indexRaw != null ? Number(indexRaw) : NaN;
+
+              if (action === "edit") {
+                if (!Number.isFinite(index)) return;
+                const items = getNoteItems();
+                showEditor("edit", index, items[index]?.text ?? "");
+                return;
+              }
+
+              if (action === "remove") {
+                if (!Number.isFinite(index)) return;
+                const items = getNoteItems();
+                items.splice(index, 1);
+                setNoteItems(items);
+                hideEditor();
+                renderList();
+                return;
+              }
+
+              if (action === "cancel") {
+                hideEditor();
+                return;
+              }
+
+              if (action === "ok") {
+                const value = String(textarea.value ?? "").trim();
+                if (!value) {
+                  hideEditor();
+                  return;
+                }
+
+                const mode = String(editor.getAttribute("data-note-mode") || "")
+                  .trim()
+                  .toLowerCase();
+                const items = getNoteItems();
+                const nowIso = new Date().toISOString();
+
+                if (mode === "edit") {
+                  const editIndex = Number(
+                    editor.getAttribute("data-note-edit-index"),
+                  );
+                  if (Number.isFinite(editIndex) && editIndex >= 0) {
+                    const prev = items[editIndex] || {
+                      text: "",
+                      updatedAt: "",
+                    };
+                    items[editIndex] = {
+                      text: value,
+                      updatedAt: nowIso || prev.updatedAt,
+                    };
+                  }
+                } else {
+                  items.unshift({ text: value, updatedAt: nowIso });
+                }
+
+                setNoteItems(items);
+                hideEditor();
+                renderList();
+                return;
+              }
+            }
+
+            const testataNotesSection = noteActionEl.closest(
+              "[data-testata-notes]",
+            );
+            if (testataNotesSection) {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const notesBody = testataNotesSection.querySelector(
+                "[data-section-body]",
+              );
+              const notesHeader = testataNotesSection.querySelector(
+                '[data-section-toggle="testata-notes"]',
+              );
+              const notesIndicator = testataNotesSection.querySelector(
+                ".journalist-section__toggle",
+              );
+
+              const setNotesOpen = (open) => {
+                if (notesBody) notesBody.hidden = !open;
+                if (notesHeader) {
+                  notesHeader.setAttribute(
+                    "aria-expanded",
+                    open ? "true" : "false",
+                  );
+                }
+                if (notesIndicator) {
+                  notesIndicator.textContent = open ? "-" : "+";
+                }
+                setSectionOpen("testata-notes", !!open);
+              };
+
+              const action = String(
+                noteActionEl.getAttribute("data-note-action") || "",
+              )
+                .trim()
+                .toLowerCase();
+
+              if (notesBody && notesBody.hidden) {
+                setNotesOpen(true);
+              }
+
+              const testataKey = String(
+                testataNotesSection.getAttribute("data-testata-key") || "",
+              ).trim();
+              if (!testataKey) return;
+
+              const t = testateByKey.get(testataKey);
+              if (!t) return;
+
+              const editor =
+                testataNotesSection.querySelector("[data-note-editor]");
+              const textarea = testataNotesSection.querySelector(
+                "[data-note-textarea]",
+              );
+              const list =
+                testataNotesSection.querySelector("[data-note-list]");
+              if (!editor || !textarea || !list) return;
+
+              const getNoteItems = () => normalizeNoteItems(t.note);
+              const setNoteItems = (arr) => {
+                const clean = (arr || [])
+                  .map((x) => ({
+                    text: String(x?.text ?? "").trim(),
+                    updatedAt: x?.updatedAt ? String(x.updatedAt) : "",
+                  }))
+                  .filter((x) => x.text.length > 0);
+                t.note = clean;
+              };
+
+              const renderList = () => {
+                const items = getNoteItems();
+                list.innerHTML = "";
+                if (!items.length) {
+                  const empty = document.createElement("div");
+                  empty.className = "muted";
+                  empty.textContent = "nessuna nota";
+                  list.appendChild(empty);
+                  return;
+                }
+
+                for (let i = 0; i < items.length; i++) {
+                  const itemText = items[i]?.text;
+                  const itemDate = items[i]?.updatedAt;
+                  const item = document.createElement("div");
+                  item.className = "journalist-note-item";
+                  item.setAttribute("data-note-index", String(i));
+
+                  const text = document.createElement("div");
+                  text.className = "journalist-note-text t-value";
+                  text.textContent = itemText;
+
+                  const footer = document.createElement("div");
+                  footer.className = "journalist-note-footer";
+
+                  const date = document.createElement("span");
+                  date.className = "t-value";
+                  date.textContent = formatNoteDate(itemDate);
+
+                  const edit = document.createElement("a");
+                  edit.href = "#";
+                  edit.className = "c-link c-link--action";
+                  edit.textContent = "modifica";
+                  edit.setAttribute("data-note-action", "edit");
+
+                  const remove = document.createElement("a");
+                  remove.href = "#";
+                  remove.className = "c-link c-link--action";
+                  remove.textContent = "rimuovi";
+                  remove.setAttribute("data-note-action", "remove");
+
+                  footer.appendChild(date);
+                  footer.appendChild(edit);
+                  footer.appendChild(remove);
+
+                  item.appendChild(text);
+                  item.appendChild(footer);
                   list.appendChild(item);
                 }
               };
@@ -11338,6 +12291,16 @@
         window.addEventListener("resize", () => {
           scheduleUpdateCardNameLayouts();
         });
+
+        window.addEventListener("load", () => {
+          scheduleUpdateCardNameLayouts();
+        });
+
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => {
+            scheduleUpdateCardNameLayouts();
+          });
+        }
 
         cardsGrid.addEventListener("click", (e) => {
           const removeFromListBtn = e.target?.closest?.(
