@@ -16,6 +16,7 @@
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="tokens.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -3444,6 +3445,33 @@
         return "n/d";
       }
 
+      function inferEditore(nome) {
+        const EDITORI = [
+          "GEDI",
+          "RCS MediaGroup",
+          "Il Sole 24 Ore",
+          "Mondadori",
+          "Cairo Communication",
+          "Gruppo Editoriale",
+        ];
+        const seed = hashStringToUint(`editore:${String(nome || "").trim()}`);
+        return EDITORI[seed % EDITORI.length] || "n/d";
+      }
+
+      function inferDatiPubblicitari(nome, mediaType) {
+        const parent = String(mediaType?.parent || "").trim();
+        const seed = hashStringToUint(
+          `dati-pub:${parent}:${String(nome || "").trim()}`,
+        );
+        const hasKit = seed % 3 !== 0;
+        if (!hasKit) return "n/d";
+        if (parent === "Web") return "media kit + form online";
+        if (parent === "Carta Stampata") return "listino + formati + chiusure";
+        if (parent === "TV") return "listino spot + planning";
+        if (parent === "Radio") return "listino spot + contatti";
+        return "media kit disponibile";
+      }
+
       function inferRedazioneIndirizzo(nome) {
         const n = String(nome || "")
           .trim()
@@ -3486,10 +3514,12 @@
                 nome,
                 argomento: "Generalista",
                 direttore: "Direttore responsabile",
+                editore: inferEditore(nome),
                 tipoMedia: mediaType,
                 frequenzaPubblicazione: inferPublicationFrequency(mediaType),
                 diffusione: inferDiffusione(nome, mediaType),
                 tiratura: inferTiratura(mediaType),
+                datiPubblicitari: inferDatiPubblicitari(nome, mediaType),
                 _serviceCounts: {},
                 redazione: {
                   giornalisti: [],
@@ -4103,6 +4133,66 @@
         const j = (journalists || []).find((x) => getJournalistId(x) === jid);
         if (!j) return jid;
         return `${j.nome} ${j.cognome}`;
+      }
+
+      function getJournalistNamePartsById(jid) {
+        const j = (journalists || []).find((x) => getJournalistId(x) === jid);
+        if (!j) {
+          const full = String(jid || "").trim();
+          const parts = full.split(/\s+/).filter(Boolean);
+          if (parts.length <= 1) {
+            return { full, firstName: "", lastName: full };
+          }
+          const lastName = parts.pop();
+          const firstName = parts.join(" ");
+          return { full, firstName, lastName };
+        }
+
+        const firstName = String(j?.nome || "").trim();
+        const lastName = String(j?.cognome || "").trim();
+        const full = `${firstName} ${lastName}`.trim();
+        return { full, firstName, lastName };
+      }
+
+      let selectedNameLayoutRaf = 0;
+      let selectedPanelResizeObserver = null;
+
+      function updateSelectedItemNameLayout(item) {
+        if (!item) return;
+
+        const link = item.querySelector(".selected-item-name.journalist-link");
+        if (!link) return;
+
+        if (link.clientWidth < 5) return;
+
+        const firstNameEl = item.querySelector(".selected-item-first-name");
+        const lastNameEl = item.querySelector(".selected-item-last-name");
+        if (!lastNameEl) return;
+
+        item.classList.remove("selected-item--hide-first-name");
+
+        if (!firstNameEl || !String(firstNameEl.textContent || "").trim()) {
+          return;
+        }
+
+        const lastNameIsTruncated =
+          lastNameEl.scrollWidth - lastNameEl.clientWidth > 1;
+        if (lastNameIsTruncated) {
+          item.classList.add("selected-item--hide-first-name");
+        }
+      }
+
+      function scheduleUpdateSelectedNameLayouts() {
+        if (selectedNameLayoutRaf) return;
+        selectedNameLayoutRaf = requestAnimationFrame(() => {
+          selectedNameLayoutRaf = 0;
+          if (!selectedPanelBody) return;
+          for (const item of selectedPanelBody.querySelectorAll(
+            ".selected-item",
+          )) {
+            updateSelectedItemNameLayout(item);
+          }
+        });
       }
 
       function ensureSelectedOrder(jid) {
@@ -4984,15 +5074,26 @@
           const left = document.createElement("div");
           left.className = "selected-item-left";
 
-          const name = document.createElement("div");
-          name.className = "selected-item-name";
-          name.textContent = getJournalistNameById(jid);
+          const parts = getJournalistNamePartsById(jid);
 
-          const scheda = document.createElement("a");
-          scheda.href = "#";
-          scheda.className = "testata-link journalist-link";
-          scheda.textContent = "scheda";
-          scheda.setAttribute("data-journalist", getJournalistNameById(jid));
+          const nameLink = document.createElement("a");
+          nameLink.href = "#";
+          nameLink.className = "selected-item-name journalist-link";
+          nameLink.setAttribute("data-journalist", parts.full);
+          nameLink.setAttribute("aria-label", "apri scheda");
+          nameLink.setAttribute("title", "apri scheda");
+
+          const firstSpan = document.createElement("span");
+          firstSpan.className = "selected-item-first-name";
+          firstSpan.textContent = parts.firstName;
+
+          const lastSpan = document.createElement("span");
+          lastSpan.className = "selected-item-last-name";
+          lastSpan.textContent = parts.lastName || parts.full;
+          lastSpan.setAttribute("title", parts.full);
+
+          nameLink.appendChild(firstSpan);
+          nameLink.appendChild(lastSpan);
 
           const remove = document.createElement("button");
           remove.type = "button";
@@ -5000,14 +5101,14 @@
           remove.textContent = "×";
           remove.setAttribute("data-jid", jid);
 
-          left.appendChild(name);
-          left.appendChild(scheda);
+          left.appendChild(nameLink);
           item.appendChild(left);
           item.appendChild(remove);
           list.appendChild(item);
         }
 
         selectedPanelBody.appendChild(list);
+        scheduleUpdateSelectedNameLayouts();
       }
 
       if (selectedRemoveFromListLink) {
@@ -5259,17 +5360,14 @@
                 data-jid="${jid}"
                 ${isSelected ? "checked" : ""}
               />
-              <label class="card-name-label" for="${checkboxId}">
-                <h3 class="card-name card-name--person"><span class="card-first-name">${highlightedFirstName}</span><span class="card-last-name" title="${escapeHtml(fullName)}">${highlightedLastName}</span></h3>
-              </label>
               <a
                 href="#"
-                class="testata-link journalist-link card-open-link"
-                data-journalist="${j.nome} ${j.cognome}"
+                class="journalist-link card-name-link"
+                data-journalist="${escapeHtml(fullName)}"
                 aria-label="apri scheda"
                 title="apri scheda"
               >
-                <span class="card-open-icon" aria-hidden="true"></span>
+                <h3 class="card-name card-name--person"><span class="card-first-name">${highlightedFirstName}</span><span class="card-last-name" title="${escapeHtml(fullName)}">${highlightedLastName}</span></h3>
               </a>
               <p class="card-role">${j.ruolo}</p>
             </div>
@@ -6356,59 +6454,38 @@
             body.setAttribute("data-section-body", "");
             body.hidden = !sectionOpen;
 
-            const table = document.createElement("table");
-            table.className = "journalist-contact-table";
-            {
-              const colgroup = document.createElement("colgroup");
-              const col1 = document.createElement("col");
-              col1.style.width = "24ch";
-              const col2 = document.createElement("col");
-              col2.style.width = "48ch";
-              colgroup.appendChild(col1);
-              colgroup.appendChild(col2);
-              table.appendChild(colgroup);
+            const kv = document.createElement("div");
+            kv.className = "c-kv c-kv--grid";
 
-              const tbody = document.createElement("tbody");
-              table.appendChild(tbody);
+            const addRow = (labelText, valueText) => {
+              const row = document.createElement("div");
+              row.className = "c-kv__row";
 
-              const makeRow = (label, value) => {
-                const tr = document.createElement("tr");
+              const label = document.createElement("div");
+              label.className = "c-kv__label t-label";
+              label.textContent = normalizeTextHeader(labelText) || "";
 
-                const tdLabel = document.createElement("td");
-                const sLabel = document.createElement("span");
-                sLabel.className = "journalist-contact-cell t-label";
-                sLabel.textContent = normalizeTextHeader(label) || "";
-                tdLabel.appendChild(sLabel);
+              const value = document.createElement("div");
+              value.className = "c-kv__value t-value";
+              value.textContent = normalizeTextHeader(valueText) || "n/d";
 
-                const tdValue = document.createElement("td");
-                const sValue = document.createElement("span");
-                sValue.className = "journalist-contact-cell t-value";
-                sValue.textContent = normalizeTextHeader(value) || "n/d";
-                tdValue.appendChild(sValue);
+              row.appendChild(label);
+              row.appendChild(value);
+              kv.appendChild(row);
+            };
 
-                tr.appendChild(tdLabel);
-                tr.appendChild(tdValue);
-                return tr;
-              };
+            addRow("Editore", t?.editore);
+            addRow(
+              "Tipo di media",
+              String(t?.tipoMedia?.child || t?.tipoMedia?.parent || "").trim(),
+            );
+            addRow("Frequenza", t?.frequenzaPubblicazione);
+            addRow("Argomento", t?.argomento);
+            addRow("Tiratura", t?.tiratura);
+            addRow("Diffusione", t?.diffusione);
+            addRow("Dati pubblicitari", t?.datiPubblicitari);
 
-              const p = String(t?.tipoMedia?.parent || "").trim();
-              const c = String(t?.tipoMedia?.child || "").trim();
-              const mediaText = p && c ? `${p} / ${c}` : p || c;
-
-              tbody.appendChild(makeRow("Editore", t?.editore));
-              tbody.appendChild(makeRow("Tipo di media", mediaText));
-              tbody.appendChild(
-                makeRow("frequenza", t?.frequenzaPubblicazione),
-              );
-              tbody.appendChild(makeRow("Argomento", t?.argomento));
-              tbody.appendChild(makeRow("Tiratura", t?.tiratura));
-              tbody.appendChild(makeRow("Diffusione", t?.diffusione));
-              tbody.appendChild(
-                makeRow("Dati pubblicitari", t?.datiPubblicitari),
-              );
-            }
-
-            body.appendChild(table);
+            body.appendChild(kv);
             section.appendChild(sectionHeader);
             section.appendChild(body);
             testataPanelBody.appendChild(section);
@@ -12303,6 +12380,9 @@
         }
 
         cardsGrid.addEventListener("click", (e) => {
+          const checkbox = e.target?.closest?.(".card-select");
+          if (checkbox) return;
+
           const removeFromListBtn = e.target?.closest?.(
             ".card-remove-from-list[data-remove-from-list-jid]",
           );
@@ -12322,8 +12402,15 @@
             !testateLabelLink &&
             !testataLink &&
             !journalistLink
-          )
+          ) {
+            const card = e.target?.closest?.(".card");
+            if (!card) return;
+            const checkbox = card.querySelector(".card-select");
+            if (!checkbox) return;
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event("change", { bubbles: true }));
             return;
+          }
 
           e.preventDefault();
           e.stopPropagation();
@@ -12469,6 +12556,28 @@
             renderSelectedPanelList();
           }
         });
+
+        window.addEventListener("resize", () => {
+          scheduleUpdateSelectedNameLayouts();
+        });
+
+        const selectedPanel = document.getElementById("selectedPanel");
+        if (selectedPanel && typeof ResizeObserver !== "undefined") {
+          selectedPanelResizeObserver = new ResizeObserver(() => {
+            scheduleUpdateSelectedNameLayouts();
+          });
+          selectedPanelResizeObserver.observe(selectedPanel);
+        }
+
+        window.addEventListener("load", () => {
+          scheduleUpdateSelectedNameLayouts();
+        });
+
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => {
+            scheduleUpdateSelectedNameLayouts();
+          });
+        }
       }
 
       const navSidebar = document.querySelector(".nav-sidebar");
