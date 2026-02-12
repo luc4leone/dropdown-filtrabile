@@ -3165,6 +3165,17 @@
         j.ruolo = normalizeRole(j.ruolo);
       }
 
+      {
+        const DEMO_TESTATA = "Il Sole 24 Ore";
+        let n = 0;
+        for (const j of journalists) {
+          if (n >= 20) break;
+          j.testata = DEMO_TESTATA;
+          j.testate = [DEMO_TESTATA];
+          n++;
+        }
+      }
+
       const normalizeText = (v) => String(v ?? "").trim();
 
       const makeSecondPhone = (primary) => {
@@ -5005,14 +5016,16 @@
       }
 
       function updateCardSelectionUI(jid) {
-        const card = document.querySelector(
+        const cards = document.querySelectorAll(
           `.card[data-jid="${CSS.escape(jid)}"]`,
         );
-        if (!card) return;
-        if (selectedJournalistIds.has(jid)) {
-          card.classList.add("is-selected");
-        } else {
-          card.classList.remove("is-selected");
+        if (!cards.length) return;
+        for (const card of cards) {
+          if (selectedJournalistIds.has(jid)) {
+            card.classList.add("is-selected");
+          } else {
+            card.classList.remove("is-selected");
+          }
         }
       }
 
@@ -6492,32 +6505,29 @@
           }
 
           {
-            const redazioniSection = document.createElement("section");
-            redazioniSection.className = "journalist-section";
-            redazioniSection.setAttribute("data-testata-redazioni", "");
+            const section = document.createElement("section");
+            section.className = "journalist-section";
+            section.setAttribute("data-testata-giornalisti", "");
 
-            const redazioniHeader = document.createElement("div");
-            redazioniHeader.className =
+            const header = document.createElement("div");
+            header.className =
               "journalist-section__header journalist-section__header--collapsible";
-            redazioniHeader.setAttribute(
-              "data-section-toggle",
-              "testata-redazioni",
-            );
-            redazioniHeader.setAttribute("role", "button");
-            redazioniHeader.setAttribute("tabindex", "0");
+            header.setAttribute("data-section-toggle", "testata-giornalisti");
+            header.setAttribute("role", "button");
+            header.setAttribute("tabindex", "0");
 
             const titleWrap = document.createElement("div");
             titleWrap.className = "journalist-section__title";
             {
               const heading = document.createElement("h3");
               heading.className = "journalist-section__heading";
-              heading.textContent = "REDAZIONI";
+              heading.textContent = "GIORNALISTI";
               titleWrap.appendChild(heading);
             }
-            redazioniHeader.appendChild(titleWrap);
+            header.appendChild(titleWrap);
 
-            const sectionOpen = getSectionOpen("testata-redazioni", false);
-            redazioniHeader.setAttribute(
+            const sectionOpen = getSectionOpen("testata-giornalisti", true);
+            header.setAttribute(
               "aria-expanded",
               sectionOpen ? "true" : "false",
             );
@@ -6526,326 +6536,371 @@
             toggle.className = "journalist-section__toggle";
             toggle.textContent = sectionOpen ? "-" : "+";
             toggle.setAttribute("aria-hidden", "true");
-            redazioniHeader.appendChild(toggle);
+            header.appendChild(toggle);
 
-            const redazioniBody = document.createElement("div");
-            redazioniBody.className = "journalist-section__body";
-            redazioniBody.setAttribute("data-section-body", "");
-            redazioniBody.hidden = !sectionOpen;
+            const body = document.createElement("div");
+            body.className = "journalist-section__body";
+            body.setAttribute("data-section-body", "");
+            body.hidden = !sectionOpen;
 
-            const tree = document.createElement("div");
-            tree.className = "redazioni-tree";
+            const layout = document.createElement("div");
+            layout.className = "testata-journalists-layout";
 
-            const makePropsList = (rows) => {
-              const wrap = document.createElement("div");
-              wrap.className = "redazioni-props";
+            const treeCol = document.createElement("div");
+            treeCol.className = "testata-journalists-tree";
 
-              for (const [labelText, valueText] of rows || []) {
-                const row = document.createElement("div");
-                row.className = "card-row";
+            const detailCol = document.createElement("div");
+            detailCol.className = "testata-journalists-detail";
 
-                const label = document.createElement("div");
-                label.className = "card-label";
-                label.textContent = normalizeTextHeader(labelText) || "";
+            const contacts = document.createElement("div");
+            contacts.className = "testata-journalists-contacts";
+            contacts.setAttribute("data-testata-journalists-contacts", "");
+            detailCol.appendChild(contacts);
 
-                const value = document.createElement("div");
-                value.className = "card-value";
-                value.textContent = normalizeTextHeader(valueText) || "n/d";
+            const grid = document.createElement("div");
+            grid.className = "testata-journalists-cards-grid";
+            grid.setAttribute("data-testata-journalists-grid", "");
+            detailCol.appendChild(grid);
 
-                row.appendChild(label);
-                row.appendChild(value);
-                wrap.appendChild(row);
-              }
-
-              return wrap;
-            };
-
-            const makeNode = (titleText, toggleKey, defaultOpen, contentEl) => {
-              const node = document.createElement("div");
-              node.className = "redazioni-node";
-              node.setAttribute("data-redazioni-node", "");
-
-              const btn = document.createElement("button");
-              btn.type = "button";
-              btn.className = "redazioni-node__toggle";
-              btn.setAttribute("data-redazioni-toggle", toggleKey);
-              const open = getSectionOpen(toggleKey, !!defaultOpen);
-              btn.setAttribute("aria-expanded", open ? "true" : "false");
-
-              const title = document.createElement("span");
-              title.className = "redazioni-node__title";
-              title.textContent = titleText;
-
-              const caret = document.createElement("span");
-              caret.className = "redazioni-caret";
-              caret.setAttribute("aria-hidden", "true");
-
-              btn.appendChild(title);
-              btn.appendChild(caret);
-
-              const body = document.createElement("div");
-              body.className = "redazioni-node__body";
-              body.setAttribute("data-redazioni-body", "");
-              body.hidden = !open;
-              if (contentEl) body.appendChild(contentEl);
-
-              node.appendChild(btn);
-              node.appendChild(body);
-              return node;
-            };
+            layout.appendChild(treeCol);
+            layout.appendChild(detailCol);
+            body.appendChild(layout);
 
             const rcId = String(t?.redazioneCentraleId || "").trim();
             const rc = rcId ? redazioniCentraliById.get(rcId) : null;
 
-            if (!rc) {
-              const empty = document.createElement("div");
-              empty.className = "muted";
-              empty.textContent = "n/d";
-              tree.appendChild(empty);
-            } else {
-              {
-                const wrap = document.createElement("div");
-                wrap.className = "redazioni-node__content";
-                wrap.appendChild(
-                  makePropsList([
-                    ["indirizzo", rc.indirizzo],
-                    ["email", rc.email],
-                    ["telefono", rc.telefono],
-                  ]),
-                );
+            const makeTreeLink = (label, filterKey, level = 0) => {
+              const wrap = document.createElement("div");
+              wrap.className = "testata-journalists-tree-item";
+              wrap.setAttribute("data-level", String(level));
 
-                const topicsWrap = document.createElement("div");
-                topicsWrap.className = "redazioni-children";
+              const a = document.createElement("a");
+              a.href = "#";
+              a.className = "testata-journalists-tree-link";
+              a.textContent = label;
+              a.setAttribute("data-redazione-filter", filterKey);
+              wrap.appendChild(a);
+              return wrap;
+            };
 
-                for (const a of rc.argomenti || []) {
-                  const childWrap = document.createElement("div");
-                  childWrap.className = "redazioni-node__content";
-                  childWrap.appendChild(
-                    makePropsList([
-                      ["email", a?.email],
-                      ["telefono", a?.telefono],
-                    ]),
-                  );
-                  topicsWrap.appendChild(
-                    makeNode(
-                      String(a?.nome || "").trim(),
-                      `redazioni:${rc.id}:argomento:${String(a?.id || "").trim()}`,
-                      false,
-                      childWrap,
-                    ),
-                  );
-                }
+            const makeTreeLabel = (label, level = 0) => {
+              const el = document.createElement("div");
+              el.className = "testata-journalists-tree-label";
+              el.setAttribute("data-level", String(level));
+              el.textContent = label;
+              return el;
+            };
 
-                wrap.appendChild(topicsWrap);
-                tree.appendChild(
-                  makeNode(
-                    "redazione centrale",
-                    `redazioni:${rc.id}:centrale`,
-                    true,
-                    wrap,
-                  ),
-                );
-              }
+            const emptyTree = document.createElement("div");
+            emptyTree.className = "muted";
+            emptyTree.textContent = "n/d";
 
-              {
-                const groupWrap = document.createElement("div");
-                groupWrap.className = "redazioni-children";
-                for (const l of rc.locali || []) {
-                  const childWrap = document.createElement("div");
-                  childWrap.className = "redazioni-node__content";
-                  childWrap.appendChild(
-                    makePropsList([
-                      ["indirizzo", l?.indirizzo],
-                      ["email", l?.email],
-                      ["telefono", l?.telefono],
-                    ]),
-                  );
-                  groupWrap.appendChild(
-                    makeNode(
-                      String(l?.citta || "").trim(),
-                      `redazioni:${rc.id}:locale:${String(l?.id || "").trim()}`,
-                      false,
-                      childWrap,
-                    ),
-                  );
-                }
-                tree.appendChild(
-                  makeNode(
-                    "redazioni locali",
-                    `redazioni:${rc.id}:locali`,
-                    false,
-                    groupWrap,
-                  ),
-                );
-              }
+            const allJids = [...(t?.redazione?.giornalisti || [])]
+              .map((x) => String(x || "").trim())
+              .filter(Boolean);
 
-              {
-                const groupWrap = document.createElement("div");
-                groupWrap.className = "redazioni-children";
-                for (const x of rc.estere || []) {
-                  const childWrap = document.createElement("div");
-                  childWrap.className = "redazioni-node__content";
-                  childWrap.appendChild(
-                    makePropsList([
-                      ["indirizzo", x?.indirizzo],
-                      ["email", x?.email],
-                      ["telefono", x?.telefono],
-                    ]),
-                  );
-                  groupWrap.appendChild(
-                    makeNode(
-                      String(x?.citta || "").trim(),
-                      `redazioni:${rc.id}:estera:${String(x?.id || "").trim()}`,
-                      false,
-                      childWrap,
-                    ),
-                  );
-                }
-                tree.appendChild(
-                  makeNode(
-                    "redazioni estere",
-                    `redazioni:${rc.id}:estere`,
-                    false,
-                    groupWrap,
-                  ),
-                );
-              }
-            }
+            const journalistObjs = allJids
+              .map((jid) =>
+                (journalists || []).find((x) => getJournalistId(x) === jid),
+              )
+              .filter(Boolean);
 
-            redazioniBody.appendChild(tree);
-            redazioniSection.appendChild(redazioniHeader);
-            redazioniSection.appendChild(redazioniBody);
-            testataPanelBody.appendChild(redazioniSection);
-          }
+            const redazioneByJid = new Map();
+            const availableLeafKeys = [];
 
-          const email = document.createElement("span");
-          email.textContent = String(t?.email || "");
-          addRow("E-mail", email);
+            const makeCompactCard = (j) => {
+              const card = createCard(j);
+              const firstName = card.querySelector(
+                ".card-name.card-name--person .card-first-name",
+              );
+              if (firstName) firstName.remove();
 
-          const telefono = document.createElement("span");
-          telefono.textContent = String(t?.telefono || "");
-          addRow("Telefono", telefono);
+              const testateRow = card
+                .querySelector(".card-testate")
+                ?.closest?.(".card-row");
+              if (testateRow) testateRow.remove();
 
-          const listWrap = document.createElement("div");
-          const jids = [...(t?.redazione?.giornalisti || [])].filter(Boolean);
-          if (!jids.length) {
-            const empty = document.createElement("div");
-            empty.className = "muted";
-            empty.textContent = "nessun giornalista";
-            listWrap.appendChild(empty);
-          } else {
-            const table = document.createElement("table");
-            table.className = "testata-panel-journalists-table";
+              const notesRow = card
+                .querySelector(".card-note")
+                ?.closest?.(".card-row");
+              if (notesRow) notesRow.remove();
 
-            const thead = document.createElement("thead");
-            const headRow = document.createElement("tr");
-            const headers = ["", "Nome", "Servizio", "Ruolo", "Tel", "Email"];
-            for (const h of headers) {
-              const th = document.createElement("th");
-              th.textContent = h;
-              headRow.appendChild(th);
-            }
-            thead.appendChild(headRow);
+              return card;
+            };
 
-            const tbody = document.createElement("tbody");
+            const active = { key: "all" };
 
-            const rows = jids
-              .map((jid) => {
-                const j = (journalists || []).find(
-                  (x) => getJournalistId(x) === jid,
-                );
-                const name = j
-                  ? `${String(j?.nome || "").trim()} ${String(
-                      j?.cognome || "",
-                    ).trim()}`.trim()
-                  : getJournalistNameById(jid);
-                return {
-                  jid,
-                  name,
-                  servizio: j ? String(j?.servizio || "") : "",
-                  ruolo: j ? String(j?.ruolo || "") : "",
-                  tel: j ? String(j?.telefono || "") : "",
-                  email: j ? String(j?.email || "") : "",
+            const renderContacts = () => {
+              const norm = (v) => String(v ?? "").trim();
+
+              const setContactsRow = ({ name, tel, email }) => {
+                const safeName = norm(name) || "n/d";
+                const safeTel = norm(tel) || "n/d";
+                const safeEmail = norm(email) || "n/d";
+
+                const span = (className, text) => {
+                  const el = document.createElement("span");
+                  el.className = className;
+                  el.textContent = String(text ?? "");
+                  return el;
                 };
-              })
-              .sort((a, b) =>
-                String(a.name || "").localeCompare(String(b.name || ""), "it", {
-                  sensitivity: "base",
-                }),
+
+                contacts.replaceChildren(
+                  span("t-text", `redazione ${safeName}: `),
+                  span("t-label", "tel"),
+                  document.createTextNode(" "),
+                  span("t-value", safeTel),
+                  document.createTextNode(" • "),
+                  span("t-label", "email"),
+                  document.createTextNode(" "),
+                  span("t-value t-no-transform", safeEmail),
+                );
+              };
+
+              const fallbackTel =
+                norm(t?.redazione?.telRedazione) || norm(t?.telefono) || "n/d";
+              const fallbackEmail = norm(t?.email) || "n/d";
+
+              if (!rc) {
+                const label = norm(t?.nome) || "";
+                setContactsRow({
+                  name: label,
+                  tel: fallbackTel,
+                  email: fallbackEmail,
+                });
+                return;
+              }
+
+              const key = String(active.key || "all").trim() || "all";
+
+              let name = "centrale";
+              let tel = norm(rc?.telefono) || fallbackTel;
+              let email = norm(rc?.email) || fallbackEmail;
+
+              if (key === "all") {
+                name = "centrale";
+              } else if (key.startsWith("centrale:")) {
+                name = "centrale";
+              } else if (key.startsWith("argomento:")) {
+                const id = key.slice("argomento:".length);
+                const item = (rc.argomenti || []).find(
+                  (x) => String(x?.id || "").trim() === id,
+                );
+                if (item) {
+                  name = norm(item?.nome) || name;
+                  tel = norm(item?.telefono) || tel;
+                  email = norm(item?.email) || email;
+                }
+              } else if (key.startsWith("locale:")) {
+                const id = key.slice("locale:".length);
+                const item = (rc.locali || []).find(
+                  (x) => String(x?.id || "").trim() === id,
+                );
+                if (item) {
+                  name = norm(item?.citta) || name;
+                  tel = norm(item?.telefono) || tel;
+                  email = norm(item?.email) || email;
+                }
+              } else if (key.startsWith("estera:")) {
+                const id = key.slice("estera:".length);
+                const item = (rc.estere || []).find(
+                  (x) => String(x?.id || "").trim() === id,
+                );
+                if (item) {
+                  name = norm(item?.citta) || name;
+                  tel = norm(item?.telefono) || tel;
+                  email = norm(item?.email) || email;
+                }
+              }
+
+              setContactsRow({ name, tel, email });
+            };
+
+            const renderGrid = () => {
+              grid.innerHTML = "";
+              const filtered = journalistObjs.filter((j) => {
+                if (active.key === "all") return true;
+                const jid = getJournalistId(j);
+                return redazioneByJid.get(jid) === active.key;
+              });
+
+              if (!filtered.length) {
+                const empty = document.createElement("div");
+                empty.className = "muted";
+                empty.textContent = "nessun giornalista";
+                grid.appendChild(empty);
+                return;
+              }
+
+              filtered.sort((a, b) => {
+                const la = String(a?.cognome || "").trim();
+                const lb = String(b?.cognome || "").trim();
+                const ca = la.localeCompare(lb, "it", { sensitivity: "base" });
+                if (ca !== 0) return ca;
+                const na = String(a?.nome || "").trim();
+                const nb = String(b?.nome || "").trim();
+                return na.localeCompare(nb, "it", { sensitivity: "base" });
+              });
+
+              for (const j of filtered) {
+                grid.appendChild(makeCompactCard(j));
+              }
+            };
+
+            const setActiveFilter = (key) => {
+              active.key = key || "all";
+              for (const link of treeCol.querySelectorAll(
+                ".testata-journalists-tree-link[data-redazione-filter]",
+              )) {
+                link.classList.toggle(
+                  "is-active",
+                  link.getAttribute("data-redazione-filter") === active.key,
+                );
+              }
+              renderContacts();
+              renderGrid();
+            };
+
+            if (!rc) {
+              treeCol.appendChild(makeTreeLink("tutti", "all", 0));
+              treeCol.appendChild(emptyTree);
+            } else {
+              treeCol.appendChild(makeTreeLink("tutti", "all", 0));
+
+              const centraleKey = `centrale:${String(rc.id || "").trim()}`;
+              availableLeafKeys.push(centraleKey);
+              treeCol.appendChild(makeTreeLabel("redazione centrale", 0));
+              treeCol.appendChild(makeTreeLink("centrale", centraleKey, 1));
+
+              if (Array.isArray(rc.argomenti) && rc.argomenti.length) {
+                for (const a of rc.argomenti || []) {
+                  const id = String(a?.id || "").trim();
+                  const nome = String(a?.nome || "").trim();
+                  if (!id || !nome) continue;
+                  const k = `argomento:${id}`;
+                  availableLeafKeys.push(k);
+                  treeCol.appendChild(makeTreeLink(nome, k, 1));
+                }
+              }
+
+              if (Array.isArray(rc.locali) && rc.locali.length) {
+                treeCol.appendChild(makeTreeLabel("redazioni locali", 0));
+                for (const l of rc.locali || []) {
+                  const id = String(l?.id || "").trim();
+                  const nome = String(l?.citta || "").trim();
+                  if (!id || !nome) continue;
+                  const k = `locale:${id}`;
+                  availableLeafKeys.push(k);
+                  treeCol.appendChild(makeTreeLink(nome, k, 1));
+                }
+              }
+
+              if (Array.isArray(rc.estere) && rc.estere.length) {
+                treeCol.appendChild(makeTreeLabel("redazioni estere", 0));
+                for (const x of rc.estere || []) {
+                  const id = String(x?.id || "").trim();
+                  const nome = String(x?.citta || "").trim();
+                  if (!id || !nome) continue;
+                  const k = `estera:${id}`;
+                  availableLeafKeys.push(k);
+                  treeCol.appendChild(makeTreeLink(nome, k, 1));
+                }
+              }
+
+              const topicsByNameKey = new Map(
+                (rc.argomenti || [])
+                  .map((a) => [normalizeTestataKey(a?.nome), a])
+                  .filter((x) => x[0]),
               );
 
-            for (const item of rows) {
-              const jid = item.jid;
+              const nonCentralLeafKeys = availableLeafKeys.filter(
+                (k) => k !== centraleKey,
+              );
 
-              const tr = document.createElement("tr");
-
-              const checkboxId = `testata-panel-select-${jid.replace(
-                /[^a-zA-Z0-9_-]/g,
-                "_",
-              )}`;
-
-              const tdCb = document.createElement("td");
-              const cb = document.createElement("input");
-              cb.type = "checkbox";
-              cb.className = "testata-panel-select";
-              cb.id = checkboxId;
-              cb.setAttribute("data-jid", jid);
-              cb.checked = selectedJournalistIds.has(jid);
-              cb.addEventListener("change", (e) => {
-                e.stopPropagation();
-                if (cb.checked) {
-                  selectedJournalistIds.add(jid);
-                  ensureSelectedOrder(jid);
-                  openSelectedPanel();
-                } else {
-                  selectedJournalistIds.delete(jid);
-                  removeFromSelectedOrder(jid);
-                  if (selectedJournalistIds.size === 0) {
-                    closeSelectedPanel();
-                  } else {
-                    renderSelectedPanelList();
-                  }
+              for (const j of journalistObjs) {
+                const jid = getJournalistId(j);
+                const serviceKey = normalizeTestataKey(j?.servizio);
+                const maybeTopic = serviceKey
+                  ? topicsByNameKey.get(serviceKey)
+                  : null;
+                if (maybeTopic && maybeTopic.id) {
+                  redazioneByJid.set(
+                    `` + jid,
+                    `argomento:${String(maybeTopic.id).trim()}`,
+                  );
+                  continue;
                 }
-                updateCheckboxUI(jid);
-                updateCardSelectionUI(jid);
-              });
-              tdCb.appendChild(cb);
 
-              const tdName = document.createElement("td");
-              const nameLink = document.createElement("a");
-              nameLink.href = "#";
-              nameLink.className = "testata-link journalist-link";
-              nameLink.textContent = item.name;
-              nameLink.setAttribute("data-journalist", item.name);
-              tdName.appendChild(nameLink);
+                const h = hashStringToUint(`testata-redazioni:${rc.id}:${jid}`);
+                const prefersCentral = h % 5 === 0;
+                if (prefersCentral || nonCentralLeafKeys.length === 0) {
+                  redazioneByJid.set(jid, centraleKey);
+                  continue;
+                }
 
-              const tdServizio = document.createElement("td");
-              tdServizio.textContent = item.servizio;
-
-              const tdRuolo = document.createElement("td");
-              tdRuolo.textContent = item.ruolo;
-
-              const tdTel = document.createElement("td");
-              tdTel.textContent = item.tel;
-
-              const tdEmail = document.createElement("td");
-              tdEmail.textContent = item.email;
-
-              tr.appendChild(tdCb);
-              tr.appendChild(tdName);
-              tr.appendChild(tdServizio);
-              tr.appendChild(tdRuolo);
-              tr.appendChild(tdTel);
-              tr.appendChild(tdEmail);
-              tbody.appendChild(tr);
+                const idx = h % nonCentralLeafKeys.length;
+                redazioneByJid.set(jid, nonCentralLeafKeys[idx]);
+              }
             }
 
-            table.appendChild(thead);
-            table.appendChild(tbody);
-            listWrap.appendChild(table);
-          }
+            treeCol.addEventListener("click", (e) => {
+              const link = e.target?.closest?.(
+                ".testata-journalists-tree-link[data-redazione-filter]",
+              );
+              if (!link) return;
+              e.preventDefault();
+              e.stopPropagation();
+              const key = link.getAttribute("data-redazione-filter") || "all";
+              setActiveFilter(key);
+            });
 
-          addRow("Giornalisti", listWrap);
+            grid.addEventListener("click", (e) => {
+              const checkbox = e.target?.closest?.(".card-select");
+              if (checkbox) return;
+
+              const testataLink = e.target?.closest?.(".testata-link");
+              const journalistLink = e.target?.closest?.(".journalist-link");
+              if (testataLink || journalistLink) return;
+
+              const card = e.target?.closest?.(".card");
+              if (!card) return;
+              const cb = card.querySelector(".card-select[data-jid]");
+              if (!cb) return;
+              cb.checked = !cb.checked;
+              cb.dispatchEvent(new Event("change", { bubbles: true }));
+            });
+
+            grid.addEventListener("change", (e) => {
+              const checkbox = e.target?.closest?.(".card-select[data-jid]");
+              if (!checkbox) return;
+              const jid = checkbox.getAttribute("data-jid");
+              if (!jid) return;
+              const card = checkbox.closest(".card");
+              if (checkbox.checked) {
+                selectedJournalistIds.add(jid);
+                ensureSelectedOrder(jid);
+                card?.classList?.add("is-selected");
+                openSelectedPanel();
+              } else {
+                selectedJournalistIds.delete(jid);
+                removeFromSelectedOrder(jid);
+                card?.classList?.remove("is-selected");
+                if (selectedJournalistIds.size === 0) {
+                  closeSelectedPanel();
+                } else {
+                  renderSelectedPanelList();
+                }
+              }
+              updateCheckboxUI(jid);
+              updateCardSelectionUI(jid);
+            });
+
+            setActiveFilter("all");
+
+            section.appendChild(header);
+            section.appendChild(body);
+            testataPanelBody.appendChild(section);
+          }
         }
 
         testataOverlay.classList.add("show");
