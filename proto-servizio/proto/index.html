@@ -79,7 +79,7 @@
             ></span>
             <span>notifiche</span>
           </a>
-          <a href="#">
+          <a href="#account" data-view="account">
             <span
               class="nav-icon"
               data-icon="account"
@@ -103,44 +103,35 @@
         <div class="app-view is-active" data-view="filtra" id="viewFiltra">
           <aside class="sidebar">
             <div class="sidebar-mode" role="radiogroup" aria-label="Modalità">
-              <input
-                type="radio"
-                name="sidebarMode"
-                id="sidebarModeJournalists"
-                value="giornalisti"
-                checked
-              />
-              <label class="sidebar-mode-option" for="sidebarModeJournalists"
-                >giornalisti</label
-              >
-              <span
-                class="pill"
-                id="sidebarCountJournalists"
-                style="display: inline-block"
-              ></span>
-              <span class="sidebar-mode-separator">|</span>
-              <input
-                type="radio"
-                name="sidebarMode"
-                id="sidebarModeTestate"
-                value="testate"
-              />
-              <label class="sidebar-mode-option" for="sidebarModeTestate"
-                >testate</label
-              >
-              <span
-                class="pill"
-                id="sidebarCountTestate"
-                style="display: inline-block"
-              ></span>
+              <span class="sidebar-mode-segment">
+                <input
+                  type="radio"
+                  name="sidebarMode"
+                  id="sidebarModeJournalists"
+                  value="giornalisti"
+                  checked
+                />
+                <label class="sidebar-mode-option" for="sidebarModeJournalists"
+                  >giornalisti</label
+                >
+              </span>
+              <span class="sidebar-mode-segment">
+                <input
+                  type="radio"
+                  name="sidebarMode"
+                  id="sidebarModeTestate"
+                  value="testate"
+                />
+                <label class="sidebar-mode-option" for="sidebarModeTestate"
+                  >testate</label
+                >
+              </span>
             </div>
 
             <div class="sidebar-filters-scroll">
               <div class="dropdown-container" style="margin-bottom: 18px">
                 <div class="filter-label-row">
-                  <label class="field-label" for="textFilterInput"
-                    >Giornalista, Testata, Note</label
-                  >
+                  <label class="field-label" for="textFilterInput">Cerca</label>
                   <a href="#" class="filter-clear-link" id="textFilterClearLink"
                     >rimuovi</a
                   >
@@ -153,8 +144,18 @@
                     autocomplete="off"
                   />
                 </div>
+                <div class="filter-help-text" id="textFilterHelpText">
+                  in nome, email, note (giornalisti)
+                </div>
               </div>
 
+              <hr class="sidebar-separator" />
+              <a
+                href="#"
+                class="c-link c-link--action smart-filters-link"
+                id="smartFiltersOpenLink"
+                >filtri intelligenti</a
+              >
               <hr class="sidebar-separator" />
               <div class="sidebar-section-title">Filtri giornalista</div>
 
@@ -300,284 +301,292 @@
               <hr class="sidebar-separator" />
               <div class="sidebar-section-title">Filtri testata</div>
 
-              <div class="dropdown-container">
-                <div class="filter-label-row">
-                  <label class="field-label" for="testataArgomentoDropdownInput"
-                    >Argomento testata</label
-                  >
-                  <a
-                    href="#"
-                    class="filter-clear-link"
-                    id="testataArgomentoDropdownClearLink"
-                    >rimuovi</a
-                  >
-                </div>
-                <div
-                  class="dropdown-input"
-                  id="testataArgomentoDropdownInputWrapper"
-                >
-                  <div id="testataArgomentoChipContainer"></div>
-                  <input
-                    type="text"
-                    class="chip-text-input"
-                    id="testataArgomentoDropdownInput"
-                    autocomplete="off"
-                  />
-                  <div
-                    class="autocomplete-inline"
-                    id="testataArgomentoAutocompleteInline"
-                    aria-hidden="true"
-                  >
-                    <span
-                      class="autocomplete-suffix"
-                      id="testataArgomentoAutocompleteSuffix"
-                    ></span>
-                    <span
-                      class="autocomplete-tip"
-                      id="testataArgomentoAutocompleteTip"
-                    ></span>
-                  </div>
-                  <div
-                    class="dropdown-arrow"
-                    id="testataArgomentoDropdownArrow"
-                  ></div>
-                </div>
-                <div class="dropdown-list" id="testataArgomentoDropdownList">
-                  <div
-                    class="dropdown-suggestions"
-                    id="testataArgomentoDropdownSuggestions"
-                  ></div>
-                  <div
-                    class="dropdown-results"
-                    id="testataArgomentoDropdownResults"
-                  ></div>
-                  <div class="dropdown-footer">
+              <div id="testataFiltersSection">
+                <div class="dropdown-container">
+                  <div class="filter-label-row">
+                    <label
+                      class="field-label"
+                      for="testataArgomentoDropdownInput"
+                      >Argomento testata</label
+                    >
                     <a
                       href="#"
-                      class="close-dropdown-link"
-                      id="testataArgomentoCloseDropdownLink"
-                      >chiudi tendina</a
+                      class="filter-clear-link"
+                      id="testataArgomentoDropdownClearLink"
+                      >rimuovi</a
                     >
-                    <button
-                      type="button"
-                      class="keycap"
+                  </div>
+                  <div
+                    class="dropdown-input"
+                    id="testataArgomentoDropdownInputWrapper"
+                  >
+                    <div id="testataArgomentoChipContainer"></div>
+                    <input
+                      type="text"
+                      class="chip-text-input"
+                      id="testataArgomentoDropdownInput"
+                      autocomplete="off"
+                    />
+                    <div
+                      class="autocomplete-inline"
+                      id="testataArgomentoAutocompleteInline"
                       aria-hidden="true"
-                      tabindex="-1"
                     >
-                      ESC
-                    </button>
+                      <span
+                        class="autocomplete-suffix"
+                        id="testataArgomentoAutocompleteSuffix"
+                      ></span>
+                      <span
+                        class="autocomplete-tip"
+                        id="testataArgomentoAutocompleteTip"
+                      ></span>
+                    </div>
+                    <div
+                      class="dropdown-arrow"
+                      id="testataArgomentoDropdownArrow"
+                    ></div>
+                  </div>
+                  <div class="dropdown-list" id="testataArgomentoDropdownList">
+                    <div
+                      class="dropdown-suggestions"
+                      id="testataArgomentoDropdownSuggestions"
+                    ></div>
+                    <div
+                      class="dropdown-results"
+                      id="testataArgomentoDropdownResults"
+                    ></div>
+                    <div class="dropdown-footer">
+                      <a
+                        href="#"
+                        class="close-dropdown-link"
+                        id="testataArgomentoCloseDropdownLink"
+                        >chiudi tendina</a
+                      >
+                      <button
+                        type="button"
+                        class="keycap"
+                        aria-hidden="true"
+                        tabindex="-1"
+                      >
+                        ESC
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="dropdown-container" style="margin-top: 18px">
-                <div class="filter-label-row">
-                  <label class="field-label" for="testataTipoMediaDropdownInput"
-                    >Tipo di media</label
-                  >
-                  <a
-                    href="#"
-                    class="filter-clear-link"
-                    id="testataTipoMediaDropdownClearLink"
-                    >rimuovi</a
-                  >
-                </div>
-                <div
-                  class="dropdown-input"
-                  id="testataTipoMediaDropdownInputWrapper"
-                >
-                  <div id="testataTipoMediaChipContainer"></div>
-                  <input
-                    type="text"
-                    class="chip-text-input"
-                    id="testataTipoMediaDropdownInput"
-                    autocomplete="off"
-                  />
-                  <div
-                    class="autocomplete-inline"
-                    id="testataTipoMediaAutocompleteInline"
-                    aria-hidden="true"
-                  >
-                    <span
-                      class="autocomplete-suffix"
-                      id="testataTipoMediaAutocompleteSuffix"
-                    ></span>
-                    <span
-                      class="autocomplete-tip"
-                      id="testataTipoMediaAutocompleteTip"
-                    ></span>
-                  </div>
-                  <div
-                    class="dropdown-arrow"
-                    id="testataTipoMediaDropdownArrow"
-                  ></div>
-                </div>
-                <div class="dropdown-list" id="testataTipoMediaDropdownList">
-                  <div
-                    class="dropdown-suggestions"
-                    id="testataTipoMediaDropdownSuggestions"
-                  ></div>
-                  <div
-                    class="dropdown-results"
-                    id="testataTipoMediaDropdownResults"
-                  ></div>
-                  <div class="dropdown-footer">
+                <div class="dropdown-container" style="margin-top: 18px">
+                  <div class="filter-label-row">
+                    <label
+                      class="field-label"
+                      for="testataTipoMediaDropdownInput"
+                      >Tipo di media</label
+                    >
                     <a
                       href="#"
-                      class="close-dropdown-link"
-                      id="testataTipoMediaCloseDropdownLink"
-                      >chiudi tendina</a
+                      class="filter-clear-link"
+                      id="testataTipoMediaDropdownClearLink"
+                      >rimuovi</a
                     >
-                    <button
-                      type="button"
-                      class="keycap"
+                  </div>
+                  <div
+                    class="dropdown-input"
+                    id="testataTipoMediaDropdownInputWrapper"
+                  >
+                    <div id="testataTipoMediaChipContainer"></div>
+                    <input
+                      type="text"
+                      class="chip-text-input"
+                      id="testataTipoMediaDropdownInput"
+                      autocomplete="off"
+                    />
+                    <div
+                      class="autocomplete-inline"
+                      id="testataTipoMediaAutocompleteInline"
                       aria-hidden="true"
-                      tabindex="-1"
                     >
-                      ESC
-                    </button>
+                      <span
+                        class="autocomplete-suffix"
+                        id="testataTipoMediaAutocompleteSuffix"
+                      ></span>
+                      <span
+                        class="autocomplete-tip"
+                        id="testataTipoMediaAutocompleteTip"
+                      ></span>
+                    </div>
+                    <div
+                      class="dropdown-arrow"
+                      id="testataTipoMediaDropdownArrow"
+                    ></div>
+                  </div>
+                  <div class="dropdown-list" id="testataTipoMediaDropdownList">
+                    <div
+                      class="dropdown-suggestions"
+                      id="testataTipoMediaDropdownSuggestions"
+                    ></div>
+                    <div
+                      class="dropdown-results"
+                      id="testataTipoMediaDropdownResults"
+                    ></div>
+                    <div class="dropdown-footer">
+                      <a
+                        href="#"
+                        class="close-dropdown-link"
+                        id="testataTipoMediaCloseDropdownLink"
+                        >chiudi tendina</a
+                      >
+                      <button
+                        type="button"
+                        class="keycap"
+                        aria-hidden="true"
+                        tabindex="-1"
+                      >
+                        ESC
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="dropdown-container" style="margin-top: 18px">
-                <div class="filter-label-row">
-                  <label class="field-label" for="testataFrequenzaDropdownInput"
-                    >Frequenza di pubblicazione</label
-                  >
-                  <a
-                    href="#"
-                    class="filter-clear-link"
-                    id="testataFrequenzaDropdownClearLink"
-                    >rimuovi</a
-                  >
-                </div>
-                <div
-                  class="dropdown-input"
-                  id="testataFrequenzaDropdownInputWrapper"
-                >
-                  <div id="testataFrequenzaChipContainer"></div>
-                  <input
-                    type="text"
-                    class="chip-text-input"
-                    id="testataFrequenzaDropdownInput"
-                    autocomplete="off"
-                  />
-                  <div
-                    class="autocomplete-inline"
-                    id="testataFrequenzaAutocompleteInline"
-                    aria-hidden="true"
-                  >
-                    <span
-                      class="autocomplete-suffix"
-                      id="testataFrequenzaAutocompleteSuffix"
-                    ></span>
-                    <span
-                      class="autocomplete-tip"
-                      id="testataFrequenzaAutocompleteTip"
-                    ></span>
-                  </div>
-                  <div
-                    class="dropdown-arrow"
-                    id="testataFrequenzaDropdownArrow"
-                  ></div>
-                </div>
-                <div class="dropdown-list" id="testataFrequenzaDropdownList">
-                  <div
-                    class="dropdown-suggestions"
-                    id="testataFrequenzaDropdownSuggestions"
-                  ></div>
-                  <div
-                    class="dropdown-results"
-                    id="testataFrequenzaDropdownResults"
-                  ></div>
-                  <div class="dropdown-footer">
+                <div class="dropdown-container" style="margin-top: 18px">
+                  <div class="filter-label-row">
+                    <label
+                      class="field-label"
+                      for="testataFrequenzaDropdownInput"
+                      >Frequenza di pubblicazione</label
+                    >
                     <a
                       href="#"
-                      class="close-dropdown-link"
-                      id="testataFrequenzaCloseDropdownLink"
-                      >chiudi tendina</a
+                      class="filter-clear-link"
+                      id="testataFrequenzaDropdownClearLink"
+                      >rimuovi</a
                     >
-                    <button
-                      type="button"
-                      class="keycap"
+                  </div>
+                  <div
+                    class="dropdown-input"
+                    id="testataFrequenzaDropdownInputWrapper"
+                  >
+                    <div id="testataFrequenzaChipContainer"></div>
+                    <input
+                      type="text"
+                      class="chip-text-input"
+                      id="testataFrequenzaDropdownInput"
+                      autocomplete="off"
+                    />
+                    <div
+                      class="autocomplete-inline"
+                      id="testataFrequenzaAutocompleteInline"
                       aria-hidden="true"
-                      tabindex="-1"
                     >
-                      ESC
-                    </button>
+                      <span
+                        class="autocomplete-suffix"
+                        id="testataFrequenzaAutocompleteSuffix"
+                      ></span>
+                      <span
+                        class="autocomplete-tip"
+                        id="testataFrequenzaAutocompleteTip"
+                      ></span>
+                    </div>
+                    <div
+                      class="dropdown-arrow"
+                      id="testataFrequenzaDropdownArrow"
+                    ></div>
+                  </div>
+                  <div class="dropdown-list" id="testataFrequenzaDropdownList">
+                    <div
+                      class="dropdown-suggestions"
+                      id="testataFrequenzaDropdownSuggestions"
+                    ></div>
+                    <div
+                      class="dropdown-results"
+                      id="testataFrequenzaDropdownResults"
+                    ></div>
+                    <div class="dropdown-footer">
+                      <a
+                        href="#"
+                        class="close-dropdown-link"
+                        id="testataFrequenzaCloseDropdownLink"
+                        >chiudi tendina</a
+                      >
+                      <button
+                        type="button"
+                        class="keycap"
+                        aria-hidden="true"
+                        tabindex="-1"
+                      >
+                        ESC
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="dropdown-container" style="margin-top: 18px">
-                <div class="filter-label-row">
-                  <label
-                    class="field-label"
-                    for="testataDiffusioneDropdownInput"
-                    >Diffusione</label
-                  >
-                  <a
-                    href="#"
-                    class="filter-clear-link"
-                    id="testataDiffusioneDropdownClearLink"
-                    >rimuovi</a
-                  >
-                </div>
-                <div
-                  class="dropdown-input"
-                  id="testataDiffusioneDropdownInputWrapper"
-                >
-                  <div id="testataDiffusioneChipContainer"></div>
-                  <input
-                    type="text"
-                    class="chip-text-input"
-                    id="testataDiffusioneDropdownInput"
-                    autocomplete="off"
-                  />
-                  <div
-                    class="autocomplete-inline"
-                    id="testataDiffusioneAutocompleteInline"
-                    aria-hidden="true"
-                  >
-                    <span
-                      class="autocomplete-suffix"
-                      id="testataDiffusioneAutocompleteSuffix"
-                    ></span>
-                    <span
-                      class="autocomplete-tip"
-                      id="testataDiffusioneAutocompleteTip"
-                    ></span>
-                  </div>
-                  <div
-                    class="dropdown-arrow"
-                    id="testataDiffusioneDropdownArrow"
-                  ></div>
-                </div>
-                <div class="dropdown-list" id="testataDiffusioneDropdownList">
-                  <div
-                    class="dropdown-suggestions"
-                    id="testataDiffusioneDropdownSuggestions"
-                  ></div>
-                  <div
-                    class="dropdown-results"
-                    id="testataDiffusioneDropdownResults"
-                  ></div>
-                  <div class="dropdown-footer">
+                <div class="dropdown-container" style="margin-top: 18px">
+                  <div class="filter-label-row">
+                    <label
+                      class="field-label"
+                      for="testataDiffusioneDropdownInput"
+                      >Diffusione</label
+                    >
                     <a
                       href="#"
-                      class="close-dropdown-link"
-                      id="testataDiffusioneCloseDropdownLink"
-                      >chiudi tendina</a
+                      class="filter-clear-link"
+                      id="testataDiffusioneDropdownClearLink"
+                      >rimuovi</a
                     >
-                    <button
-                      type="button"
-                      class="keycap"
+                  </div>
+                  <div
+                    class="dropdown-input"
+                    id="testataDiffusioneDropdownInputWrapper"
+                  >
+                    <div id="testataDiffusioneChipContainer"></div>
+                    <input
+                      type="text"
+                      class="chip-text-input"
+                      id="testataDiffusioneDropdownInput"
+                      autocomplete="off"
+                    />
+                    <div
+                      class="autocomplete-inline"
+                      id="testataDiffusioneAutocompleteInline"
                       aria-hidden="true"
-                      tabindex="-1"
                     >
-                      ESC
-                    </button>
+                      <span
+                        class="autocomplete-suffix"
+                        id="testataDiffusioneAutocompleteSuffix"
+                      ></span>
+                      <span
+                        class="autocomplete-tip"
+                        id="testataDiffusioneAutocompleteTip"
+                      ></span>
+                    </div>
+                    <div
+                      class="dropdown-arrow"
+                      id="testataDiffusioneDropdownArrow"
+                    ></div>
+                  </div>
+                  <div class="dropdown-list" id="testataDiffusioneDropdownList">
+                    <div
+                      class="dropdown-suggestions"
+                      id="testataDiffusioneDropdownSuggestions"
+                    ></div>
+                    <div
+                      class="dropdown-results"
+                      id="testataDiffusioneDropdownResults"
+                    ></div>
+                    <div class="dropdown-footer">
+                      <a
+                        href="#"
+                        class="close-dropdown-link"
+                        id="testataDiffusioneCloseDropdownLink"
+                        >chiudi tendina</a
+                      >
+                      <button
+                        type="button"
+                        class="keycap"
+                        aria-hidden="true"
+                        tabindex="-1"
+                      >
+                        ESC
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -589,7 +598,14 @@
               <div>
                 <div class="main-header-row">
                   <div class="main-header-left">
-                    <h1 class="main-title" id="mainTitle">Banca Dati</h1>
+                    <div class="main-title-with-icon" id="mainTitleWithIcon">
+                      <span
+                        class="main-title-icon"
+                        id="mainTitleIcon"
+                        aria-hidden="true"
+                      ></span>
+                      <h1 class="main-title" id="mainTitle">Banca Dati</h1>
+                    </div>
                     <span
                       class="pill"
                       id="mailingListCountPill"
@@ -651,6 +667,43 @@
                       >seleziona tutti</a
                     >
                   </span>
+                  <div
+                    class="sidebar-mode main-mode"
+                    role="radiogroup"
+                    aria-label="Modalità risultati"
+                    id="mainMode"
+                  >
+                    <input
+                      type="radio"
+                      name="mainMode"
+                      id="mainModeJournalists"
+                      value="giornalisti"
+                      checked
+                    />
+                    <label class="sidebar-mode-option" for="mainModeJournalists"
+                      >giornalisti</label
+                    >
+                    <span
+                      class="pill"
+                      id="mainCountJournalists"
+                      style="display: inline-block"
+                    ></span>
+                    <span class="sidebar-mode-separator">e corrispondenti</span>
+                    <input
+                      type="radio"
+                      name="mainMode"
+                      id="mainModeTestate"
+                      value="testate"
+                    />
+                    <label class="sidebar-mode-option" for="mainModeTestate"
+                      >testate</label
+                    >
+                    <span
+                      class="pill"
+                      id="mainCountTestate"
+                      style="display: inline-block"
+                    ></span>
+                  </div>
                   <span class="c-sort-controls c-sort-controls--v2">
                     <span class="main-subtitle">ordina:</span>
 
@@ -721,6 +774,15 @@
                               class="dropdown-item"
                               role="option"
                               aria-selected="false"
+                              data-sort="relevance"
+                              id="sortByNameOptionRelevance"
+                            >
+                              <a href="#" class="sort-link">rilevanza</a>
+                            </div>
+                            <div
+                              class="dropdown-item"
+                              role="option"
+                              aria-selected="false"
                               data-sort="role"
                               id="sortByNameOptionRole"
                             >
@@ -784,7 +846,30 @@
                 </div>
               </div>
             </div>
-            <div class="cards-grid" id="cardsGrid"></div>
+            <div class="cards-grid" id="cardsGrid">
+              <div
+                id="cardsLoader"
+                class="muted"
+                style="display: block; text-align: center; padding: 10px 0"
+              >
+                <span class="c-blink-loader" aria-label="caricamento">
+                  M<span class="c-blink-loader__cursor">_</span>
+                </span>
+              </div>
+              <div
+                id="cardsLoadMoreWrap"
+                style="
+                  display: none;
+                  margin: 16px 0;
+                  grid-column: 1 / -1;
+                  text-align: center;
+                "
+              >
+                <a href="#" class="c-link c-link--action" id="cardsLoadMore"
+                  >mostra altri</a
+                >
+              </div>
+            </div>
           </main>
 
           <aside class="selected-panel" id="selectedPanel" aria-hidden="true">
@@ -795,6 +880,33 @@
                     <p class="selected-panel-title">Selezionati</p>
                     <span class="pill" id="selectedCountPill"></span>
                   </span>
+                </div>
+                <div
+                  class="selected-panel-actions-row selected-panel-actions-row--secondary"
+                  id="selectedInListRow"
+                  style="display: none"
+                >
+                  <span class="selected-panel-actions-text">
+                    in lista
+                    <span class="c-pill" id="selectedInListCount"></span>
+                  </span>
+                  <span class="sidebar-mode-separator" aria-hidden="true"
+                    >•</span
+                  >
+                  <a
+                    href="#"
+                    class="c-link c-link--action"
+                    id="selectedRemoveFromListLink"
+                  >
+                    rimuovi da lista
+                  </a>
+                </div>
+                <div
+                  class="selected-panel-actions-row selected-panel-actions-row--primary"
+                >
+                  <a href="#" class="close-dropdown-link" id="selectedClearAll">
+                    svuota selezione
+                  </a>
                   <span
                     class="c-split-button"
                     id="selectedActionsSplit"
@@ -855,29 +967,6 @@
                     </div>
                   </span>
                 </div>
-                <div
-                  class="selected-panel-actions-row selected-panel-actions-row--secondary"
-                  id="selectedInListRow"
-                  style="display: none"
-                >
-                  <span class="selected-panel-actions-text">
-                    in lista
-                    <span class="c-pill" id="selectedInListCount"></span>
-                  </span>
-                  <span class="sidebar-mode-separator" aria-hidden="true"
-                    >•</span
-                  >
-                  <a
-                    href="#"
-                    class="c-link c-link--action"
-                    id="selectedRemoveFromListLink"
-                  >
-                    rimuovi da lista
-                  </a>
-                </div>
-                <a href="#" class="close-dropdown-link" id="selectedClearAll">
-                  svuota selezione
-                </a>
               </div>
             </div>
             <div class="selected-panel-body" id="selectedPanelBody"></div>
@@ -954,6 +1043,27 @@
           </main>
         </div>
 
+        <div class="app-view" data-view="account" id="viewAccount">
+          <main class="main">
+            <div class="main-header">
+              <div>
+                <h1 class="main-title">Account</h1>
+              </div>
+            </div>
+            <div class="account-settings">
+              <label class="account-setting" for="showHelpCheckbox">
+                <input
+                  type="checkbox"
+                  class="dropdown-checkbox"
+                  id="showHelpCheckbox"
+                  checked
+                />
+                <span>mostra help</span>
+              </label>
+            </div>
+          </main>
+        </div>
+
         <div class="app-view" data-view="mailing-list" id="viewMailingList">
           <main class="main">
             <div class="main-header">
@@ -967,6 +1077,78 @@
         </div>
       </div>
     </div>
+
+    <div
+      class="notes-modal-overlay"
+      id="smartFiltersModalOverlay"
+      aria-hidden="true"
+    ></div>
+    <div class="notes-modal" id="smartFiltersModal" aria-hidden="true">
+      <div class="notes-modal-header">
+        <p class="notes-modal-title" id="smartFiltersModalTitle">
+          filtri intelligenti
+        </p>
+        <button
+          type="button"
+          class="notes-modal-close"
+          id="smartFiltersModalClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="notes-modal-body">
+        <label class="field-label" for="smartFiltersText">Testo</label>
+        <div class="dropdown-input">
+          <textarea
+            class="chip-text-input smart-filters-textarea"
+            id="smartFiltersText"
+            autocomplete="off"
+          ></textarea>
+        </div>
+
+        <div class="smart-filters-actions">
+          <a href="#" class="c-link c-link--action" id="smartFiltersSuggestBtn"
+            >suggerisci filtri</a
+          >
+        </div>
+
+        <div class="smart-filters-results" id="smartFiltersResults"></div>
+
+        <div class="smart-filters-apply-row">
+          <a
+            href="#"
+            class="c-link c-link--action is-disabled"
+            id="smartFiltersApplyBtn"
+            aria-disabled="true"
+            >applica filtri suggeriti</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <a href="#" class="global-help-link" id="globalHelpLink">help</a>
+
+    <aside class="help-panel" id="helpPanel" aria-hidden="true">
+      <div class="selected-panel-header">
+        <div class="selected-panel-header-left">
+          <div class="selected-panel-title-row">
+            <span class="selected-panel-title-row-left">
+              <p class="selected-panel-title">Help</p>
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="selected-panel-close"
+          id="helpPanelClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="selected-panel-body"></div>
+    </aside>
 
     <div class="testata-overlay" id="testataOverlay" aria-hidden="true"></div>
     <aside class="testata-panel" id="testataPanel" aria-hidden="true">
@@ -1265,6 +1447,7 @@
       </div>
     </div>
 
+    <script src="./generated/data.js"></script>
     <script>
       const APP_STORAGE_KEY = "proto-servizio-app-state-v1";
 
@@ -1290,6 +1473,13 @@
           }
           return {
             view: typeof parsed.view === "string" ? parsed.view : "filtra",
+            ui: parsed.ui && typeof parsed.ui === "object" ? parsed.ui : {},
+            sortMode:
+              typeof parsed.sortMode === "string" ? parsed.sortMode : "",
+            activeMailingListId:
+              typeof parsed.activeMailingListId === "string"
+                ? parsed.activeMailingListId
+                : "",
             mailingLists: Array.isArray(parsed.mailingLists)
               ? parsed.mailingLists
               : [],
@@ -1303,6 +1493,9 @@
         } catch (e) {
           return {
             view: "filtra",
+            ui: {},
+            sortMode: "",
+            activeMailingListId: "",
             mailingLists: [],
             comunicati: [],
             spedizioni: [],
@@ -1326,6 +1519,10 @@
 
       if (!appState.ui || typeof appState.ui !== "object") {
         appState.ui = {};
+      }
+
+      if (typeof appState.ui.showHelp !== "boolean") {
+        appState.ui.showHelp = true;
       }
 
       function normalizeTheme(value) {
@@ -1431,10 +1628,57 @@
         });
       }
 
+      const cardsLoadMore = document.getElementById("cardsLoadMore");
+      if (cardsLoadMore) {
+        cardsLoadMore.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const mode = getMainMode();
+          if (mode === "testate") {
+            visibleTestateLimit += CARD_PAGE_SIZE;
+          } else {
+            visibleJournalistLimit += CARD_PAGE_SIZE;
+          }
+          scheduleRender();
+        });
+      }
+
+      {
+        const wrap = document.getElementById("cardsLoadMoreWrap");
+        const rootEl = document.getElementById("cardsGrid");
+        if (wrap && typeof IntersectionObserver !== "undefined") {
+          let inFlight = false;
+          const obs = new IntersectionObserver(
+            (entries) => {
+              const entry = entries && entries[0];
+              if (!entry || !entry.isIntersecting) return;
+              if (wrap.style.display === "none") return;
+              if (inFlight) return;
+              inFlight = true;
+
+              const mode = getMainMode();
+              if (mode === "testate") {
+                visibleTestateLimit += CARD_PAGE_SIZE;
+              } else {
+                visibleJournalistLimit += CARD_PAGE_SIZE;
+              }
+              scheduleRender();
+
+              window.setTimeout(() => {
+                inFlight = false;
+              }, 500);
+            },
+            { root: rootEl || null, rootMargin: "600px 0px", threshold: 0.01 },
+          );
+          obs.observe(wrap);
+        }
+      }
+
       function getSortMode() {
         const v = String(appState.sortMode || "")
           .trim()
           .toLowerCase();
+        if (v === "relevance" || v === "rilevanza") return "relevance";
         if (v === "role") return "role";
         if (v === "media-type") return "media-type";
         if (v === "frequency") return "frequency";
@@ -1447,16 +1691,29 @@
           .trim()
           .toLowerCase();
         const next =
-          raw === "role"
-            ? "role"
-            : raw === "media-type" || raw === "tipo-media"
-              ? "media-type"
-              : raw === "frequency" || raw === "frequenza"
-                ? "frequency"
-                : raw === "name-desc" || raw === "name-z-a" || raw === "z-a"
-                  ? "name-desc"
-                  : "name-asc";
+          raw === "relevance" || raw === "rilevanza"
+            ? "relevance"
+            : raw === "role"
+              ? "role"
+              : raw === "media-type" || raw === "tipo-media"
+                ? "media-type"
+                : raw === "frequency" || raw === "frequenza"
+                  ? "frequency"
+                  : raw === "name-desc" || raw === "name-z-a" || raw === "z-a"
+                    ? "name-desc"
+                    : "name-asc";
         appState.sortMode = next;
+        if (getMainMode() === "testate") {
+          const { textActive } = getFilterState();
+          if (textActive) {
+            appState.testateSortManuallyOverridden = next !== "relevance";
+          }
+        } else {
+          const { textActive } = getFilterState();
+          if (textActive) {
+            appState.journalistsSortManuallyOverridden = next !== "relevance";
+          }
+        }
         saveAppState(appState);
         scheduleRender();
       }
@@ -1470,6 +1727,7 @@
         "spedizioni",
         "progetti",
         "todos",
+        "account",
       ]);
 
       function normalizeViewId(value) {
@@ -1530,6 +1788,12 @@
 
         if (save) {
           saveAppState(appState);
+        }
+
+        updateHelpLinkVisibility();
+
+        if (v === "account") {
+          closeHelpPanel();
         }
 
         if (v === "filtra" || v === "mailing-list") {
@@ -1826,6 +2090,37 @@
             }
           }
           this.init();
+        }
+
+        setSynonymsByFilter(synonymsByFilter = {}) {
+          const syns =
+            synonymsByFilter && typeof synonymsByFilter === "object"
+              ? synonymsByFilter
+              : {};
+
+          this.keywordToFiltersMap = {};
+          this.autocompleteTerms = new Set();
+
+          for (const [filter, list] of Object.entries(syns)) {
+            const f = String(filter || "").trim();
+            if (!f) continue;
+            for (const raw of Array.isArray(list) ? list : []) {
+              const term = String(raw || "")
+                .trim()
+                .toLowerCase();
+              if (!term) continue;
+              if (!this.keywordToFiltersMap[term]) {
+                this.keywordToFiltersMap[term] = [f];
+              } else if (!this.keywordToFiltersMap[term].includes(f)) {
+                this.keywordToFiltersMap[term].push(f);
+              }
+              this.autocompleteTerms.add(term);
+            }
+          }
+
+          const current = this.input?.value || "";
+          this.filterOptions(current);
+          this.updateAutocompleteHint(current);
         }
 
         updateReservedSpace() {
@@ -2578,10 +2873,16 @@
         }
 
         updateClearVisibility() {
-          if (this.selectedValues.size > 0) {
+          const hasActive = this.selectedValues.size > 0;
+          if (hasActive) {
             if (this.clear) this.clear.classList.add("show");
           } else {
             if (this.clear) this.clear.classList.remove("show");
+          }
+
+          if (this.container) {
+            if (hasActive) this.container.classList.add("has-active-filter");
+            else this.container.classList.remove("has-active-filter");
           }
           if (this.arrow) {
             this.arrow.style.display = "block";
@@ -2600,6 +2901,10 @@
           this.updateAutocompleteHint(this.input.value);
           this.selectedIndex = -1;
 
+          if (this.container) {
+            this.container.classList.add("is-open");
+          }
+
           this.list.classList.add("show");
           this.arrow.classList.add("rotated");
           this.inputWrapper.style.borderRadius =
@@ -2612,6 +2917,11 @@
 
         close() {
           this.isOpen = false;
+
+          if (this.container) {
+            this.container.classList.remove("is-open");
+          }
+
           this.list.classList.remove("show");
           this.arrow.classList.remove("rotated");
           this.inputWrapper.style.borderRadius = "var(--border-radius-xs)";
@@ -3770,7 +4080,662 @@
         );
       }
 
-      const testate = buildTestateFromJournalists(journalists);
+      const __generated =
+        typeof window !== "undefined" &&
+        window.__PROTO_DATA__ &&
+        typeof window.__PROTO_DATA__ === "object"
+          ? window.__PROTO_DATA__
+          : null;
+
+      let __subjectsIndex = null;
+      let __staffPositionsIndex = null;
+      let __mediaTypesIndex = null;
+      let __frequenciesIndex = null;
+      let __coveragesIndex = null;
+
+      function __parseIdFromPrefixed(value, prefix) {
+        const v = String(value || "").trim();
+        if (!v.startsWith(prefix)) return null;
+        const raw = v.slice(prefix.length);
+        const n = Number(raw);
+        if (!Number.isFinite(n)) return null;
+        return n;
+      }
+
+      async function __loadJsonArray(url) {
+        try {
+          const res = await fetch(url, { cache: "no-store" });
+          if (!res.ok) {
+            console.warn("filters-data fetch not ok", {
+              url,
+              status: res.status,
+            });
+            return null;
+          }
+          const parsed = await res.json();
+          if (!Array.isArray(parsed)) {
+            console.warn("filters-data json not array", {
+              url,
+              type: typeof parsed,
+            });
+            return null;
+          }
+          return parsed;
+        } catch (e) {
+          console.warn("filters-data fetch failed", { url, error: String(e) });
+          return null;
+        }
+      }
+
+      function __normalizeDictKey(value) {
+        return String(value || "")
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "");
+      }
+
+      function __canonicalizeFromIndex(raw, valueByNorm) {
+        const v = String(raw || "").trim();
+        if (!v) return v;
+        const key = __normalizeDictKey(v);
+        const direct = valueByNorm?.get(key);
+        if (direct) return direct;
+
+        // Fallback fuzzy match: pick the closest canonical value where keys are substring-related.
+        let best = "";
+        let bestScore = Number.POSITIVE_INFINITY;
+        for (const [k, canon] of valueByNorm?.entries?.() || []) {
+          if (!k || !canon) continue;
+          if (!(k.includes(key) || key.includes(k))) continue;
+          const score = Math.abs(k.length - key.length);
+          if (score < bestScore) {
+            best = canon;
+            bestScore = score;
+          }
+        }
+        return best || v;
+      }
+
+      function __buildSubjectsIndex(items) {
+        const byId = new Map();
+        const parents = [];
+        const parentIdToLabel = new Map();
+        const childrenByParent = {};
+        const synonymsByValue = {};
+
+        const normalizeSyn = (v) =>
+          String(v || "")
+            .trim()
+            .replace(/\s+/g, " ");
+
+        const generateVariants = (value) => {
+          const v = normalizeSyn(value);
+          if (!v) return [];
+
+          const out = [];
+
+          const noParens = v
+            .replace(/\([^)]*\)/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (noParens && noParens !== v) out.push(noParens);
+
+          const delims = noParens
+            .split(/[\/,;:+\-–—]+/g)
+            .map((x) => normalizeSyn(x))
+            .filter(Boolean);
+          for (const p of delims) {
+            if (p && p !== v && p !== noParens) out.push(p);
+          }
+
+          const spaced = noParens
+            .replace(/[’']/g, " ")
+            .replace(/[^\p{L}\p{N}]+/gu, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (spaced && spaced !== v && spaced !== noParens) out.push(spaced);
+
+          const uniq = [];
+          const seen = new Set();
+          for (const x of out) {
+            const k = x.toLowerCase();
+            if (!k) continue;
+            if (seen.has(k)) continue;
+            seen.add(k);
+            uniq.push(x);
+          }
+          return uniq;
+        };
+
+        for (const it of items || []) {
+          const id = Number(it?.id);
+          if (!Number.isFinite(id)) continue;
+          const value = String(it?.value || "").trim();
+          if (!value) continue;
+          const parentId =
+            it?.parent_id === null || it?.parent_id === undefined
+              ? null
+              : Number(it.parent_id);
+          const synonyms = Array.isArray(it?.synonyms)
+            ? it.synonyms.map((x) => String(x || "").trim()).filter(Boolean)
+            : [];
+          byId.set(id, { id, parentId, value, synonyms });
+        }
+
+        for (const it of byId.values()) {
+          if (it.parentId === null) {
+            parents.push(it.value);
+            parentIdToLabel.set(it.id, it.value);
+            if (!childrenByParent[it.value]) childrenByParent[it.value] = [];
+          }
+        }
+
+        for (const it of byId.values()) {
+          if (it.parentId === null) continue;
+          const pLabel = parentIdToLabel.get(it.parentId);
+          if (!pLabel) continue;
+          if (!childrenByParent[pLabel]) childrenByParent[pLabel] = [];
+          childrenByParent[pLabel].push(it.value);
+
+          const baseSyns = Array.isArray(it.synonyms)
+            ? it.synonyms.map((x) => normalizeSyn(x)).filter(Boolean)
+            : [];
+
+          const syns = [];
+          const seen = new Set();
+
+          const pushSyn = (s) => {
+            const v = normalizeSyn(s);
+            if (!v) return;
+            const k = v.toLowerCase();
+            if (seen.has(k)) return;
+            seen.add(k);
+            syns.push(v);
+          };
+
+          if (baseSyns.length) {
+            for (const s of baseSyns) pushSyn(s);
+          }
+
+          pushSyn(it.value);
+          const vars = generateVariants(it.value);
+          for (const v of vars.slice(0, 2)) pushSyn(v);
+
+          if (syns.length) synonymsByValue[it.value] = syns;
+        }
+
+        parents.sort((a, b) =>
+          a.localeCompare(b, "it", { sensitivity: "base" }),
+        );
+        for (const p of Object.keys(childrenByParent)) {
+          childrenByParent[p].sort((a, b) =>
+            a.localeCompare(b, "it", { sensitivity: "base" }),
+          );
+        }
+
+        return { byId, parents, childrenByParent, synonymsByValue };
+      }
+
+      function __buildStaffPositionsIndex(items) {
+        const byId = new Map();
+        const priorityByValue = new Map();
+        for (const it of items || []) {
+          const id = Number(it?.id);
+          if (!Number.isFinite(id)) continue;
+          const value = String(it?.value || "").trim();
+          if (!value) continue;
+          const priority = Number(it?.priority);
+          byId.set(id, {
+            id,
+            value,
+            priority: Number.isFinite(priority) ? priority : 9999,
+          });
+          if (!priorityByValue.has(value)) {
+            priorityByValue.set(
+              value,
+              Number.isFinite(priority) ? priority : 9999,
+            );
+          }
+        }
+        return { byId, priorityByValue };
+      }
+
+      function __buildMediaTypesIndex(items) {
+        const byId = new Map();
+        const parents = [];
+        const parentIdToLabel = new Map();
+        const childrenByParent = {};
+        const valueByNorm = new Map();
+
+        for (const it of items || []) {
+          const id = Number(it?.id);
+          if (!Number.isFinite(id)) continue;
+          const value = String(it?.value || "").trim();
+          if (!value) continue;
+          const parentId =
+            it?.parent_id === null || it?.parent_id === undefined
+              ? null
+              : Number(it.parent_id);
+          byId.set(id, { id, value, parentId });
+          valueByNorm.set(__normalizeDictKey(value), value);
+        }
+
+        for (const it of byId.values()) {
+          if (it.parentId === null || it.parentId === it.id) {
+            parents.push(it.value);
+            parentIdToLabel.set(it.id, it.value);
+            if (!childrenByParent[it.value]) childrenByParent[it.value] = [];
+          }
+        }
+
+        for (const it of byId.values()) {
+          if (it.parentId === null || it.parentId === it.id) continue;
+          const pLabel = parentIdToLabel.get(it.parentId);
+          if (!pLabel) continue;
+          if (!childrenByParent[pLabel]) childrenByParent[pLabel] = [];
+          childrenByParent[pLabel].push(it.value);
+        }
+
+        parents.sort((a, b) =>
+          a.localeCompare(b, "it", { sensitivity: "base" }),
+        );
+        for (const p of Object.keys(childrenByParent)) {
+          childrenByParent[p].sort((a, b) =>
+            a.localeCompare(b, "it", { sensitivity: "base" }),
+          );
+        }
+
+        return { parents, childrenByParent, valueByNorm };
+      }
+
+      function __buildSimpleValueIndex(items) {
+        const values = [];
+        const valueByNorm = new Map();
+        for (const it of items || []) {
+          const value = String(it?.value || "").trim();
+          if (!value) continue;
+          values.push(value);
+          valueByNorm.set(__normalizeDictKey(value), value);
+        }
+        return { values, valueByNorm };
+      }
+
+      function __applyHumanLabelsToJournalists() {
+        if (!__subjectsIndex && !__staffPositionsIndex) return false;
+        let changed = false;
+        for (const j of journalists || []) {
+          const svcId = __parseIdFromPrefixed(j?.servizio, "subject:");
+          if (svcId != null && __subjectsIndex?.byId?.has(svcId)) {
+            j.servizioRaw = j.servizio;
+            j.servizio = __subjectsIndex.byId.get(svcId).value;
+            changed = true;
+          }
+          const spId = __parseIdFromPrefixed(j?.ruolo, "staff_position:");
+          if (spId != null && __staffPositionsIndex?.byId?.has(spId)) {
+            j.ruoloRaw = j.ruolo;
+            j.ruolo = __staffPositionsIndex.byId.get(spId).value;
+            changed = true;
+          }
+        }
+
+        return changed;
+      }
+
+      function __applyArgomentoToTestate(testate) {
+        if (!Array.isArray(testate) || !testate.length) return;
+        const byId = new Map();
+        for (const j of journalists || []) {
+          const jid = String(getJournalistId(j) || "").trim();
+          if (!jid) continue;
+          byId.set(jid, j);
+        }
+
+        for (const t of testate || []) {
+          const jids = Array.isArray(t?.redazione?.giornalisti)
+            ? t.redazione.giornalisti
+            : [];
+          const c = new Map();
+          for (const jid of jids) {
+            const j = byId.get(String(jid || "").trim());
+            if (!j) continue;
+            const k = String(j?.servizio || "").trim();
+            if (!k) continue;
+            c.set(k, (Number(c.get(k) || 0) || 0) + 1);
+          }
+          let best = "";
+          let bestN = 0;
+          for (const [k, n] of c.entries()) {
+            if (n > bestN) {
+              best = k;
+              bestN = n;
+            }
+          }
+          if (best) {
+            t.argomento = best;
+          }
+        }
+      }
+
+      function __buildOptionToParent(parents, childrenByParent) {
+        const m = {};
+        for (const p of parents || []) {
+          for (const child of childrenByParent?.[p] || []) {
+            m[child] = p;
+          }
+        }
+        return m;
+      }
+
+      function __applySubjectsToDropdowns(testataDropdown) {
+        if (!__subjectsIndex) return;
+        const parents = [...(__subjectsIndex.parents || [])];
+        const childrenByParent = {
+          ...(__subjectsIndex.childrenByParent || {}),
+        };
+
+        const EXTRA_PARENT = "Altro";
+        if (!parents.includes(EXTRA_PARENT)) parents.push(EXTRA_PARENT);
+        if (!childrenByParent[EXTRA_PARENT])
+          childrenByParent[EXTRA_PARENT] = [];
+        if (!childrenByParent[EXTRA_PARENT].includes("Generalista")) {
+          childrenByParent[EXTRA_PARENT].push("Generalista");
+        }
+
+        const options = Object.values(childrenByParent).flat();
+        const optionToParent = __buildOptionToParent(parents, childrenByParent);
+
+        if (dropdown && typeof dropdown.setOptions === "function") {
+          dropdown.parents = parents;
+          dropdown.childrenByParent = childrenByParent;
+          dropdown.optionToParent = optionToParent;
+          dropdown.preserveParentOrder = true;
+          dropdown.setOptions(options);
+          if (typeof dropdown.setSynonymsByFilter === "function") {
+            dropdown.setSynonymsByFilter(__subjectsIndex.synonymsByValue || {});
+          }
+          dropdown.updateAutocompleteHint("");
+        }
+
+        if (
+          testataDropdown &&
+          typeof testataDropdown.setOptions === "function"
+        ) {
+          testataDropdown.parents = parents;
+          testataDropdown.childrenByParent = childrenByParent;
+          testataDropdown.optionToParent = optionToParent;
+          testataDropdown.preserveParentOrder = true;
+          testataDropdown.setOptions(options);
+          if (typeof testataDropdown.setSynonymsByFilter === "function") {
+            testataDropdown.setSynonymsByFilter(
+              __subjectsIndex.synonymsByValue || {},
+            );
+          }
+          testataDropdown.updateAutocompleteHint("");
+        }
+      }
+
+      function __applyStaffPositionsToRoleDropdown() {
+        if (!__staffPositionsIndex || !roleDropdown) return;
+        if (typeof roleDropdown.setOptions !== "function") return;
+
+        const items = Array.from(__staffPositionsIndex.byId.values());
+        items.sort(
+          (a, b) =>
+            (a.priority || 9999) - (b.priority || 9999) ||
+            a.value.localeCompare(b.value, "it"),
+        );
+        const options = items.map((x) => x.value);
+
+        const EXTRA_PARENT = "Altro";
+        roleDropdown.parents = [];
+        roleDropdown.childrenByParent = {};
+        roleDropdown.optionToParent = {};
+        roleDropdown.preserveParentOrder = true;
+        roleDropdown.setOptions(options);
+        roleDropdown.updateAutocompleteHint("");
+      }
+
+      async function __initFiltersDataIfAvailable() {
+        const needsSubjects = !__subjectsIndex;
+        const needsStaff = !__staffPositionsIndex;
+        const needsMedia = !__mediaTypesIndex;
+        const needsFreq = !__frequenciesIndex;
+        const needsCov = !__coveragesIndex;
+
+        if (
+          !needsSubjects &&
+          !needsStaff &&
+          !needsMedia &&
+          !needsFreq &&
+          !needsCov
+        ) {
+          __applySubjectsToDropdowns();
+          __applyStaffPositionsToRoleDropdown();
+          if (typeof __applyTestataMetaDropdownsIfReady === "function") {
+            __applyTestataMetaDropdownsIfReady();
+          }
+          return;
+        }
+
+        const [subjectsArr, staffArr, mediaArr, freqArr, covArr] =
+          await Promise.all([
+            needsSubjects
+              ? __loadJsonArray("./filters-data/subjects.json")
+              : null,
+            needsStaff
+              ? __loadJsonArray("./filters-data/staff-positions.json")
+              : null,
+            needsMedia
+              ? __loadJsonArray("./filters-data/media-types.json")
+              : null,
+            needsFreq
+              ? __loadJsonArray("./filters-data/frequencies.json")
+              : null,
+            needsCov ? __loadJsonArray("./filters-data/coverages.json") : null,
+          ]);
+
+        if (needsSubjects && !subjectsArr) {
+          console.warn("subjects json not loaded");
+        }
+        if (needsStaff && !staffArr) {
+          console.warn("staff positions json not loaded");
+        }
+
+        if (needsSubjects && subjectsArr) {
+          try {
+            __subjectsIndex = __buildSubjectsIndex(subjectsArr);
+          } catch (e) {
+            console.warn("subjects index build failed", String(e));
+          }
+        }
+        if (needsStaff && staffArr) {
+          try {
+            __staffPositionsIndex = __buildStaffPositionsIndex(staffArr);
+          } catch (e) {
+            console.warn("staff positions index build failed", String(e));
+          }
+        }
+
+        if (needsMedia && mediaArr) {
+          try {
+            __mediaTypesIndex = __buildMediaTypesIndex(mediaArr);
+          } catch (e) {
+            console.warn("media types index build failed", String(e));
+          }
+        }
+        if (needsFreq && freqArr) {
+          try {
+            __frequenciesIndex = __buildSimpleValueIndex(freqArr);
+          } catch (e) {
+            console.warn("frequencies index build failed", String(e));
+          }
+        }
+        if (needsCov && covArr) {
+          try {
+            __coveragesIndex = __buildSimpleValueIndex(covArr);
+          } catch (e) {
+            console.warn("coverages index build failed", String(e));
+          }
+        }
+
+        let didMapHumanLabels = false;
+        try {
+          didMapHumanLabels = __applyHumanLabelsToJournalists();
+        } catch (e) {
+          console.warn("apply human labels failed", String(e));
+        }
+
+        if (Array.isArray(window.__PROTO_DATA__?.testate)) {
+          if (typeof __applyArgomentoToTestate === "function") {
+            try {
+              __applyArgomentoToTestate(window.__PROTO_DATA__.testate);
+            } catch (e) {
+              console.warn("apply argomento to testate failed", String(e));
+            }
+          }
+          if (typeof __applyTestataMetaLabelsToTestate === "function") {
+            try {
+              __applyTestataMetaLabelsToTestate(window.__PROTO_DATA__.testate);
+            } catch (e) {
+              console.warn("apply testata meta labels failed", String(e));
+            }
+          }
+        }
+
+        try {
+          __applySubjectsToDropdowns();
+        } catch (e) {
+          console.warn("apply subjects to dropdowns failed", String(e));
+        }
+        try {
+          __applyStaffPositionsToRoleDropdown();
+        } catch (e) {
+          console.warn(
+            "apply staff positions to role dropdown failed",
+            String(e),
+          );
+        }
+        if (typeof __applyTestataMetaDropdownsIfReady === "function") {
+          try {
+            __applyTestataMetaDropdownsIfReady();
+          } catch (e) {
+            console.warn("apply testata meta dropdowns failed", String(e));
+          }
+        }
+
+        if (didMapHumanLabels) {
+          lastCardsQueryKey = "";
+          lastRenderedMode = "";
+          lastRenderedJournalistCount = 0;
+          lastRenderedTestateCount = 0;
+          visibleJournalistLimit = CARD_PAGE_SIZE;
+          visibleTestateLimit = CARD_PAGE_SIZE;
+        }
+
+        if (!__subjectsIndex) {
+          console.warn("subjects index not available");
+        }
+        if (!__staffPositionsIndex) {
+          console.warn("staff positions index not available");
+        }
+
+        let sampleSvc = "";
+        let sampleRole = "";
+        for (const j of journalists || []) {
+          const s = String(j?.servizio || "").trim();
+          const r = String(j?.ruolo || "").trim();
+          if (!sampleSvc && s.startsWith("subject:")) sampleSvc = s;
+          if (!sampleRole && r.startsWith("staff_position:")) sampleRole = r;
+          if (sampleSvc && sampleRole) break;
+        }
+        if (sampleSvc || sampleRole) {
+          console.warn("human labels not fully applied", {
+            sampleServizio: sampleSvc,
+            sampleRuolo: sampleRole,
+          });
+        }
+      }
+
+      if (Array.isArray(__generated?.journalists)) {
+        journalists.length = 0;
+        for (const j of __generated.journalists) {
+          journalists.push(j);
+        }
+
+        __initFiltersDataIfAvailable()
+          .then(() => {
+            if (!__subjectsIndex && !__staffPositionsIndex) {
+              const uniq = (arr) => {
+                const out = [];
+                const seen = new Set();
+                for (const x of arr || []) {
+                  const v = String(x ?? "").trim();
+                  if (!v) continue;
+                  const k = v.toLowerCase();
+                  if (seen.has(k)) continue;
+                  seen.add(k);
+                  out.push(v);
+                }
+                return out;
+              };
+
+              const serviceValues = uniq(
+                (journalists || []).map((j) =>
+                  String(j?.servizio || "").trim(),
+                ),
+              ).sort((a, b) =>
+                a.localeCompare(b, "it", { sensitivity: "base" }),
+              );
+              const roleValues = uniq(
+                (journalists || []).map((j) => String(j?.ruolo || "").trim()),
+              ).sort((a, b) =>
+                a.localeCompare(b, "it", { sensitivity: "base" }),
+              );
+
+              const hasSubjectIds = serviceValues.some((s) =>
+                s.startsWith("subject:"),
+              );
+              const hasStaffPositionIds = roleValues.some((r) =>
+                r.startsWith("staff_position:"),
+              );
+
+              if (
+                hasSubjectIds &&
+                dropdown &&
+                typeof dropdown.setOptions === "function"
+              ) {
+                dropdown.parents = [];
+                dropdown.childrenByParent = {};
+                dropdown.optionToParent = {};
+                dropdown.setOptions(serviceValues);
+                dropdown.updateAutocompleteHint("");
+              }
+
+              if (
+                hasStaffPositionIds &&
+                roleDropdown &&
+                typeof roleDropdown.setOptions === "function"
+              ) {
+                roleDropdown.parents = [];
+                roleDropdown.childrenByParent = {};
+                roleDropdown.optionToParent = {};
+                roleDropdown.setOptions(roleValues);
+                roleDropdown.updateAutocompleteHint("");
+              }
+            }
+
+            scheduleRender();
+          })
+          .catch((e) => {
+            console.warn("filters-data init failed", String(e));
+            scheduleRender();
+          });
+      }
+
+      let testate = buildTestateFromJournalists(journalists);
+      if (Array.isArray(__generated?.testate)) {
+        testate = __generated.testate;
+      }
 
       const redazioniCentrali = buildRedazioniCentraliFromTestate(testate);
       const redazioniCentraliById = new Map();
@@ -3780,11 +4745,16 @@
         redazioniCentraliById.set(id, r);
       }
 
-      const testateByKey = new Map();
+      testateByKey = new Map();
       for (const t of testate || []) {
-        const key = String(t?.id || "").trim();
-        if (!key) continue;
-        testateByKey.set(key, t);
+        const idKey = String(t?.id || "").trim();
+        const nameKey = normalizeTestataKey(String(t?.nome || ""));
+        if (idKey) {
+          if (!testateByKey.has(idKey)) testateByKey.set(idKey, t);
+        }
+        if (nameKey) {
+          if (!testateByKey.has(nameKey)) testateByKey.set(nameKey, t);
+        }
       }
 
       const testataArgomentoDropdown = new FilterableDropdown(
@@ -3814,6 +4784,14 @@
         },
       );
       testataArgomentoDropdown.updateAutocompleteHint("");
+
+      __initFiltersDataIfAvailable()
+        .then(() => {
+          __applySubjectsToDropdowns(testataArgomentoDropdown);
+        })
+        .catch((e) => {
+          console.warn("filters-data init failed", String(e));
+        });
 
       const TESTATA_MEDIA_BY_PARENT = {
         Radio: ["News / GR", "Trasmissioni Radio"],
@@ -4009,6 +4987,8 @@
       );
       testataDiffusioneDropdown.updateAutocompleteHint("");
 
+      __initFiltersDataIfAvailable().catch(() => {});
+
       const selectedJournalistIds = new Set();
       const selectedJournalistOrder = [];
       let lastRenderedVisibleJournalistIds = [];
@@ -4096,6 +5076,7 @@
         "addToNewShipmentError",
       );
       const mainTitleEl = document.getElementById("mainTitle");
+      const mainTitleIconEl = document.getElementById("mainTitleIcon");
       const mailingListCountPill = document.getElementById(
         "mailingListCountPill",
       );
@@ -4127,14 +5108,31 @@
 
       const committedTextTerms = [];
 
+      var testateByKey;
+
       function getJournalistId(j) {
-        return String(j?.email || "").trim();
+        return String(j?.id || j?.email || "").trim();
       }
 
       function getJournalistTestate(j) {
         if (!j) return [];
         if (Array.isArray(j.testate)) {
           return j.testate.map((x) => String(x ?? "").trim()).filter(Boolean);
+        }
+        if (
+          Array.isArray(j.outletIds) &&
+          testateByKey &&
+          typeof testateByKey.get === "function" &&
+          testateByKey.size > 0
+        ) {
+          const ids = j.outletIds
+            .map((x) => String(x ?? "").trim())
+            .filter(Boolean);
+          const names = ids
+            .map((id) => testateByKey?.get?.(id))
+            .map((t) => String(t?.nome || "").trim())
+            .filter(Boolean);
+          if (names.length) return names;
         }
         const s = String(j.testata ?? "").trim();
         return s ? [s] : [];
@@ -4361,6 +5359,41 @@
         );
       }
 
+      let toastHideTimer = 0;
+      function showToast(message, options = {}) {
+        const { durationMs = 2600 } = options;
+        const msg = String(message || "").trim();
+        if (!msg) return;
+
+        let el = document.getElementById("appToast");
+        if (!el) {
+          el = document.createElement("div");
+          el.id = "appToast";
+          el.className = "app-toast";
+          el.setAttribute("role", "status");
+          el.setAttribute("aria-live", "polite");
+          document.body.appendChild(el);
+        }
+
+        el.textContent = msg;
+        el.classList.add("show");
+        if (toastHideTimer) window.clearTimeout(toastHideTimer);
+        toastHideTimer = window.setTimeout(
+          () => {
+            el.classList.remove("show");
+          },
+          Math.max(400, Number(durationMs) || 2600),
+        );
+      }
+
+      function formatRemovedFromListToast(count) {
+        const n = Math.max(0, Math.floor(Number(count) || 0));
+        if (n === 1) {
+          return "1 giornalista rimosso da lista (non da banca dati)";
+        }
+        return `${n} giornalisti rimossi da lista (non da banca dati)`;
+      }
+
       const addToListDropdown = new FilterableDropdown(
         "addToListDropdownInput",
         [],
@@ -4422,6 +5455,432 @@
       addToShipmentDropdown.onSelectionChange = () => {
         if (addToShipmentError) addToShipmentError.style.display = "none";
       };
+
+      const smartFiltersOpenLink = document.getElementById(
+        "smartFiltersOpenLink",
+      );
+      const smartFiltersModalOverlay = document.getElementById(
+        "smartFiltersModalOverlay",
+      );
+      const smartFiltersModal = document.getElementById("smartFiltersModal");
+      const smartFiltersModalClose = document.getElementById(
+        "smartFiltersModalClose",
+      );
+      const smartFiltersText = document.getElementById("smartFiltersText");
+      const smartFiltersSuggestBtn = document.getElementById(
+        "smartFiltersSuggestBtn",
+      );
+      const smartFiltersApplyBtn = document.getElementById(
+        "smartFiltersApplyBtn",
+      );
+      const smartFiltersResults = document.getElementById(
+        "smartFiltersResults",
+      );
+
+      let smartFiltersLastSuggested = [];
+
+      function setLinkDisabled(link, disabled) {
+        if (!link) return;
+        link.classList.toggle("is-disabled", !!disabled);
+        link.setAttribute("aria-disabled", disabled ? "true" : "false");
+      }
+
+      function openSmartFiltersModal() {
+        if (!smartFiltersModal || !smartFiltersModalOverlay) return;
+        smartFiltersModalOverlay.classList.add("show");
+        smartFiltersModal.classList.add("show");
+        smartFiltersModalOverlay.setAttribute("aria-hidden", "false");
+        smartFiltersModal.setAttribute("aria-hidden", "false");
+
+        updateSmartFiltersModeHint();
+        if (smartFiltersText) smartFiltersText.focus();
+      }
+
+      function closeSmartFiltersModal() {
+        if (!smartFiltersModal || !smartFiltersModalOverlay) return;
+        smartFiltersModalOverlay.classList.remove("show");
+        smartFiltersModal.classList.remove("show");
+        smartFiltersModalOverlay.setAttribute("aria-hidden", "true");
+        smartFiltersModal.setAttribute("aria-hidden", "true");
+      }
+
+      function updateSmartFiltersModeHint() {
+        if (!smartFiltersResults) return;
+        const mode = getSidebarMode();
+        smartFiltersResults.setAttribute("data-mode", mode);
+
+        if (
+          smartFiltersModal?.classList.contains("show") &&
+          Array.isArray(smartFiltersLastSuggested) &&
+          smartFiltersLastSuggested.length > 0
+        ) {
+          renderSmartFiltersResults(smartFiltersLastSuggested, {
+            loading: false,
+          });
+        }
+      }
+
+      function renderSmartFiltersResults(subjects = [], meta = {}) {
+        if (!smartFiltersResults) return;
+        const items = Array.isArray(subjects)
+          ? subjects.map((x) => String(x || "").trim()).filter(Boolean)
+          : [];
+
+        setLinkDisabled(smartFiltersApplyBtn, true);
+
+        smartFiltersResults.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "smart-filters-results-title";
+        title.textContent = "Suggerimenti";
+        smartFiltersResults.appendChild(title);
+
+        if (!items.length) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.textContent = meta?.loading
+            ? "Analisi in corso…"
+            : "Nessun suggerimento";
+          smartFiltersResults.appendChild(empty);
+          return;
+        }
+
+        const list = document.createElement("div");
+        list.className = "smart-filters-chip-list";
+        for (const s of items) {
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          const text = document.createElement("span");
+          text.textContent = s;
+          chip.appendChild(text);
+          list.appendChild(chip);
+        }
+        smartFiltersResults.appendChild(list);
+
+        {
+          const mode = getSidebarMode();
+          const applyTitle = document.createElement("div");
+          applyTitle.className = "smart-filters-apply-title";
+          applyTitle.textContent =
+            mode === "testate" ? "Argomento testata" : "Servizio giornalistico";
+          smartFiltersResults.appendChild(applyTitle);
+
+          const inst = mode === "testate" ? testataArgomentoDropdown : dropdown;
+          const toApply = inst ? canonicalizeSubjects(items, inst) : [];
+
+          setLinkDisabled(smartFiltersApplyBtn, toApply.length === 0);
+
+          if (!toApply.length) {
+            const empty = document.createElement("div");
+            empty.className = "muted";
+            empty.textContent = "Nessun filtro applicabile";
+            smartFiltersResults.appendChild(empty);
+          } else {
+            const list2 = document.createElement("div");
+            list2.className = "smart-filters-chip-list";
+            for (const s of toApply) {
+              const chip = document.createElement("span");
+              chip.className = "chip";
+              const text = document.createElement("span");
+              text.textContent = s;
+              chip.appendChild(text);
+              list2.appendChild(chip);
+            }
+            smartFiltersResults.appendChild(list2);
+          }
+        }
+      }
+
+      async function fetchOpenAiSubjectsFromText(text) {
+        const inputText = String(text || "").trim();
+        const key = String(
+          window.localStorage.getItem("openai_api_key") ||
+            window.localStorage.getItem("OPENAI_API_KEY") ||
+            "",
+        ).trim();
+        if (!inputText) throw new Error("Testo mancante");
+        if (!key) {
+          throw new Error("API key mancante (localStorage: openai_api_key)");
+        }
+
+        const system =
+          "Sei un assistente che suggerisce filtri per targeting giornalisti. Rispondi SOLO con JSON valido e nient'altro.";
+        const user =
+          `Dato il testo seguente, suggerisci una lista breve (max 5) di subjects/argomenti utili per raggiungere giornalisti interessati. ` +
+          `Rispondi con JSON nel formato: {"subjects": ["..."], "notes": ""}. ` +
+          `Non usare markdown, non usare backticks.\n\nTESTO:\n${inputText}`;
+
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${key}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            temperature: 0.2,
+            max_tokens: 220,
+            messages: [
+              { role: "system", content: system },
+              { role: "user", content: user },
+            ],
+          }),
+        });
+
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          throw new Error(
+            `OpenAI error ${res.status}: ${txt || res.statusText}`,
+          );
+        }
+
+        const json = await res.json();
+        const content =
+          json?.choices?.[0]?.message?.content ||
+          json?.choices?.[0]?.text ||
+          "";
+        const raw = String(content || "").trim();
+        if (!raw) throw new Error("Risposta AI vuota");
+
+        let parsed = null;
+        try {
+          parsed = JSON.parse(raw);
+        } catch {
+          const start = raw.indexOf("{");
+          const end = raw.lastIndexOf("}");
+          if (start >= 0 && end > start) {
+            parsed = JSON.parse(raw.slice(start, end + 1));
+          }
+        }
+        if (!parsed || typeof parsed !== "object") {
+          throw new Error("Risposta AI non parseabile come JSON");
+        }
+        const subjects = Array.isArray(parsed.subjects)
+          ? parsed.subjects.map((x) => String(x || "").trim()).filter(Boolean)
+          : [];
+        return { subjects, notes: String(parsed?.notes || "").trim() };
+      }
+
+      function canonicalizeSubjects(subjects, inst) {
+        const out = [];
+        const seen = new Set();
+
+        const normalize =
+          typeof __normalizeDictKey === "function"
+            ? __normalizeDictKey
+            : (v) =>
+                String(v || "")
+                  .trim()
+                  .toLowerCase();
+
+        const options = Array.isArray(inst?.originalOptions)
+          ? inst.originalOptions
+          : [];
+
+        const byNorm = new Map();
+        for (const opt of options) {
+          const k = normalize(opt);
+          if (k && !byNorm.has(k)) byNorm.set(k, opt);
+        }
+
+        const synsByValue = __subjectsIndex?.synonymsByValue;
+        if (synsByValue && typeof synsByValue === "object") {
+          for (const [value, syns] of Object.entries(synsByValue)) {
+            if (!Array.isArray(syns)) continue;
+            for (const s of syns) {
+              const k = normalize(s);
+              if (k && !byNorm.has(k)) byNorm.set(k, value);
+            }
+          }
+        }
+
+        const stop = new Set([
+          "in",
+          "di",
+          "a",
+          "da",
+          "su",
+          "per",
+          "e",
+          "o",
+          "il",
+          "lo",
+          "la",
+          "i",
+          "gli",
+          "le",
+          "un",
+          "uno",
+          "una",
+          "del",
+          "della",
+          "dei",
+          "degli",
+          "delle",
+          "al",
+          "allo",
+          "alla",
+          "ai",
+          "agli",
+          "alle",
+          "nel",
+          "nello",
+          "nella",
+          "nei",
+          "negli",
+          "nelle",
+          "sul",
+          "sullo",
+          "sulla",
+          "sui",
+          "sugli",
+          "sulle",
+        ]);
+
+        const tokenize = (raw) => {
+          return String(raw || "")
+            .toLowerCase()
+            .replace(/[’']/g, " ")
+            .replace(/[^\p{L}\p{N}]+/gu, " ")
+            .trim()
+            .split(/\s+/g)
+            .map((x) => String(x || "").trim())
+            .filter(Boolean);
+        };
+
+        const pushCanon = (canon) => {
+          const ck = normalize(canon);
+          if (!ck || seen.has(ck)) return;
+          seen.add(ck);
+          out.push(canon);
+        };
+
+        const tryFuzzy = (raw) => {
+          const key = normalize(raw);
+          if (!key) return "";
+          let best = "";
+          let bestScore = 0;
+          for (const opt of options) {
+            const ok = normalize(opt);
+            if (!ok) continue;
+            if (ok === key) return opt;
+            if (key.includes(ok) && ok.length >= 7) return opt;
+            let score = 0;
+            if (ok.includes(key)) score = key.length / ok.length;
+            else if (key.includes(ok)) score = ok.length / key.length;
+            if (score > bestScore) {
+              bestScore = score;
+              best = opt;
+            }
+          }
+          return bestScore >= 0.33 ? best : "";
+        };
+
+        for (const s of subjects || []) {
+          const raw = String(s || "").trim();
+          if (!raw) continue;
+          const k = normalize(raw);
+
+          const direct = byNorm.get(k);
+          if (direct) {
+            pushCanon(direct);
+            continue;
+          }
+
+          const fuzzy = tryFuzzy(raw);
+          if (fuzzy) {
+            pushCanon(fuzzy);
+            continue;
+          }
+
+          const tokens = tokenize(raw).filter(
+            (t) => t.length >= 4 && !stop.has(t),
+          );
+          for (const t of tokens) {
+            const tk = normalize(t);
+            const canon = byNorm.get(tk) || tryFuzzy(t);
+            if (canon) pushCanon(canon);
+          }
+        }
+        return out;
+      }
+
+      function applySubjectsToDropdown(inst, subjects) {
+        if (!inst) return;
+        inst.selectedValues.clear();
+        for (const s of subjects || []) {
+          inst.selectedValues.add(s);
+        }
+        inst.renderChips();
+        inst.renderList();
+        inst.updateClearVisibility();
+        if (typeof inst.onSelectionChange === "function") {
+          inst.onSelectionChange(Array.from(inst.selectedValues));
+        }
+      }
+
+      function applySmartFiltersSuggestedSubjects() {
+        const mode = getSidebarMode();
+        const inst = mode === "testate" ? testataArgomentoDropdown : dropdown;
+        if (!inst) return;
+        const canon = canonicalizeSubjects(smartFiltersLastSuggested, inst);
+        applySubjectsToDropdown(inst, canon);
+        scheduleRender();
+        closeSmartFiltersModal();
+      }
+
+      if (smartFiltersOpenLink) {
+        smartFiltersOpenLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openSmartFiltersModal();
+        });
+      }
+      if (smartFiltersModalClose) {
+        smartFiltersModalClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeSmartFiltersModal();
+        });
+      }
+      if (smartFiltersModalOverlay) {
+        smartFiltersModalOverlay.addEventListener("click", () => {
+          closeSmartFiltersModal();
+        });
+      }
+
+      if (smartFiltersSuggestBtn) {
+        smartFiltersSuggestBtn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          try {
+            setLinkDisabled(smartFiltersSuggestBtn, true);
+            setLinkDisabled(smartFiltersApplyBtn, true);
+            smartFiltersLastSuggested = [];
+            renderSmartFiltersResults([], { loading: true });
+
+            const text = smartFiltersText?.value || "";
+            const { subjects } = await fetchOpenAiSubjectsFromText(text);
+
+            smartFiltersLastSuggested = subjects;
+            renderSmartFiltersResults(subjects, { loading: false });
+          } catch (err) {
+            renderSmartFiltersResults([], { loading: false });
+            showToast(String(err?.message || err || "Errore"));
+          } finally {
+            setLinkDisabled(smartFiltersSuggestBtn, false);
+          }
+        });
+      }
+
+      if (smartFiltersApplyBtn) {
+        smartFiltersApplyBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (smartFiltersApplyBtn.classList.contains("is-disabled")) return;
+          applySmartFiltersSuggestedSubjects();
+        });
+      }
 
       const clearAddToShipmentForm = () => {
         if (addToShipmentDropdown?.isOpen) {
@@ -4997,6 +6456,11 @@
         return terms;
       }
 
+      function getHighlightTextTerms() {
+        const current = String(textFilterInput?.value || "").trim();
+        return current ? [current] : [];
+      }
+
       function findBestMatchTerm(haystack, terms) {
         const h = String(haystack || "").toLowerCase();
         let best = null;
@@ -5158,6 +6622,8 @@
           } else {
             renderSelectedPanelList();
           }
+
+          showToast(formatRemovedFromListToast(toRemove.length));
           scheduleRender();
         });
       }
@@ -5295,7 +6761,7 @@
 
         const checkboxId = `card-select-${jid.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
 
-        const activeTerms = getActiveTextTerms();
+        const activeTerms = getHighlightTextTerms();
         const highlightedFirstName = highlightHtmlMulti(
           rawFirstName,
           activeTerms,
@@ -5304,11 +6770,14 @@
           rawLastName,
           activeTerms,
         );
+        const highlightedEmail = cardEmail
+          ? highlightHtmlMulti(cardEmail, activeTerms)
+          : '<span class="muted">n/d</span>';
         const testate = getJournalistTestate(j);
         const testatePreviewHtml = testate.length
           ? testate
               .map((tname) => {
-                const label = highlightHtmlMulti(tname, activeTerms);
+                const label = escapeHtml(tname);
                 return `<a href="#" class="testata-link" data-testata="${escapeHtml(
                   tname,
                 )}">${label}</a>`;
@@ -5392,7 +6861,7 @@
             cardPhone
           }</div></div>
           <div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${
-            cardEmail
+            highlightedEmail
           }</div></div>
           <div class="card-row"><div class="card-label"><span class="card-journalist-testate-label" data-jid="${jid}">Testate</span></div><div class="card-value card-testate">${testatePreviewHtml}</div></div>
           <div class="card-row"><div class="card-label">${
@@ -5451,7 +6920,7 @@
 
       function createTestataCard(t, activeTerms) {
         const card = document.createElement("div");
-        card.className = "card";
+        card.className = "card card--testata";
         card.dataset.testataKey = String(t?.id || "");
 
         const notesArr = normalizeNotes(t?.note);
@@ -5512,36 +6981,38 @@
           String(t?.nome || ""),
           activeTerms,
         );
-        const highlightedTelefono = highlightHtmlMulti(
-          String(t?.telefono || ""),
-          activeTerms,
-        );
-        const highlightedEmail = highlightHtmlMulti(
-          String(t?.email || ""),
-          activeTerms,
-        );
+        const highlightedTelefono = escapeHtml(String(t?.telefono || ""));
+        const highlightedEmail = escapeHtml(String(t?.email || ""));
         const highlightedJournalists = journalistNamesRaw
-          ? highlightHtmlMulti(journalistNamesRaw, activeTerms)
+          ? escapeHtml(journalistNamesRaw)
           : '<span class="muted">n/d</span>';
 
         card.innerHTML = `
           <div class="card-top">
             <div class="card-name-row">
-              <h3 class="card-name">${highlightedName}</h3>
               <a
                 href="#"
-                class="testata-link"
+                class="testata-link card-name-link"
                 data-testata-key="${escapeHtml(String(t?.id || ""))}"
                 data-testata="${escapeHtml(String(t?.nome || ""))}"
+                aria-label="apri scheda"
+                title="apri scheda"
               >
-                scheda
+                <h3 class="card-name">${highlightedName}</h3>
               </a>
             </div>
             <p class="card-role">${escapeHtml(mediaLabel)}</p>
           </div>
           <div class="card-row"><div class="card-label">Telefono</div><div class="card-value">${highlightedTelefono}</div></div>
           <div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${highlightedEmail}</div></div>
-          <div class="card-row"><div class="card-label">${testataJournalistsLabelHtml}</div><div class="card-value muted card-journalists">${highlightedJournalists}</div></div>
+          <div class="card-row"><div class="card-label">${testataJournalistsLabelHtml}</div><div class="card-value card-journalists">${highlightedJournalists}</div></div>
+          <div class="card-row"><div class="card-label">${
+            noteShowsEllipsis
+              ? `<a href="#" class="card-label-link card-notes-open" data-testata-key="${escapeHtml(
+                  String(t?.id || ""),
+                )}">Note</a>`
+              : "Note"
+          }</div><div class="card-value muted card-note">${highlightedNote}</div></div>
         `;
 
         return card;
@@ -5587,6 +7058,9 @@
       const sortByNameOptionDesc = document.getElementById(
         "sortByNameOptionDesc",
       );
+      const sortByNameOptionRelevance = document.getElementById(
+        "sortByNameOptionRelevance",
+      );
       const sortByNameOptionRole = document.getElementById(
         "sortByNameOptionRole",
       );
@@ -5605,6 +7079,45 @@
 
       const selectedPanel = document.getElementById("selectedPanel");
 
+      const globalHelpLink = document.getElementById("globalHelpLink");
+      const helpPanel = document.getElementById("helpPanel");
+      const helpPanelClose = document.getElementById("helpPanelClose");
+      const showHelpCheckbox = document.getElementById("showHelpCheckbox");
+
+      function isShowHelpEnabled() {
+        return !!appState?.ui?.showHelp;
+      }
+
+      function updateHelpLinkVisibility() {
+        if (!globalHelpLink) return;
+        const v = normalizeViewId(appState.view);
+        const shouldShow = isShowHelpEnabled() && v && v !== "account";
+        globalHelpLink.style.display = shouldShow ? "inline-block" : "none";
+        if (!shouldShow) {
+          closeHelpPanel();
+        }
+      }
+
+      function openHelpPanel() {
+        if (!helpPanel) return;
+        helpPanel.classList.add("show");
+        helpPanel.setAttribute("aria-hidden", "false");
+        document.body.classList.add("help-panel-open");
+      }
+
+      function closeHelpPanel() {
+        if (!helpPanel) return;
+        helpPanel.classList.remove("show");
+        helpPanel.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("help-panel-open");
+      }
+
+      function setShowHelpEnabled(enabled) {
+        appState.ui.showHelp = !!enabled;
+        saveAppState(appState);
+        updateHelpLinkVisibility();
+      }
+
       function openSelectedPanel() {
         selectedPanel.classList.add("show");
         selectedPanel.setAttribute("aria-hidden", "false");
@@ -5616,6 +7129,47 @@
         selectedPanel.classList.remove("show");
         selectedPanel.setAttribute("aria-hidden", "true");
         document.body.classList.remove("selection-panel-open");
+      }
+
+      if (globalHelpLink) {
+        globalHelpLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!helpPanel) return;
+          const isOpen = helpPanel.classList.contains("show");
+          if (isOpen) {
+            closeHelpPanel();
+          } else {
+            openHelpPanel();
+          }
+        });
+      }
+
+      if (helpPanelClose) {
+        helpPanelClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeHelpPanel();
+        });
+      }
+
+      document.addEventListener(
+        "click",
+        (e) => {
+          if (!helpPanel || !helpPanel.classList.contains("show")) return;
+          const t = e.target;
+          if (helpPanel.contains(t)) return;
+          if (globalHelpLink && globalHelpLink.contains(t)) return;
+          closeHelpPanel();
+        },
+        true,
+      );
+
+      if (showHelpCheckbox) {
+        showHelpCheckbox.checked = isShowHelpEnabled();
+        showHelpCheckbox.addEventListener("change", () => {
+          setShowHelpEnabled(!!showHelpCheckbox.checked);
+        });
       }
 
       if (selectedClearAll) {
@@ -6031,6 +7585,10 @@
         renderSelectedPanelList();
         closeSelectedPanel();
 
+        if (typeof clearAllFilters === "function") {
+          clearAllFilters();
+        }
+
         closeSaveListModal();
 
         window.location.hash = "#mailing-list";
@@ -6064,10 +7622,17 @@
 
       function updateTextFilterClearVisibility() {
         if (!textFilterClear || !textFilterInput) return;
-        if (
+        const isActive =
           (textFilterInput.value || "").trim().length > 0 ||
-          committedTextTerms.length > 0
-        ) {
+          committedTextTerms.length > 0;
+
+        const container = textFilterInput.closest(".dropdown-container");
+        if (container) {
+          if (isActive) container.classList.add("has-active-filter");
+          else container.classList.remove("has-active-filter");
+        }
+
+        if (isActive) {
           textFilterClear.classList.add("show");
         } else {
           textFilterClear.classList.remove("show");
@@ -6091,9 +7656,16 @@
           closeAllFilterableDropdowns();
         });
 
+        let _textFilterInputDebounce = null;
         textFilterInput.addEventListener("input", () => {
           updateTextFilterClearVisibility();
-          scheduleRender();
+          if (_textFilterInputDebounce) {
+            window.clearTimeout(_textFilterInputDebounce);
+          }
+          _textFilterInputDebounce = window.setTimeout(() => {
+            _textFilterInputDebounce = null;
+            scheduleRender();
+          }, 120);
         });
 
         textFilterInput.addEventListener("keydown", (e) => {
@@ -8384,6 +9956,10 @@
               li.innerHTML = '<span class="muted">n/d</span>';
               redazioniList.appendChild(li);
             } else {
+              const journalistOutletIds = Array.isArray(j?.outletIds)
+                ? j.outletIds.map((x) => String(x ?? "").trim()).filter(Boolean)
+                : [];
+
               for (const tname of journalistTestate) {
                 const li = document.createElement("li");
 
@@ -8392,6 +9968,25 @@
                 link.className = "testata-link journalist-list__title";
                 link.textContent = tname;
                 link.setAttribute("data-testata", tname);
+
+                {
+                  const tKey = normalizeTestataKey(tname);
+                  const t = testateByKey?.get?.(tKey) || null;
+                  if (t && t.id) {
+                    link.setAttribute("data-testata-key", String(t.id));
+                  } else if (journalistOutletIds.length) {
+                    const matched = journalistOutletIds
+                      .map((oid) => testateByKey?.get?.(String(oid)))
+                      .find(
+                        (tx) =>
+                          tx &&
+                          normalizeTestataKey(String(tx?.nome || "")) === tKey,
+                      );
+                    if (matched && matched.id) {
+                      link.setAttribute("data-testata-key", String(matched.id));
+                    }
+                  }
+                }
                 li.appendChild(link);
 
                 const role = getJournalistRoleForTestata(j, tname);
@@ -9448,8 +11043,8 @@
             .trim()
             .toLowerCase();
           if (!mode) return;
-          const sidebarMode = getSidebarMode();
-          const isTestateMode = sidebarMode === "testate";
+          const mainMode = getMainMode();
+          const isTestateMode = mainMode === "testate";
           if (isTestateMode && mode === "role") mode = "frequency";
           setSortMode(mode);
           closeSortByNameMenu();
@@ -9483,8 +11078,14 @@
 
       function selectAllFilteredCards() {
         const grid = document.getElementById("cardsGrid");
-        const idsSet = new Set();
-        if (grid) {
+        const ids = Array.isArray(lastRenderedVisibleJournalistIds)
+          ? lastRenderedVisibleJournalistIds
+              .map((x) => String(x || "").trim())
+              .filter(Boolean)
+          : [];
+
+        if (!ids.length && grid) {
+          const idsSet = new Set();
           for (const el of grid.querySelectorAll(".card-select[data-jid]")) {
             const jid = String(el.getAttribute("data-jid") || "").trim();
             if (jid) idsSet.add(jid);
@@ -9493,19 +11094,8 @@
             const jid = String(el.getAttribute("data-jid") || "").trim();
             if (jid) idsSet.add(jid);
           }
+          ids.push(...Array.from(idsSet));
         }
-
-        if (
-          idsSet.size === 0 &&
-          Array.isArray(lastRenderedVisibleJournalistIds)
-        ) {
-          for (const raw of lastRenderedVisibleJournalistIds) {
-            const jid = String(raw || "").trim();
-            if (jid) idsSet.add(jid);
-          }
-        }
-
-        const ids = Array.from(idsSet);
         if (!ids.length) return;
 
         for (let i = ids.length - 1; i >= 0; i--) {
@@ -9513,6 +11103,15 @@
           if (!jid) continue;
           selectedJournalistIds.add(jid);
           ensureSelectedOrder(jid);
+        }
+
+        if (grid) {
+          for (const card of grid.querySelectorAll(".card[data-jid]")) {
+            const jid = String(card.getAttribute("data-jid") || "").trim();
+            if (!jid) continue;
+            updateCheckboxUI(jid);
+            updateCardSelectionUI(jid);
+          }
         }
 
         openSelectedPanel();
@@ -11367,6 +12966,25 @@
         return v === "testate" ? "testate" : "giornalisti";
       }
 
+      function getMainMode() {
+        const el = document.querySelector('input[name="mainMode"]:checked');
+        const v = String(el?.value || "giornalisti")
+          .trim()
+          .toLowerCase();
+        return v === "testate" ? "testate" : "giornalisti";
+      }
+
+      function getTextFilterLabel() {
+        return "Cerca";
+      }
+
+      function getTextFilterHelpText() {
+        const mode = getSidebarMode();
+        return mode === "testate"
+          ? "in nome, note (testate)"
+          : "in nome, email, note (giornalisti)";
+      }
+
       function setFilterDropdownEnabled(inst, enabled) {
         if (!inst) return;
         if (inst?.isOpen && !enabled) {
@@ -11374,6 +12992,10 @@
         }
         if (inst?.input) {
           inst.input.disabled = !enabled;
+        }
+        if (inst?.clear) {
+          inst.clear.classList.toggle("is-disabled", !enabled);
+          inst.clear.setAttribute("aria-disabled", enabled ? "false" : "true");
         }
         const container = inst?.container;
         if (container) {
@@ -11384,7 +13006,21 @@
 
       function applySidebarModeUI() {
         const effectiveMode = getSidebarMode();
-        const enableJournalistFilters = true;
+        const enableJournalistFilters = effectiveMode === "giornalisti";
+
+        {
+          const label = document.querySelector(
+            'label.field-label[for="textFilterInput"]',
+          );
+          if (label) {
+            label.textContent = getTextFilterLabel();
+          }
+
+          const help = document.getElementById("textFilterHelpText");
+          if (help) {
+            help.textContent = getTextFilterHelpText();
+          }
+        }
 
         const journalistFiltersSlot = document.getElementById(
           "journalistFiltersSlot",
@@ -11419,6 +13055,176 @@
 
         setFilterDropdownEnabled(dropdown, enableJournalistFilters);
         setFilterDropdownEnabled(roleDropdown, enableJournalistFilters);
+
+        const testataFiltersWrap = document.getElementById(
+          "testataFiltersSection",
+        );
+        if (testataFiltersWrap) {
+          testataFiltersWrap.classList.remove("is-disabled");
+          testataFiltersWrap.setAttribute("aria-disabled", "false");
+        }
+        setFilterDropdownEnabled(testataArgomentoDropdown, true);
+        setFilterDropdownEnabled(testataTipoMediaDropdown, true);
+        setFilterDropdownEnabled(testataFrequenzaDropdown, true);
+        setFilterDropdownEnabled(testataDiffusioneDropdown, true);
+
+        if (textFilterInput) {
+          textFilterInput.disabled = false;
+          const wrap = textFilterInput.closest?.(".dropdown-container");
+          if (wrap) {
+            wrap.classList.remove("is-disabled");
+            wrap.setAttribute("aria-disabled", "false");
+          }
+        }
+      }
+
+      function setSidebarMode(mode) {
+        const m = String(mode || "")
+          .trim()
+          .toLowerCase();
+        const next = m === "testate" ? "testate" : "giornalisti";
+        const inputs = document.querySelectorAll('input[name="sidebarMode"]');
+        inputs.forEach((el) => {
+          const v = String(el?.value || "")
+            .trim()
+            .toLowerCase();
+          el.checked = v === next;
+        });
+      }
+
+      function setMainMode(mode) {
+        const m = String(mode || "")
+          .trim()
+          .toLowerCase();
+        const next = m === "testate" ? "testate" : "giornalisti";
+        const inputs = document.querySelectorAll('input[name="mainMode"]');
+        inputs.forEach((el) => {
+          const v = String(el?.value || "")
+            .trim()
+            .toLowerCase();
+          el.checked = v === next;
+        });
+      }
+
+      let isBulkFilterReset = false;
+
+      function snapshotFilterState(mode) {
+        const m = String(mode || currentMode || "")
+          .trim()
+          .toLowerCase();
+        const isTestateMode = m === "testate";
+        return {
+          selectedServices: isTestateMode
+            ? []
+            : Array.from(dropdown.selectedValues || []),
+          selectedRoles: isTestateMode
+            ? []
+            : Array.from(roleDropdown.selectedValues || []),
+          selectedTestataArgomenti: Array.from(
+            testataArgomentoDropdown.selectedValues || [],
+          ),
+          selectedTestataTipoMedia: Array.from(
+            testataTipoMediaDropdown.selectedValues || [],
+          ),
+          selectedTestataFrequenze: Array.from(
+            testataFrequenzaDropdown.selectedValues || [],
+          ),
+          selectedTestataDiffusioni: Array.from(
+            testataDiffusioneDropdown.selectedValues || [],
+          ),
+          committedTextTerms: [...committedTextTerms],
+          currentTextQuery: (textFilterInput?.value || "").trim(),
+        };
+      }
+
+      function restoreFilterState(state) {
+        const s = state || {};
+        isBulkFilterReset = true;
+
+        dropdown.resetSelection();
+        roleDropdown.resetSelection();
+        testataArgomentoDropdown.resetSelection();
+        testataTipoMediaDropdown.resetSelection();
+        testataFrequenzaDropdown.resetSelection();
+        testataDiffusioneDropdown.resetSelection();
+
+        const safeToggle = (inst, value) => {
+          if (!inst) return;
+          const v = String(value ?? "").trim();
+          if (!v) return;
+          if (
+            Array.isArray(inst.originalOptions) &&
+            inst.originalOptions.length
+          ) {
+            if (!inst.originalOptions.includes(v)) return;
+          }
+          inst.toggleOption(v);
+        };
+
+        for (const v of s.selectedServices || []) safeToggle(dropdown, v);
+        for (const v of s.selectedRoles || []) safeToggle(roleDropdown, v);
+        for (const v of s.selectedTestataArgomenti || []) {
+          safeToggle(testataArgomentoDropdown, v);
+        }
+        for (const v of s.selectedTestataTipoMedia || []) {
+          safeToggle(testataTipoMediaDropdown, v);
+        }
+        for (const v of s.selectedTestataFrequenze || []) {
+          safeToggle(testataFrequenzaDropdown, v);
+        }
+        for (const v of s.selectedTestataDiffusioni || []) {
+          safeToggle(testataDiffusioneDropdown, v);
+        }
+
+        committedTextTerms.splice(0, committedTextTerms.length);
+        for (const term of s.committedTextTerms || []) {
+          const t = String(term || "").trim();
+          if (t) committedTextTerms.push(t);
+        }
+
+        if (textFilterInput) {
+          textFilterInput.value = String(s.currentTextQuery || "");
+          updateTextFilterClearVisibility();
+        }
+
+        isBulkFilterReset = false;
+      }
+
+      const filterStateByMode = {
+        giornalisti: null,
+        testate: null,
+      };
+      let currentMode = getSidebarMode();
+
+      setMainMode(currentMode);
+      setSidebarMode(currentMode);
+      applySidebarModeUI();
+
+      function handleModeSwitch(nextMode) {
+        const current = currentMode;
+        const next =
+          String(nextMode || "")
+            .trim()
+            .toLowerCase() === "testate"
+            ? "testate"
+            : "giornalisti";
+        if (current === next) {
+          setMainMode(next);
+          setSidebarMode(next);
+          applySidebarModeUI();
+          scheduleRender();
+          return;
+        }
+
+        filterStateByMode[current] = snapshotFilterState(current);
+        currentMode = next;
+
+        setSidebarMode(next);
+        setMainMode(next);
+
+        restoreFilterState(filterStateByMode[next]);
+        applySidebarModeUI();
+        scheduleRender();
       }
 
       function getFilterState() {
@@ -11475,12 +13281,26 @@
         };
       }
 
+      const CARD_PAGE_SIZE = 50;
+      let visibleJournalistLimit = CARD_PAGE_SIZE;
+      let visibleTestateLimit = CARD_PAGE_SIZE;
+      let lastCardsQueryKey = "";
+      let lastLoaderYieldKey = "";
+      let journalistByIdCache = null;
+      let lastRenderedMode = "";
+      let lastRenderedJournalistCount = 0;
+      let lastRenderedTestateCount = 0;
+      let renderCardsJobId = 0;
+
       function renderCards() {
         const grid = document.getElementById("cardsGrid");
-        const countJournalistsEl = document.getElementById(
-          "sidebarCountJournalists",
+        const cardsLoader = document.getElementById("cardsLoader");
+        const loadMoreWrap = document.getElementById("cardsLoadMoreWrap");
+        const loadMoreLink = document.getElementById("cardsLoadMore");
+        const mainCountJournalistsEl = document.getElementById(
+          "mainCountJournalists",
         );
-        const countTestateEl = document.getElementById("sidebarCountTestate");
+        const mainCountTestateEl = document.getElementById("mainCountTestate");
         const subtitleEl = document.getElementById("cardsSubtitle");
         const clearFiltersLink = document.getElementById("clearFiltersLink");
 
@@ -11500,9 +13320,16 @@
           "sortSepAfterMediaType",
         );
 
-        const journalistById = new Map(
-          (journalists || []).map((j) => [getJournalistId(j), j]),
-        );
+        if (!journalistByIdCache || journalistByIdCache.size === 0) {
+          journalistByIdCache = new Map(
+            (journalists || []).map((j) => [getJournalistId(j), j]),
+          );
+        } else if (journalistByIdCache.size !== (journalists || []).length) {
+          journalistByIdCache = new Map(
+            (journalists || []).map((j) => [getJournalistId(j), j]),
+          );
+        }
+        const journalistById = journalistByIdCache;
 
         const {
           selectedServices,
@@ -11530,16 +13357,174 @@
 
         applySidebarModeUI();
 
-        const mode = getSidebarMode();
-        const isTestateMode = mode === "testate";
+        const sidebarMode = getSidebarMode();
+        const mainMode = getMainMode();
+        const isSidebarTestateMode = sidebarMode === "testate";
+        const isMainTestateMode = mainMode === "testate";
 
         if (bulkSelectControls) {
-          bulkSelectControls.style.display = isTestateMode ? "none" : "";
+          bulkSelectControls.style.display = isMainTestateMode ? "none" : "";
         }
 
-        const sortMode = getSortMode();
-        const effectiveSortMode =
-          isTestateMode && sortMode === "role" ? "frequency" : sortMode;
+        let sortMode = getSortMode();
+        const isTestateSortManuallyOverridden =
+          !!appState.testateSortManuallyOverridden;
+        const isJournalistsSortManuallyOverridden =
+          !!appState.journalistsSortManuallyOverridden;
+
+        if (!textActive) {
+          let didMutate = false;
+          if (sortMode === "relevance") {
+            appState.sortMode = "name-asc";
+            sortMode = "name-asc";
+            didMutate = true;
+          }
+          if (isMainTestateMode) {
+            if (isTestateSortManuallyOverridden) {
+              appState.testateSortManuallyOverridden = false;
+              didMutate = true;
+            }
+          } else {
+            if (isJournalistsSortManuallyOverridden) {
+              appState.journalistsSortManuallyOverridden = false;
+              didMutate = true;
+            }
+          }
+          if (didMutate) saveAppState(appState);
+        }
+
+        let effectiveSortMode = isMainTestateMode
+          ? textActive && !isTestateSortManuallyOverridden
+            ? "relevance"
+            : sortMode === "role"
+              ? "frequency"
+              : sortMode
+          : textActive && !isJournalistsSortManuallyOverridden
+            ? "relevance"
+            : sortMode;
+
+        const isJournalistRelevanceAllowed = !isSidebarTestateMode;
+        if (!isMainTestateMode && !isJournalistRelevanceAllowed) {
+          if (effectiveSortMode === "relevance") {
+            effectiveSortMode = "name-asc";
+          }
+        }
+
+        let cardsQueryKeyChanged = false;
+        {
+          const safeJoin = (arr) =>
+            Array.isArray(arr) ? arr.map((x) => String(x || "")).join(",") : "";
+          const mailingListKey = isMailingListView
+            ? safeJoin(activeList?.journalistIds)
+            : "";
+          const qk = [
+            isMainTestateMode ? "testate" : "giornalisti",
+            String(appState.view || ""),
+            String(appState.activeMailingListId || ""),
+            mailingListKey,
+            String(effectiveSortMode || ""),
+            String(currentTextQuery || ""),
+            safeJoin(selectedServices),
+            safeJoin(selectedRoles),
+            safeJoin(selectedTestataArgomenti),
+            safeJoin(selectedTestataTipoMedia),
+            safeJoin(selectedTestataFrequenze),
+            safeJoin(selectedTestataDiffusioni),
+          ].join("||");
+
+          if (qk !== lastCardsQueryKey) {
+            cardsQueryKeyChanged = true;
+            lastCardsQueryKey = qk;
+            if (isMainTestateMode) {
+              visibleTestateLimit = CARD_PAGE_SIZE;
+            } else {
+              visibleJournalistLimit = CARD_PAGE_SIZE;
+            }
+          }
+        }
+
+        const cardsModeKey = isMainTestateMode ? "testate" : "giornalisti";
+        const cardsModeChanged = cardsModeKey !== lastRenderedMode;
+        const shouldClearGrid = cardsModeChanged || cardsQueryKeyChanged;
+        if (shouldClearGrid) {
+          lastRenderedMode = cardsModeKey;
+          lastRenderedJournalistCount = 0;
+          lastRenderedTestateCount = 0;
+        }
+
+        if (shouldClearGrid && grid && cardsLoader) {
+          const qkNow = String(lastCardsQueryKey || "");
+          if (qkNow && lastLoaderYieldKey !== qkNow) {
+            lastLoaderYieldKey = qkNow;
+            cardsLoader.style.display = "block";
+            if (loadMoreWrap) {
+              grid.replaceChildren(cardsLoader, loadMoreWrap);
+            } else {
+              grid.replaceChildren(cardsLoader);
+            }
+            scheduleRender();
+            return;
+          }
+        }
+
+        if (grid && cardsLoader && cardsLoader.parentElement !== grid) {
+          grid.appendChild(cardsLoader);
+        }
+        if (grid && loadMoreWrap && loadMoreWrap.parentElement !== grid) {
+          grid.appendChild(loadMoreWrap);
+        }
+
+        const myJobId = ++renderCardsJobId;
+
+        const renderIncremental = ({
+          items,
+          startIndex,
+          endIndex,
+          createElement,
+          onDone,
+        }) => {
+          const safeStart = Math.max(0, Number(startIndex || 0));
+          const safeEnd = Math.max(safeStart, Number(endIndex || 0));
+          if (!grid) return;
+
+          const firstBatchSize = 15;
+          const batchSize = 20;
+
+          const appendRange = (from, to) => {
+            for (let i = from; i < to; i++) {
+              const item = items[i];
+              if (!item) continue;
+              const el = createElement(item);
+              if (loadMoreWrap && loadMoreWrap.parentElement === grid) {
+                grid.insertBefore(el, loadMoreWrap);
+              } else {
+                grid.appendChild(el);
+              }
+            }
+          };
+
+          const runBatch = (from) => {
+            if (myJobId !== renderCardsJobId) return;
+            const nextTo = Math.min(safeEnd, from + batchSize);
+            appendRange(from, nextTo);
+            if (nextTo >= safeEnd) {
+              if (typeof onDone === "function") onDone();
+              return;
+            }
+            requestAnimationFrame(() => runBatch(nextTo));
+          };
+
+          const firstTo = Math.min(safeEnd, safeStart + firstBatchSize);
+          appendRange(safeStart, firstTo);
+          if (cardsLoader) {
+            cardsLoader.style.display = "none";
+          }
+          if (firstTo >= safeEnd) {
+            if (typeof onDone === "function") onDone();
+            return;
+          }
+          requestAnimationFrame(() => runBatch(firstTo));
+        };
 
         const keyLower = (x) =>
           String(x || "")
@@ -11624,6 +13609,7 @@
 
         {
           const labelBySortMode = {
+            relevance: "rilevanza",
             "name-asc": "nome a-z",
             "name-desc": "nome z-a",
             role: "ruolo",
@@ -11636,6 +13622,7 @@
 
           const isAsc = effectiveSortMode === "name-asc";
           const isDesc = effectiveSortMode === "name-desc";
+          const isRelevance = effectiveSortMode === "relevance";
           const isRole = effectiveSortMode === "role";
           const isMediaType = effectiveSortMode === "media-type";
           const isFrequency = effectiveSortMode === "frequency";
@@ -11649,16 +13636,25 @@
 
           setOptionState(sortByNameOptionAsc, isAsc);
           setOptionState(sortByNameOptionDesc, isDesc);
+          setOptionState(sortByNameOptionRelevance, isRelevance);
           setOptionState(sortByNameOptionRole, isRole);
           setOptionState(sortByNameOptionMediaType, isMediaType);
           setOptionState(sortByNameOptionFrequency, isFrequency);
 
+          if (sortByNameOptionRelevance) {
+            const allow = isMainTestateMode
+              ? textActive
+              : textActive && isJournalistRelevanceAllowed;
+            sortByNameOptionRelevance.style.display = allow ? "" : "none";
+          }
           if (sortByNameOptionRole) {
-            sortByNameOptionRole.style.display = isTestateMode ? "none" : "";
+            sortByNameOptionRole.style.display = isMainTestateMode
+              ? "none"
+              : "";
           }
         }
         if (sortByRoleLink) {
-          sortByRoleLink.style.display = isTestateMode ? "none" : "";
+          sortByRoleLink.style.display = isMainTestateMode ? "none" : "";
           sortByRoleLink.classList.toggle(
             "is-active",
             effectiveSortMode === "role",
@@ -11692,7 +13688,7 @@
         }
 
         if (sortSepAfterRole) {
-          sortSepAfterRole.style.display = isTestateMode ? "none" : "";
+          sortSepAfterRole.style.display = isMainTestateMode ? "none" : "";
         }
 
         if (mainTitleEl) {
@@ -11702,6 +13698,16 @@
             mainTitleEl.textContent = "Banca Dati";
           }
         }
+
+        if (mainTitleIconEl) {
+          mainTitleIconEl.style.display =
+            isMailingListView && activeList ? "inline-block" : "none";
+        }
+
+        document.body.classList.toggle(
+          "is-mailing-list-view",
+          !!(isMailingListView && activeList),
+        );
 
         if (isMailingListView && activeList) {
           if (chooseDatabaseLink) chooseDatabaseLink.style.display = "none";
@@ -11768,12 +13774,22 @@
             ? new Set(activeList.journalistIds || [])
             : null;
 
+        const matchesTextTerm = (haystack, term) => {
+          const h = String(haystack ?? "").toLowerCase();
+          const q = String(term ?? "")
+            .trim()
+            .toLowerCase();
+          if (!q) return true;
+          return h.includes(q);
+        };
+
         const matchesJournalist = (j) => {
           const serviceOk =
             !servicesActive || selectedServices.includes(j.servizio);
           const roleOk = !rolesActive || selectedRoles.includes(j.ruolo);
 
-          const tKeys = getJournalistTestate(j)
+          const journalistTestate = getJournalistTestate(j);
+          const tKeys = journalistTestate
             .map((x) => normalizeTestataKey(x))
             .filter(Boolean);
           const testateObjs = tKeys
@@ -11805,7 +13821,7 @@
             );
 
           const fullName = `${j.nome} ${j.cognome}`.toLowerCase();
-          const testata = getJournalistTestate(j).join(" ").toLowerCase();
+          const email = String(j?.email || "").toLowerCase();
           const noteCombined = combineNotes(
             normalizeNotes(j.note),
           ).toLowerCase();
@@ -11819,7 +13835,7 @@
               if (!q) return true;
               return (
                 fullName.includes(q) ||
-                testata.includes(q) ||
+                email.includes(q) ||
                 noteCombined.includes(q)
               );
             });
@@ -11888,24 +13904,14 @@
             !textActive ||
             (() => {
               const nome = String(t?.nome || "").toLowerCase();
-              const argomento = String(t?.argomento || "").toLowerCase();
               const note = combineNotes(normalizeNotes(t?.note)).toLowerCase();
-              const giornalisti = relevantJids
-                .map((jid) => getJournalistNameById(jid))
-                .join(" ")
-                .toLowerCase();
 
               return activeTextTerms.every((term) => {
                 const q = String(term || "")
                   .trim()
                   .toLowerCase();
                 if (!q) return true;
-                return (
-                  nome.includes(q) ||
-                  argomento.includes(q) ||
-                  note.includes(q) ||
-                  giornalisti.includes(q)
-                );
+                return matchesTextTerm(nome, q) || matchesTextTerm(note, q);
               });
             })();
 
@@ -11920,18 +13926,91 @@
           );
         };
 
-        if (countJournalistsEl) {
-          const filteredCount = (baseJournalists || []).filter(
-            matchesJournalist,
-          ).length;
-          countJournalistsEl.textContent = String(filteredCount);
-        }
-        if (countTestateEl) {
-          const filteredCount = (testate || []).filter(matchesTestata).length;
-          countTestateEl.textContent = String(filteredCount);
+        const filteredTestateForCount = isSidebarTestateMode
+          ? (testate || []).filter(matchesTestata)
+          : null;
+
+        const deriveJournalistsFromTestate = (ts) => {
+          const ids = new Set();
+          for (const t of ts || []) {
+            const jids = Array.isArray(t?.redazione?.giornalisti)
+              ? t.redazione.giornalisti
+              : [];
+            for (const raw of jids) {
+              const id = String(raw || "").trim();
+              if (!id) continue;
+              if (mailingAllowedJids && !mailingAllowedJids.has(id)) continue;
+              ids.add(id);
+            }
+          }
+
+          const out = [];
+          for (const id of ids) {
+            const j = journalistById.get(id);
+            if (j) out.push(j);
+          }
+          return out;
+        };
+
+        const filteredJournalistsForCount = isSidebarTestateMode
+          ? deriveJournalistsFromTestate(filteredTestateForCount || [])
+          : (baseJournalists || []).filter(matchesJournalist);
+
+        const deriveTestateFromJournalists = (js) => {
+          const keys = new Set();
+          for (const j of js || []) {
+            if (Array.isArray(j?.outletIds) && j.outletIds.length) {
+              for (const oid of j.outletIds) {
+                const k = String(oid ?? "").trim();
+                if (k) keys.add(k);
+              }
+            }
+
+            const names = getJournalistTestate(j);
+            for (const n of names) {
+              const k = normalizeTestataKey(n);
+              if (k) keys.add(k);
+            }
+          }
+
+          const out = [];
+          const seenId = new Set();
+          for (const k of keys) {
+            const t = testateByKey?.get?.(k) || null;
+            if (!t) continue;
+            const id = String(t?.id || "").trim();
+            const uniq = id || String(k || "");
+            if (!uniq) continue;
+            if (seenId.has(uniq)) continue;
+            seenId.add(uniq);
+            out.push(t);
+          }
+          return out;
+        };
+
+        const mainViewTestateItems = isMainTestateMode
+          ? isSidebarTestateMode
+            ? filteredTestateForCount || []
+            : deriveTestateFromJournalists(filteredJournalistsForCount)
+          : null;
+
+        if (mainCountJournalistsEl) {
+          mainCountJournalistsEl.textContent = String(
+            filteredJournalistsForCount.length,
+          );
         }
 
-        const effectiveActive = isTestateMode
+        if (mainCountTestateEl) {
+          const n = isSidebarTestateMode
+            ? String((filteredTestateForCount || []).length)
+            : String(
+                deriveTestateFromJournalists(filteredJournalistsForCount)
+                  .length,
+              );
+          mainCountTestateEl.textContent = n;
+        }
+
+        const effectiveActive = isSidebarTestateMode
           ? textActive ||
             testataArgomentoActive ||
             testataTipoMediaActive ||
@@ -11946,9 +14025,35 @@
             : "none";
         }
 
-        if (isTestateMode) {
-          const filteredTestate = (testate || []).filter(matchesTestata);
-          const sortedTestate = [...filteredTestate].sort((a, b) => {
+        if (isMainTestateMode) {
+          const items = mainViewTestateItems || [];
+          const sortedTestate = [...items].sort((a, b) => {
+            if (effectiveSortMode === "relevance") {
+              const score = (t) => {
+                const name = String(t?.nome || "").toLowerCase();
+                const note = combineNotes(
+                  normalizeNotes(t?.note),
+                ).toLowerCase();
+                let s = 0;
+                for (const term of activeTextTerms || []) {
+                  const q = String(term || "")
+                    .trim()
+                    .toLowerCase();
+                  if (!q) continue;
+                  const inName = matchesTextTerm(name, q);
+                  const inNote = matchesTextTerm(note, q);
+                  if (inName && inNote) s += 3;
+                  else if (inName) s += 2;
+                  else if (inNote) s += 1;
+                  if (inName && name.startsWith(q)) s += 1;
+                }
+                return s;
+              };
+
+              const ra = score(a);
+              const rb = score(b);
+              return rb - ra || compareTestateByName(a, b);
+            }
             if (effectiveSortMode === "frequency") {
               const fa = getFreqSort(a?.frequenzaPubblicazione);
               const fb = getFreqSort(b?.frequenzaPubblicazione);
@@ -11971,9 +14076,48 @@
             return compareTestateByName(a, b);
           });
 
-          grid.innerHTML = "";
-          for (const t of sortedTestate) {
-            grid.appendChild(createTestataCard(t, activeTextTerms));
+          const endIndex = Math.min(
+            sortedTestate.length,
+            Math.max(0, visibleTestateLimit),
+          );
+          const startIndex = shouldClearGrid
+            ? 0
+            : Math.min(lastRenderedTestateCount, endIndex);
+
+          if (shouldClearGrid) {
+            if (cardsLoader) {
+              cardsLoader.style.display = "block";
+            }
+            if (loadMoreWrap) {
+              if (cardsLoader) {
+                grid.replaceChildren(cardsLoader, loadMoreWrap);
+              } else {
+                grid.replaceChildren(loadMoreWrap);
+              }
+            } else {
+              grid.innerHTML = "";
+            }
+          }
+
+          renderIncremental({
+            items: sortedTestate,
+            startIndex,
+            endIndex,
+            createElement: (t) => createTestataCard(t, getHighlightTextTerms()),
+            onDone: () => {
+              lastRenderedTestateCount = endIndex;
+              scheduleUpdateCardNameLayouts();
+            },
+          });
+
+          if (loadMoreWrap && loadMoreLink) {
+            const hasMore = sortedTestate.length > endIndex;
+            loadMoreWrap.style.display = hasMore ? "block" : "none";
+            if (hasMore) {
+              const remaining = sortedTestate.length - endIndex;
+              const step = Math.min(CARD_PAGE_SIZE, remaining);
+              loadMoreLink.textContent = `mostra altri (${step})`;
+            }
           }
 
           {
@@ -12033,7 +14177,7 @@
             };
 
             if (textActive) {
-              const row = makeRow("Termine:");
+              const row = makeRow(getTextFilterLabel());
               for (const term of committedTextTerms) {
                 row.appendChild(
                   createChip(term, () => {
@@ -12136,8 +14280,42 @@
           return;
         }
 
-        const filtered = (baseJournalists || []).filter(matchesJournalist);
+        const filtered = filteredJournalistsForCount;
         const sorted = [...filtered].sort((a, b) => {
+          if (effectiveSortMode === "relevance") {
+            const score = (j) => {
+              const fullName = `${j?.nome || ""} ${j?.cognome || ""}`
+                .trim()
+                .toLowerCase();
+              const email = String(j?.email || "")
+                .trim()
+                .toLowerCase();
+              const note = combineNotes(normalizeNotes(j?.note)).toLowerCase();
+              let s = 0;
+              for (const term of activeTextTerms || []) {
+                const q = String(term || "")
+                  .trim()
+                  .toLowerCase();
+                if (!q) continue;
+                const inName = fullName.includes(q);
+                const inEmail = email.includes(q);
+                const inNote = note.includes(q);
+                if (inName && inEmail && inNote) s += 4;
+                else if (inName && inEmail) s += 4;
+                else if (inName && inNote) s += 3;
+                else if (inEmail && inNote) s += 2;
+                else if (inName) s += 3;
+                else if (inEmail) s += 2;
+                else if (inNote) s += 1;
+                if (inName && fullName.startsWith(q)) s += 1;
+              }
+              return s;
+            };
+
+            const ra = score(a);
+            const rb = score(b);
+            return rb - ra || compareJournalistsByName(a, b);
+          }
           if (effectiveSortMode === "role") {
             const ra = getRoleRank(a?.ruolo);
             const rb = getRoleRank(b?.ruolo);
@@ -12188,19 +14366,56 @@
           return compareJournalistsByName(a, b);
         });
 
-        grid.innerHTML = "";
-        for (const j of sorted) {
-          grid.appendChild(createCard(j));
+        const endIndex = Math.min(
+          sorted.length,
+          Math.max(0, visibleJournalistLimit),
+        );
+        const startIndex = shouldClearGrid
+          ? 0
+          : Math.min(lastRenderedJournalistCount, endIndex);
+
+        if (shouldClearGrid) {
+          if (cardsLoader) {
+            cardsLoader.style.display = "block";
+          }
+          if (loadMoreWrap) {
+            if (cardsLoader) {
+              grid.replaceChildren(cardsLoader, loadMoreWrap);
+            } else {
+              grid.replaceChildren(loadMoreWrap);
+            }
+          } else {
+            grid.innerHTML = "";
+          }
+        }
+
+        renderIncremental({
+          items: sorted,
+          startIndex,
+          endIndex,
+          createElement: (j) => createCard(j),
+          onDone: () => {
+            lastRenderedJournalistCount = endIndex;
+            requestAnimationFrame(() => {
+              updateJournalistTestateLabelLinks(grid);
+              scheduleUpdateCardNameLayouts();
+            });
+          },
+        });
+
+        if (loadMoreWrap && loadMoreLink) {
+          const hasMore = sorted.length > endIndex;
+          loadMoreWrap.style.display = hasMore ? "block" : "none";
+          if (hasMore) {
+            const remaining = sorted.length - endIndex;
+            const step = Math.min(CARD_PAGE_SIZE, remaining);
+            loadMoreLink.textContent = `mostra altri (${step})`;
+          }
         }
 
         lastRenderedVisibleJournalistIds = sorted
           .map((j) => String(getJournalistId(j) || "").trim())
           .filter(Boolean);
-
-        requestAnimationFrame(() => {
-          updateJournalistTestateLabelLinks(grid);
-          scheduleUpdateCardNameLayouts();
-        });
 
         if (!active) {
           subtitleEl.textContent = "";
@@ -12244,13 +14459,17 @@
           };
 
           if (textActive) {
-            const row = makeRow("Termine:");
+            const row = makeRow(getTextFilterLabel());
 
             for (const t of committedTextTerms) {
               row.appendChild(
                 createChip(t, () => {
-                  const idx = committedTextTerms.indexOf(t);
-                  if (idx !== -1) committedTextTerms.splice(idx, 1);
+                  activeTextTerms.delete(t);
+                  for (let i = committedTextTerms.length - 1; i >= 0; i--) {
+                    if (committedTextTerms[i] === t) {
+                      committedTextTerms.splice(i, 1);
+                    }
+                  }
                   updateTextFilterClearVisibility();
                   scheduleRender();
                 }),
@@ -12346,22 +14565,24 @@
         }
       }
 
-      let isBulkFilterReset = false;
-
       const clearAllFilters = () => {
+        const mode = getSidebarMode();
         isBulkFilterReset = true;
-        dropdown.resetSelection();
-        roleDropdown.resetSelection();
         testataArgomentoDropdown.resetSelection();
         testataTipoMediaDropdown.resetSelection();
         testataFrequenzaDropdown.resetSelection();
         testataDiffusioneDropdown.resetSelection();
+        if (mode !== "testate") {
+          dropdown.resetSelection();
+          roleDropdown.resetSelection();
+        }
         committedTextTerms.splice(0, committedTextTerms.length);
         if (textFilterInput) {
           textFilterInput.value = "";
           updateTextFilterClearVisibility();
         }
         isBulkFilterReset = false;
+        filterStateByMode[mode] = snapshotFilterState(mode);
         scheduleRender();
       };
 
@@ -12406,7 +14627,13 @@
 
       document.querySelectorAll('input[name="sidebarMode"]').forEach((el) => {
         el.addEventListener("change", () => {
-          applySidebarModeUI();
+          const mode = getSidebarMode();
+          handleModeSwitch(mode);
+        });
+      });
+
+      document.querySelectorAll('input[name="mainMode"]').forEach((el) => {
+        el.addEventListener("change", () => {
           scheduleRender();
         });
       });
@@ -12499,6 +14726,7 @@
               }
             }
 
+            showToast(formatRemovedFromListToast(1));
             scheduleRender();
             return;
           }
@@ -12546,7 +14774,7 @@
         });
 
         cardsGrid.addEventListener("change", (e) => {
-          const checkbox = e.target?.closest?.(".card-select");
+          const checkbox = e.target?.closest?.(".card-select[data-jid]");
           if (!checkbox) return;
           const jid = checkbox.getAttribute("data-jid");
           if (!jid) return;
@@ -12668,6 +14896,8 @@
       }
       const initialView = initialFromHash || appState.view || "filtra";
       setActiveView(initialView, { save: true });
+
+      updateHelpLinkVisibility();
 
       scheduleRender();
     </script>
