@@ -27,12 +27,7 @@
             <span class="nav-icon" data-icon="M__" aria-hidden="true"></span>
             <span>dashboard</span>
           </a>
-          <a
-            href="#filtra"
-            data-view="filtra"
-            class="is-active"
-            aria-current="page"
-          >
+          <a href="#filtra" data-view="filtra">
             <span class="nav-icon" data-icon="filter" aria-hidden="true"></span>
             <span>banca dati</span></a
           >
@@ -100,7 +95,7 @@
         </nav>
       </aside>
       <div class="views" id="views">
-        <div class="app-view is-active" data-view="filtra" id="viewFiltra">
+        <div class="app-view" data-view="filtra" id="viewFiltra">
           <aside class="sidebar">
             <div class="sidebar-mode" role="radiogroup" aria-label="Modalità">
               <span class="sidebar-mode-segment">
@@ -129,6 +124,199 @@
             </div>
 
             <div class="sidebar-filters-scroll">
+              <div id="shipmentRecipientsSection" style="display: none">
+                <div class="sidebar-section-title-row">
+                  <div class="sidebar-section-title">Destinatari</div>
+                  <span class="pill" id="shipmentRecipientsCountPill">0</span>
+                </div>
+
+                <div class="dropdown-container" style="margin-bottom: 18px">
+                  <div class="filter-label-row">
+                    <label
+                      class="field-label"
+                      for="shipmentRecipientsJournalistsInput"
+                      >Giornalisti</label
+                    >
+                  </div>
+                  <div
+                    class="dropdown-input"
+                    id="shipmentRecipientsJournalistsInputWrapper"
+                  >
+                    <input
+                      type="text"
+                      class="chip-text-input"
+                      id="shipmentRecipientsJournalistsInput"
+                      autocomplete="off"
+                    />
+                    <div
+                      class="autocomplete-inline"
+                      id="shipmentRecipientsJournalistsAutocompleteInline"
+                      aria-hidden="true"
+                    >
+                      <span
+                        class="autocomplete-suffix"
+                        id="shipmentRecipientsJournalistsAutocompleteSuffix"
+                      ></span>
+                      <span
+                        class="autocomplete-tip"
+                        id="shipmentRecipientsJournalistsAutocompleteTip"
+                      ></span>
+                    </div>
+                    <div
+                      class="dropdown-arrow"
+                      id="shipmentRecipientsJournalistsDropdownArrow"
+                    ></div>
+                  </div>
+                  <div
+                    class="dropdown-list"
+                    id="shipmentRecipientsJournalistsDropdownList"
+                  >
+                    <div
+                      id="shipmentRecipientsJournalistsDropdownChipSink"
+                      style="display: none"
+                    ></div>
+                    <div
+                      class="dropdown-suggestions"
+                      id="shipmentRecipientsJournalistsDropdownSuggestions"
+                    ></div>
+                    <div
+                      class="dropdown-results"
+                      id="shipmentRecipientsJournalistsDropdownResults"
+                    ></div>
+                  </div>
+                </div>
+
+                <div class="dropdown-container" style="margin-bottom: 12px">
+                  <div class="filter-label-row">
+                    <label
+                      class="field-label"
+                      for="shipmentRecipientsListsInput"
+                      >Liste</label
+                    >
+                  </div>
+                  <div
+                    class="dropdown-input"
+                    id="shipmentRecipientsListsInputWrapper"
+                  >
+                    <input
+                      type="text"
+                      class="chip-text-input"
+                      id="shipmentRecipientsListsInput"
+                      autocomplete="off"
+                    />
+                    <div
+                      class="autocomplete-inline"
+                      id="shipmentRecipientsListsAutocompleteInline"
+                      aria-hidden="true"
+                    >
+                      <span
+                        class="autocomplete-suffix"
+                        id="shipmentRecipientsListsAutocompleteSuffix"
+                      ></span>
+                      <span
+                        class="autocomplete-tip"
+                        id="shipmentRecipientsListsAutocompleteTip"
+                      ></span>
+                    </div>
+                    <div
+                      class="dropdown-arrow"
+                      id="shipmentRecipientsListsDropdownArrow"
+                    ></div>
+                  </div>
+                  <div
+                    class="dropdown-list"
+                    id="shipmentRecipientsListsDropdownList"
+                  >
+                    <div
+                      id="shipmentRecipientsListsDropdownChipSink"
+                      style="display: none"
+                    ></div>
+                    <div
+                      class="dropdown-suggestions"
+                      id="shipmentRecipientsListsDropdownSuggestions"
+                    ></div>
+                    <div
+                      class="dropdown-results"
+                      id="shipmentRecipientsListsDropdownResults"
+                    ></div>
+                  </div>
+                </div>
+
+                <a
+                  href="#"
+                  class="c-link c-link--action"
+                  id="shipmentAiSuggestionsLink"
+                  >suggerimenti</a
+                >
+
+                <hr class="sidebar-separator" />
+
+                <div class="sidebar-section-title-row">
+                  <div class="sidebar-section-title">Comunicato stampa</div>
+                  <a
+                    href="#"
+                    class="c-link c-link--action"
+                    id="shipmentPressNewLink"
+                    >nuovo</a
+                  >
+                </div>
+
+                <div class="shipment-press-option">
+                  <input
+                    type="radio"
+                    id="shipmentPressModeSelect"
+                    name="shipmentPressMode"
+                    class="shipment-press-radio"
+                    value="select"
+                    checked
+                  />
+                  <label for="shipmentPressModeSelect"
+                    >Seleziona un comunicato stampa</label
+                  >
+                </div>
+                <div
+                  class="shipment-press-indented"
+                  id="shipmentPressSelectWrap"
+                >
+                  <select
+                    id="shipmentPressSelect"
+                    class="shipment-press-select"
+                  >
+                    <option value="">Nessun comunicato disponibile</option>
+                  </select>
+                  <a
+                    href="#"
+                    class="c-link c-link--action"
+                    id="shipmentPressOpenLink"
+                    >apri comunicato selezionato</a
+                  >
+                </div>
+
+                <div class="shipment-press-option" style="margin-top: 16px">
+                  <input
+                    type="radio"
+                    id="shipmentPressModeEmail"
+                    name="shipmentPressMode"
+                    class="shipment-press-radio"
+                    value="email"
+                  />
+                  <label for="shipmentPressModeEmail"
+                    >Inviaci un comunicato da spedire</label
+                  >
+                </div>
+                <div
+                  class="shipment-press-indented"
+                  id="shipmentPressInstructionsWrap"
+                >
+                  <a
+                    href="#"
+                    class="c-link c-link--action"
+                    id="shipmentPressInstructionsLink"
+                    >istruzioni</a
+                  >
+                </div>
+              </div>
+
               <div class="dropdown-container" style="margin-bottom: 18px">
                 <div class="filter-label-row">
                   <label class="field-label" for="textFilterInput">Cerca</label>
@@ -646,6 +834,15 @@
                         id="mailingListDeleteLink"
                         >elimina</a
                       >
+                      <span class="sidebar-mode-separator" aria-hidden="true"
+                        >•</span
+                      >
+                      <a
+                        href="#"
+                        class="c-link c-link--action"
+                        id="mailingListSendLink"
+                        >spedisci</a
+                      >
                     </div>
                   </div>
                 </div>
@@ -688,7 +885,7 @@
                       id="mainCountJournalists"
                       style="display: inline-block"
                     ></span>
-                    <span class="sidebar-mode-separator">e corrispondenti</span>
+                    <span class="sidebar-mode-separator">e relative</span>
                     <input
                       type="radio"
                       name="mainMode"
@@ -847,27 +1044,102 @@
               </div>
             </div>
             <div class="cards-grid" id="cardsGrid">
-              <div
-                id="cardsLoader"
-                class="muted"
-                style="display: block; text-align: center; padding: 10px 0"
-              >
-                <span class="c-blink-loader" aria-label="caricamento">
-                  M<span class="c-blink-loader__cursor">_</span>
-                </span>
+              <div class="shipment-cards-column" id="shipmentCardsColumn">
+                <div
+                  class="shipment-selected-lists-chips"
+                  id="shipmentSelectedListsChips"
+                ></div>
+                <input
+                  type="text"
+                  id="shipmentCardsFilterInput"
+                  class="shipment-cards-filter-input"
+                  placeholder="filtra..."
+                  aria-label="filtra giornalisti..."
+                />
+                <div
+                  id="cardsLoader"
+                  class="muted"
+                  style="display: block; text-align: center; padding: 10px 0"
+                >
+                  <span class="c-blink-loader" aria-label="caricamento">
+                    M<span class="c-blink-loader__cursor">_</span>
+                  </span>
+                </div>
+                <div
+                  id="cardsLoadMoreWrap"
+                  style="
+                    display: none;
+                    margin: 16px 0;
+                    grid-column: 1 / -1;
+                    text-align: center;
+                  "
+                >
+                  <a href="#" class="c-link c-link--action" id="cardsLoadMore"
+                    >mostra altri</a
+                  >
+                </div>
               </div>
               <div
-                id="cardsLoadMoreWrap"
-                style="
-                  display: none;
-                  margin: 16px 0;
-                  grid-column: 1 / -1;
-                  text-align: center;
-                "
+                class="shipment-email-header-column"
+                id="shipmentEmailHeaderColumn"
               >
-                <a href="#" class="c-link c-link--action" id="cardsLoadMore"
-                  >mostra altri</a
+                <div class="shipment-comunicato-controls-row">
+                  <label class="shipment-append-comunicato-toggle">
+                    <input
+                      type="checkbox"
+                      id="shipmentAppendComunicatoCheckbox"
+                    />
+                    <span>aggiungi il comunicato in calce</span>
+                  </label>
+                  <span class="shipment-comunicato-share-links">
+                    <a
+                      href="#"
+                      class="c-link c-link--action shipment-comunicato-link shipment-comunicato-link--public"
+                      id="shipmentComunicatoPublicLink"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-disabled="true"
+                      >link</a
+                    >
+                    <span class="shipment-comunicato-share-text"
+                      >a comunicato</span
+                    >
+                    <a
+                      href="#"
+                      class="c-link c-link--action shipment-comunicato-link shipment-comunicato-link--copy"
+                      id="shipmentComunicatoCopyLink"
+                      aria-disabled="true"
+                      >copia</a
+                    >
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  id="shipmentEmailSubjectInput"
+                  class="shipment-email-subject-input"
+                  placeholder="oggetto"
+                />
+                <textarea
+                  id="newPressPanelEmailHeaderTextarea"
+                  class="new-press-panel-textarea new-press-panel-textarea--email-header"
+                  placeholder="intestazione email"
+                ></textarea>
+                <section
+                  class="shipment-selected-comunicato"
+                  id="shipmentSelectedComunicatoWrap"
+                  aria-live="polite"
                 >
+                  <p
+                    class="shipment-selected-comunicato-title"
+                    id="shipmentSelectedComunicatoTitle"
+                  >
+                    Comunicato selezionato
+                  </p>
+                  <div
+                    class="shipment-selected-comunicato-body"
+                    id="shipmentSelectedComunicatoText"
+                  ></div>
+                </section>
               </div>
             </div>
           </main>
@@ -918,7 +1190,7 @@
                       data-split-main
                       data-split-action="save-list"
                     >
-                      salva lista
+                      crea lista
                     </button>
                     <button
                       type="button"
@@ -952,7 +1224,7 @@
                             href="#"
                             class="c-link c-link--nav"
                             data-split-action="add-to-new-shipment"
-                            >salva spedizione</a
+                            >crea spedizione</a
                           >
                         </div>
                         <div class="dropdown-item" role="option">
@@ -975,14 +1247,70 @@
 
         <div class="app-view" data-view="dashboard" id="viewDashboard">
           <main class="main">
-            <div class="main-header">
-              <div>
-                <h1 class="main-title">Liste</h1>
-              </div>
-            </div>
             <div class="dashboard-layout">
               <div class="dashboard-mailing-lists-col">
-                <div id="dashboardMailingLists"></div>
+                <div class="dashboard-subtitle-row">
+                  <div class="main-subtitle dashboard-main-subtitle">liste</div>
+                </div>
+                <input
+                  type="text"
+                  class="shipment-cards-filter-input"
+                  id="dashboardMailingListsFilterInput"
+                  placeholder="filtra liste"
+                  autocomplete="off"
+                />
+                <div
+                  id="dashboardMailingLists"
+                  class="dashboard-filter-results"
+                ></div>
+              </div>
+              <div class="dashboard-mailing-lists-col">
+                <div class="dashboard-subtitle-row">
+                  <div class="main-subtitle dashboard-main-subtitle">
+                    spedizioni
+                  </div>
+                  <a
+                    href="#"
+                    id="dashboardShipmentsNewLink"
+                    class="dashboard-subtitle-link"
+                    >nuova</a
+                  >
+                </div>
+                <input
+                  type="text"
+                  class="shipment-cards-filter-input"
+                  id="dashboardShipmentsFilterInput"
+                  placeholder="filtra spedizioni"
+                  autocomplete="off"
+                />
+                <div
+                  id="dashboardShipments"
+                  class="dashboard-filter-results"
+                ></div>
+              </div>
+              <div class="dashboard-mailing-lists-col">
+                <div class="dashboard-subtitle-row">
+                  <div class="main-subtitle dashboard-main-subtitle">
+                    comunicati
+                  </div>
+                  <a
+                    href="#"
+                    id="dashboardComunicatiNewLink"
+                    class="dashboard-subtitle-link"
+                    >nuovo</a
+                  >
+                </div>
+                <input
+                  type="text"
+                  class="shipment-cards-filter-input"
+                  id="dashboardComunicatiFilterInput"
+                  placeholder="filtra comunicati"
+                  autocomplete="off"
+                />
+                <div
+                  id="dashboardComunicati"
+                  class="dashboard-filter-results"
+                ></div>
               </div>
             </div>
           </main>
@@ -995,7 +1323,11 @@
                 <h1 class="main-title">Liste</h1>
               </div>
             </div>
-            <div class="muted">placeholder</div>
+            <div class="dashboard-layout">
+              <div class="dashboard-mailing-lists-col">
+                <div id="mailingListsMailingLists"></div>
+              </div>
+            </div>
           </main>
         </div>
 
@@ -1017,7 +1349,11 @@
                 <h1 class="main-title">Spedizioni</h1>
               </div>
             </div>
-            <div class="muted">placeholder</div>
+            <div class="dashboard-layout">
+              <div class="dashboard-mailing-lists-col">
+                <div id="spedizioniShipments"></div>
+              </div>
+            </div>
           </main>
         </div>
 
@@ -1079,6 +1415,74 @@
     </div>
 
     <div
+      class="shipment-email-spotlight"
+      id="shipmentEmailSpotlight"
+      aria-hidden="true"
+    >
+      <div
+        class="shipment-email-spotlight-shade"
+        id="shipmentEmailSpotlightTop"
+        data-shipment-email-spotlight-close="true"
+      ></div>
+      <div
+        class="shipment-email-spotlight-shade"
+        id="shipmentEmailSpotlightLeft"
+        data-shipment-email-spotlight-close="true"
+      ></div>
+      <div
+        class="shipment-email-spotlight-shade"
+        id="shipmentEmailSpotlightRight"
+        data-shipment-email-spotlight-close="true"
+      ></div>
+      <div
+        class="shipment-email-spotlight-shade"
+        id="shipmentEmailSpotlightBottom"
+        data-shipment-email-spotlight-close="true"
+      ></div>
+    </div>
+
+    <div
+      class="notes-modal-overlay"
+      id="shipmentPressEmailModalOverlay"
+      aria-hidden="true"
+    ></div>
+    <div class="notes-modal" id="shipmentPressEmailModal" aria-hidden="true">
+      <div class="notes-modal-header">
+        <p class="notes-modal-title">email a cui inviare</p>
+        <button
+          type="button"
+          class="notes-modal-close"
+          id="shipmentPressEmailModalClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="notes-modal-body">
+        <div class="shipment-press-email-row">
+          <span id="shipmentPressEmailAddress"
+            >8d18ab1d0d@msg62.mediaaddress.it</span
+          >
+          <a
+            href="#"
+            class="c-link c-link--action"
+            id="shipmentPressEmailCopyLink"
+            >copia</a
+          >
+        </div>
+        <p class="shipment-press-email-text">
+          Ricorda che spediremo una copia esatta della mail che ci invierai,
+          pertanto ricorda di:
+        </p>
+        <ul class="shipment-press-email-list">
+          <li>comporre una NUOVA mail (non inoltrare una mail ricevuta)</li>
+          <li>scrivere OGGETTO e CORPO (il comunicato) della mail</li>
+          <li>allegare eventuali file e/o immagini</li>
+        </ul>
+      </div>
+    </div>
+
+    <div
       class="notes-modal-overlay"
       id="smartFiltersModalOverlay"
       aria-hidden="true"
@@ -1098,6 +1502,19 @@
         </button>
       </div>
       <div class="notes-modal-body">
+        <label class="field-label" for="smartFiltersApiKey"
+          >OpenAI API key</label
+        >
+        <div class="dropdown-input">
+          <input
+            type="password"
+            class="chip-text-input"
+            id="smartFiltersApiKey"
+            autocomplete="off"
+            placeholder="sk-..."
+          />
+        </div>
+
         <label class="field-label" for="smartFiltersText">Testo</label>
         <div class="dropdown-input">
           <textarea
@@ -1148,6 +1565,56 @@
         </button>
       </div>
       <div class="selected-panel-body"></div>
+    </aside>
+
+    <div
+      class="testata-overlay"
+      id="newPressPanelOverlay"
+      aria-hidden="true"
+    ></div>
+    <aside class="new-press-panel" id="newPressPanel" aria-hidden="true">
+      <div class="selected-panel-header">
+        <div class="selected-panel-header-left">
+          <div class="selected-panel-title-row">
+            <span class="selected-panel-title-row-left">
+              <p class="selected-panel-title" id="newPressPanelTitle">
+                Nuovo comunicato
+              </p>
+            </span>
+            <span
+              class="new-press-panel-journalist-tag"
+              id="newPressPanelJournalistTag"
+              style="display: none"
+            ></span>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="selected-panel-close"
+          id="newPressPanelClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="selected-panel-body">
+        <textarea
+          id="newPressPanelTextarea"
+          class="new-press-panel-textarea"
+          placeholder="testo comunicato"
+        ></textarea>
+        <div
+          class="new-press-panel-dropzone"
+          id="newPressPanelDropzone"
+          aria-label="Drop media kit files"
+        >
+          drop media kit files
+        </div>
+        <ul
+          class="new-press-panel-dropped-files"
+          id="newPressPanelDroppedFilesList"
+        ></ul>
+      </div>
     </aside>
 
     <div class="testata-overlay" id="testataOverlay" aria-hidden="true"></div>
@@ -1209,12 +1676,18 @@
         </button>
       </div>
       <div class="notes-modal-body">
-        <label class="field-label" for="saveListNameInput">Nome lista</label>
+        <label
+          class="field-label"
+          for="saveListNameInput"
+          id="saveListNameLabel"
+          >Nome lista</label
+        >
         <div class="dropdown-input">
           <input
             type="text"
             class="chip-text-input"
             id="saveListNameInput"
+            placeholder=""
             autocomplete="off"
           />
         </div>
@@ -1460,6 +1933,8 @@
               mailingLists: [],
               comunicati: [],
               spedizioni: [],
+              activeSpedizioneSourceListId: "",
+              activeSpedizioneName: "",
             };
           }
           const parsed = JSON.parse(raw);
@@ -1469,6 +1944,8 @@
               mailingLists: [],
               comunicati: [],
               spedizioni: [],
+              activeSpedizioneSourceListId: "",
+              activeSpedizioneName: "",
             };
           }
           return {
@@ -1489,6 +1966,14 @@
             spedizioni: Array.isArray(parsed.spedizioni)
               ? parsed.spedizioni
               : [],
+            activeSpedizioneSourceListId:
+              typeof parsed.activeSpedizioneSourceListId === "string"
+                ? parsed.activeSpedizioneSourceListId
+                : "",
+            activeSpedizioneName:
+              typeof parsed.activeSpedizioneName === "string"
+                ? parsed.activeSpedizioneName
+                : "",
           };
         } catch (e) {
           return {
@@ -1499,6 +1984,8 @@
             mailingLists: [],
             comunicati: [],
             spedizioni: [],
+            activeSpedizioneSourceListId: "",
+            activeSpedizioneName: "",
           };
         }
       }
@@ -1515,6 +2002,14 @@
 
       if (typeof appState.activeMailingListId !== "string") {
         appState.activeMailingListId = "";
+      }
+
+      if (typeof appState.activeSpedizioneSourceListId !== "string") {
+        appState.activeSpedizioneSourceListId = "";
+      }
+
+      if (typeof appState.activeSpedizioneName !== "string") {
+        appState.activeSpedizioneName = "";
       }
 
       if (!appState.ui || typeof appState.ui !== "object") {
@@ -1723,6 +2218,7 @@
         "mailing-list",
         "dashboard",
         "mailing-lists",
+        "spedisci-lista",
         "comunicati",
         "spedizioni",
         "progetti",
@@ -1749,16 +2245,31 @@
 
         appState.view = v;
         document.body.dataset.activeView = v;
+        document.body.classList.toggle(
+          "is-mailing-list-view",
+          v === "mailing-list",
+        );
+        document.body.classList.toggle(
+          "is-spedisci-lista-view",
+          v === "spedisci-lista",
+        );
 
         document.querySelectorAll(".app-view").forEach((el) => {
           const viewKey = el.getAttribute("data-view");
           const shouldShow =
-            v === "mailing-list" ? viewKey === "filtra" : viewKey === v;
+            v === "mailing-list" || v === "spedisci-lista"
+              ? viewKey === "filtra"
+              : viewKey === v;
           el.classList.toggle("is-active", shouldShow);
         });
 
         const sp = document.getElementById("selectedPanel");
-        if (sp && v !== "filtra" && v !== "mailing-list") {
+        if (
+          sp &&
+          v !== "filtra" &&
+          v !== "mailing-list" &&
+          v !== "spedisci-lista"
+        ) {
           sp.classList.remove("show");
           sp.setAttribute("aria-hidden", "true");
           document.body.classList.remove("selection-panel-open");
@@ -1796,10 +2307,24 @@
           closeHelpPanel();
         }
 
-        if (v === "filtra" || v === "mailing-list") {
+        if (v !== "spedisci-lista") {
+          closeShipmentEmailHeaderSpotlight();
+        }
+
+        if (v !== "spedisci-lista") {
+          closeNewPressPanel();
+        }
+
+        if (v === "filtra" || v === "mailing-list" || v === "spedisci-lista") {
           scheduleRender();
-        } else if (v === "dashboard") {
+        } else if (
+          v === "dashboard" ||
+          v === "mailing-lists" ||
+          v === "spedizioni"
+        ) {
           renderDashboardMailingLists();
+          renderDashboardSpedizioni();
+          renderDashboardComunicati();
         }
       }
 
@@ -5012,6 +5537,7 @@
       const saveListModal = document.getElementById("saveListModal");
       const saveListModalTitle = document.getElementById("saveListModalTitle");
       const saveListModalClose = document.getElementById("saveListModalClose");
+      const saveListNameLabel = document.getElementById("saveListNameLabel");
       const saveListNameInput = document.getElementById("saveListNameInput");
       const saveListConfirm = document.getElementById("saveListConfirm");
       const saveListError = document.getElementById("saveListError");
@@ -5093,15 +5619,164 @@
       const mailingListDeleteLink = document.getElementById(
         "mailingListDeleteLink",
       );
+      const mailingListSendLink = document.getElementById(
+        "mailingListSendLink",
+      );
       const mailingListCreatedAtSubtitle = document.getElementById(
         "mailingListCreatedAtSubtitle",
       );
       const dashboardMailingListsEl = document.getElementById(
         "dashboardMailingLists",
       );
+      const dashboardMailingListsFilterInput = document.getElementById(
+        "dashboardMailingListsFilterInput",
+      );
+      const dashboardShipmentsEl =
+        document.getElementById("dashboardShipments");
+      const dashboardShipmentsFilterInput = document.getElementById(
+        "dashboardShipmentsFilterInput",
+      );
+      const dashboardComunicatiEl = document.getElementById(
+        "dashboardComunicati",
+      );
+      const dashboardComunicatiFilterInput = document.getElementById(
+        "dashboardComunicatiFilterInput",
+      );
+      const dashboardShipmentsNewLink = document.getElementById(
+        "dashboardShipmentsNewLink",
+      );
+      const dashboardComunicatiNewLink = document.getElementById(
+        "dashboardComunicatiNewLink",
+      );
+      const spedizioniShipmentsEl = document.getElementById(
+        "spedizioniShipments",
+      );
+      const mailingListsMailingListsEl = document.getElementById(
+        "mailingListsMailingLists",
+      );
+      const shipmentRecipientsJournalistsInput = document.getElementById(
+        "shipmentRecipientsJournalistsInput",
+      );
+      const shipmentRecipientsListsInput = document.getElementById(
+        "shipmentRecipientsListsInput",
+      );
+      const shipmentSelectedListsChips = document.getElementById(
+        "shipmentSelectedListsChips",
+      );
+      const shipmentCardsColumn = document.getElementById(
+        "shipmentCardsColumn",
+      );
+      const shipmentRecipientsCountPill = document.getElementById(
+        "shipmentRecipientsCountPill",
+      );
+      const shipmentCardsFilterInput = document.getElementById(
+        "shipmentCardsFilterInput",
+      );
+      const shipmentEmailHeaderColumn = document.getElementById(
+        "shipmentEmailHeaderColumn",
+      );
+      const shipmentEmailSubjectInput = document.getElementById(
+        "shipmentEmailSubjectInput",
+      );
+      const shipmentAppendComunicatoCheckbox = document.getElementById(
+        "shipmentAppendComunicatoCheckbox",
+      );
+      const shipmentComunicatoPublicLink = document.getElementById(
+        "shipmentComunicatoPublicLink",
+      );
+      const shipmentComunicatoCopyLink = document.getElementById(
+        "shipmentComunicatoCopyLink",
+      );
+      const shipmentEmailSpotlight = document.getElementById(
+        "shipmentEmailSpotlight",
+      );
+      const shipmentEmailSpotlightTop = document.getElementById(
+        "shipmentEmailSpotlightTop",
+      );
+      const shipmentEmailSpotlightLeft = document.getElementById(
+        "shipmentEmailSpotlightLeft",
+      );
+      const shipmentEmailSpotlightRight = document.getElementById(
+        "shipmentEmailSpotlightRight",
+      );
+      const shipmentEmailSpotlightBottom = document.getElementById(
+        "shipmentEmailSpotlightBottom",
+      );
+      const shipmentSelectedComunicatoWrap = document.getElementById(
+        "shipmentSelectedComunicatoWrap",
+      );
+      const shipmentSelectedComunicatoTitle = document.getElementById(
+        "shipmentSelectedComunicatoTitle",
+      );
+      const shipmentSelectedComunicatoText = document.getElementById(
+        "shipmentSelectedComunicatoText",
+      );
+      const shipmentAiSuggestionsLink = document.getElementById(
+        "shipmentAiSuggestionsLink",
+      );
+      const shipmentPressModeSelectRadio = document.getElementById(
+        "shipmentPressModeSelect",
+      );
+      const shipmentPressModeEmailRadio = document.getElementById(
+        "shipmentPressModeEmail",
+      );
+      const shipmentPressSelectWrap = document.getElementById(
+        "shipmentPressSelectWrap",
+      );
+      const shipmentPressSelect = document.getElementById(
+        "shipmentPressSelect",
+      );
+      const shipmentPressOpenLink = document.getElementById(
+        "shipmentPressOpenLink",
+      );
+      const shipmentPressInstructionsWrap = document.getElementById(
+        "shipmentPressInstructionsWrap",
+      );
+      const shipmentPressInstructionsLink = document.getElementById(
+        "shipmentPressInstructionsLink",
+      );
+      const shipmentPressNewLink = document.getElementById(
+        "shipmentPressNewLink",
+      );
+
+      const shipmentPressEmailModalOverlay = document.getElementById(
+        "shipmentPressEmailModalOverlay",
+      );
+      const shipmentPressEmailModal = document.getElementById(
+        "shipmentPressEmailModal",
+      );
+      const shipmentPressEmailModalClose = document.getElementById(
+        "shipmentPressEmailModalClose",
+      );
+      const shipmentPressEmailCopyLink = document.getElementById(
+        "shipmentPressEmailCopyLink",
+      );
+      const shipmentPressEmailAddress = document.getElementById(
+        "shipmentPressEmailAddress",
+      );
 
       let saveListModalMode = "create";
       let saveListModalTargetId = "";
+      let activeComunicatoId = "";
+      let activeSpedizioneRef = null;
+      let newPressPanelOpenContext = "global";
+      let newPressPanelJournalistId = "";
+      let isShipmentEmailSpotlightOpen = false;
+      let shipmentEmailSpotlightPreviousContext = "global";
+      let shipmentEmailSpotlightPreviousJournalistId = "";
+      let wasSpedisciListaView = false;
+      let shipmentListsDropdownSyncing = false;
+      let shipmentSelectedRecipientListIds = new Set();
+      let shipmentActiveRecipientListIds = new Set();
+      let shipmentJournalistsDropdownSyncing = false;
+      let shipmentSelectedRecipientJournalistIds = new Set();
+      const shipmentJournalistOptionToId = new Map();
+      const shipmentJournalistIdToOption = new Map();
+      const shipmentListOrder = new Map();
+      let lastShipmentListOptionsKey = "";
+      let lastShipmentJournalistOptionsKey = "";
+      let lastShipmentJournalistsSourceRef = null;
+      let lastShipmentJournalistsSourceLen = -1;
 
       const textFilterInput = document.getElementById("textFilterInput");
       const textFilterClear = document.getElementById("textFilterClearLink");
@@ -5238,8 +5913,223 @@
         saveListModal.setAttribute("aria-hidden", "false");
       }
 
-      function openRenameListModal() {
+      function getComunicatiItems() {
+        const comunicati = Array.isArray(appState.comunicati)
+          ? appState.comunicati
+          : [];
+        return comunicati
+          .map((x, i) => {
+            if (typeof x === "string") {
+              const label = String(x || "").trim();
+              return label ? { id: label, label } : null;
+            }
+            if (x && typeof x === "object") {
+              const label = String(
+                x.title || x.name || x.subject || x.oggetto || "",
+              ).trim();
+              const id = String(x.id || label || i).trim();
+              return label ? { id, label } : null;
+            }
+            return null;
+          })
+          .filter(Boolean);
+      }
+
+      function getComunicatoLabelById(id) {
+        const key = String(id || "").trim();
+        if (!key) return "";
+        const items = getComunicatiItems();
+        const found = items.find((x) => String(x.id || "") === key);
+        return String(found?.label || "").trim();
+      }
+
+      function getComunicatoIndexById(id) {
+        const key = String(id || "").trim();
+        if (!key) return -1;
+        if (!Array.isArray(appState.comunicati)) return -1;
+        for (let i = 0; i < appState.comunicati.length; i++) {
+          const item = appState.comunicati[i];
+          if (typeof item === "string") {
+            if (String(item || "").trim() === key) return i;
+            continue;
+          }
+          if (!item || typeof item !== "object") continue;
+          const existingLabel = String(
+            item.title || item.name || item.subject || item.oggetto || "",
+          ).trim();
+          const itemId = String(item.id || existingLabel || i).trim();
+          if (itemId === key) return i;
+        }
+        return -1;
+      }
+
+      function ensureComunicatoRecord(id) {
+        const key = String(id || "").trim();
+        if (!key) return null;
+        if (!Array.isArray(appState.comunicati)) {
+          appState.comunicati = [];
+        }
+
+        const idx = getComunicatoIndexById(key);
+        if (idx < 0) return null;
+
+        const current = appState.comunicati[idx];
+        if (current && typeof current === "object") {
+          const title = String(
+            current.title ||
+              current.name ||
+              current.subject ||
+              current.oggetto ||
+              "",
+          ).trim();
+          if (!current.id) {
+            current.id = key;
+          }
+          if (!current.title) {
+            current.title =
+              title || getComunicatoLabelById(key) || "Nuovo comunicato";
+          }
+          if (!current.emailHeader || typeof current.emailHeader !== "string") {
+            current.emailHeader = String(current.emailHeader || "");
+          }
+          if (!current.bodyText || typeof current.bodyText !== "string") {
+            current.bodyText = String(current.bodyText || "");
+          }
+          if (
+            !current.journalistEmailHeaders ||
+            typeof current.journalistEmailHeaders !== "object"
+          ) {
+            current.journalistEmailHeaders = {};
+          }
+          return current;
+        }
+
+        const label = getComunicatoLabelById(key) || "Nuovo comunicato";
+        const normalized = {
+          id: key,
+          title: label,
+          createdAt: Date.now(),
+          emailHeader: "",
+          bodyText: "",
+          journalistEmailHeaders: {},
+        };
+        appState.comunicati[idx] = normalized;
+        return normalized;
+      }
+
+      function getComunicatoDisplayEmailHeader(record, journalistId) {
+        if (!record || typeof record !== "object") return "";
+        const jid = String(journalistId || "").trim();
+        if (jid) {
+          const byJournalist = record.journalistEmailHeaders;
+          if (
+            byJournalist &&
+            typeof byJournalist === "object" &&
+            Object.prototype.hasOwnProperty.call(byJournalist, jid)
+          ) {
+            return String(byJournalist[jid] || "");
+          }
+        }
+        return String(record.emailHeader || "");
+      }
+
+      function setNewPressPanelTitle(name) {
+        const next = String(name || "").trim() || "Nuovo comunicato";
+        if (newPressPanelTitle) {
+          newPressPanelTitle.textContent = next;
+        }
+        if (newPressPanelBodyTitle) {
+          newPressPanelBodyTitle.textContent = next;
+        }
+      }
+
+      function createNewComunicato() {
+        if (!Array.isArray(appState.comunicati)) {
+          appState.comunicati = [];
+        }
+        const baseName = "Nuovo comunicato";
+        const existingNames = new Set(
+          getComunicatiItems().map((x) => String(x.label || "").toLowerCase()),
+        );
+        let candidate = baseName;
+        let n = 2;
+        while (existingNames.has(String(candidate || "").toLowerCase())) {
+          candidate = `${baseName} ${n}`;
+          n += 1;
+        }
+
+        const createdId = `comunicato-${Date.now()}-${Math.floor(
+          Math.random() * 1_000_000,
+        )}`;
+        appState.comunicati.unshift({
+          id: createdId,
+          title: candidate,
+          createdAt: Date.now(),
+          emailHeader: "",
+          bodyText: "",
+          journalistEmailHeaders: {},
+        });
+        activeComunicatoId = createdId;
+        saveAppState(appState);
+        renderShipmentPressOptions();
+        renderDashboardComunicati();
+        if (shipmentPressSelect) {
+          shipmentPressSelect.value = createdId;
+        }
+        setNewPressPanelTitle(candidate);
+      }
+
+      function openRenameListModal(options = {}) {
         if (!saveListModal || !saveListModalOverlay) return;
+        const mode = String(options?.mode || "")
+          .trim()
+          .toLowerCase();
+        if (mode === "comunicato") {
+          let targetId = String(activeComunicatoId || "").trim();
+          if (!targetId && shipmentPressSelect) {
+            targetId = String(shipmentPressSelect.value || "").trim();
+          }
+          if (!targetId) return;
+
+          const currentName =
+            getComunicatoLabelById(targetId) || "Nuovo comunicato";
+          saveListModalMode = "rename-comunicato";
+          saveListModalTargetId = targetId;
+
+          if (saveListModalTitle) {
+            saveListModalTitle.textContent = "Rinomina comunicato";
+          }
+          if (saveListNameLabel) {
+            saveListNameLabel.textContent = "Nome comunicato";
+          }
+          if (saveListNameInput) {
+            saveListNameInput.placeholder = "Nuovo comunicato";
+          }
+          if (saveListConfirm) {
+            saveListConfirm.textContent = "rinomina comunicato";
+          }
+
+          if (saveListNameInput) {
+            saveListNameInput.value = String(currentName || "");
+            saveListNameInput.focus();
+            try {
+              saveListNameInput.setSelectionRange(
+                0,
+                String(saveListNameInput.value || "").length,
+              );
+            } catch (_) {}
+          }
+          if (saveListError) {
+            saveListError.style.display = "none";
+          }
+
+          saveListModalOverlay.classList.add("show");
+          saveListModal.classList.add("show");
+          saveListModalOverlay.setAttribute("aria-hidden", "false");
+          saveListModal.setAttribute("aria-hidden", "false");
+          return;
+        }
+
         const activeList = getMailingListById(appState.activeMailingListId);
         if (!activeList) return;
 
@@ -5280,6 +6170,8 @@
         saveListModalMode = "create";
         saveListModalTargetId = "";
         if (saveListModalTitle) saveListModalTitle.textContent = "Salva lista";
+        if (saveListNameLabel) saveListNameLabel.textContent = "Nome lista";
+        if (saveListNameInput) saveListNameInput.placeholder = "";
         if (saveListConfirm) saveListConfirm.textContent = "salva lista";
       }
 
@@ -5349,6 +6241,254 @@
         );
       }
 
+      function getActiveSpedizioneIndex(preferredName = "") {
+        if (
+          !Array.isArray(appState.spedizioni) ||
+          appState.spedizioni.length === 0
+        )
+          return -1;
+
+        if (activeSpedizioneRef) {
+          const byRefIdx = appState.spedizioni.indexOf(activeSpedizioneRef);
+          if (byRefIdx !== -1) return byRefIdx;
+        }
+
+        const sourceListId = String(
+          appState.activeSpedizioneSourceListId || "",
+        ).trim();
+        const preferred = String(
+          preferredName || appState.activeSpedizioneName || "",
+        ).trim();
+
+        if (preferred && sourceListId) {
+          const byNameAndSource = appState.spedizioni.findIndex(
+            (s) =>
+              String(s?.name || "").trim() === preferred &&
+              String(s?.sourceMailingListId || "").trim() === sourceListId,
+          );
+          if (byNameAndSource !== -1) return byNameAndSource;
+        }
+
+        if (preferred) {
+          const byName = appState.spedizioni.findIndex(
+            (s) => String(s?.name || "").trim() === preferred,
+          );
+          if (byName !== -1) return byName;
+        }
+
+        return -1;
+      }
+
+      function getSpedizioneSourceList() {
+        return getMailingListById(appState.activeSpedizioneSourceListId);
+      }
+
+      function getRecentMailingLists(limit = Infinity) {
+        const all = Array.isArray(appState.mailingLists)
+          ? [...appState.mailingLists]
+          : [];
+        const sorted = all.filter(Boolean).sort((a, b) => {
+          const aTs = Number(a?.createdAt || 0);
+          const bTs = Number(b?.createdAt || 0);
+          return bTs - aTs;
+        });
+        if (!Number.isFinite(limit)) return sorted;
+        return sorted.slice(0, Math.max(0, Number(limit) || 0));
+      }
+
+      function getShipmentSelectedRecipientLists() {
+        return Array.from(shipmentSelectedRecipientListIds)
+          .map((id) => getMailingListById(id))
+          .filter(Boolean);
+      }
+
+      function getShipmentActiveRecipientLists() {
+        return Array.from(shipmentActiveRecipientListIds)
+          .map((id) => getMailingListById(id))
+          .filter(Boolean);
+      }
+
+      function getShipmentJournalistDropdownLabel(j) {
+        const fullName =
+          `${String(j?.nome || "").trim()} ${String(j?.cognome || "").trim()}`.trim();
+        const email = String(j?.email || "").trim();
+        if (fullName && email) return `${fullName} · ${email}`;
+        return fullName || email || getJournalistId(j);
+      }
+
+      function refreshShipmentRecipientsJournalistsDropdownOptions() {
+        const source = Array.isArray(journalists) ? journalists : [];
+        if (
+          source === lastShipmentJournalistsSourceRef &&
+          source.length === lastShipmentJournalistsSourceLen
+        ) {
+          return;
+        }
+
+        const journalistLabelCount = new Map();
+        const journalistOptionEntries = source
+          .map((j) => {
+            const id = String(getJournalistId(j) || "").trim();
+            if (!id) return null;
+            const baseLabel = getShipmentJournalistDropdownLabel(j);
+            const prevCount = journalistLabelCount.get(baseLabel) || 0;
+            const nextCount = prevCount + 1;
+            journalistLabelCount.set(baseLabel, nextCount);
+            const uniqueLabel =
+              nextCount > 1 ? `${baseLabel} (${nextCount})` : baseLabel;
+            return {
+              id,
+              label: uniqueLabel,
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) =>
+            String(a.label || "").localeCompare(String(b.label || ""), "it", {
+              sensitivity: "base",
+            }),
+          );
+
+        shipmentJournalistOptionToId.clear();
+        shipmentJournalistIdToOption.clear();
+        journalistOptionEntries.forEach((entry) => {
+          shipmentJournalistOptionToId.set(entry.label, entry.id);
+          shipmentJournalistIdToOption.set(entry.id, entry.label);
+        });
+
+        const journalistOptions = journalistOptionEntries.map(
+          (entry) => entry.label,
+        );
+        const nextJournalistOptionsKey = journalistOptionEntries
+          .map((entry) => `${entry.id}:${entry.label}`)
+          .join("||");
+        if (nextJournalistOptionsKey !== lastShipmentJournalistOptionsKey) {
+          shipmentJournalistsDropdownSyncing = true;
+          shipmentRecipientsJournalistsDropdown.setOptions(journalistOptions);
+          shipmentJournalistsDropdownSyncing = false;
+          lastShipmentJournalistOptionsKey = nextJournalistOptionsKey;
+        }
+
+        lastShipmentJournalistsSourceRef = source;
+        lastShipmentJournalistsSourceLen = source.length;
+      }
+
+      function syncShipmentPrimaryListInState() {
+        const nextPrimary =
+          Array.from(shipmentSelectedRecipientListIds).find(Boolean) || "";
+        appState.activeSpedizioneSourceListId = nextPrimary;
+      }
+
+      function applyShipmentSelectedRecipientListIds(ids = [], options = {}) {
+        const { save = false, syncDropdown = true } = options;
+        const prevSelected = new Set(shipmentSelectedRecipientListIds);
+        const next = new Set(
+          (Array.isArray(ids) ? ids : [])
+            .map((id) => String(id || "").trim())
+            .filter((id) => !!getMailingListById(id)),
+        );
+        shipmentSelectedRecipientListIds = next;
+
+        const nextActive = new Set();
+        Array.from(next).forEach((id) => {
+          if (shipmentActiveRecipientListIds.has(id) || !prevSelected.has(id)) {
+            nextActive.add(id);
+          }
+        });
+        shipmentActiveRecipientListIds = nextActive;
+
+        syncShipmentPrimaryListInState();
+
+        if (syncDropdown && shipmentRecipientsListsDropdown) {
+          shipmentListsDropdownSyncing = true;
+          const selectedNames = getShipmentSelectedRecipientLists()
+            .map((list) => String(list?.name || "").trim())
+            .filter(Boolean);
+          shipmentRecipientsListsDropdown.selectedValues = new Set(
+            selectedNames,
+          );
+          shipmentRecipientsListsDropdown.renderChips();
+          shipmentRecipientsListsDropdown.renderList();
+          shipmentRecipientsListsDropdown.updateClearVisibility();
+          shipmentListsDropdownSyncing = false;
+        }
+
+        if (save) {
+          saveAppState(appState);
+        }
+      }
+
+      function applyShipmentSelectedRecipientJournalistIds(
+        ids = [],
+        options = {},
+      ) {
+        const { syncDropdown = true } = options;
+        const next = new Set(
+          (Array.isArray(ids) ? ids : [])
+            .map((id) => String(id || "").trim())
+            .filter(Boolean),
+        );
+        shipmentSelectedRecipientJournalistIds = next;
+
+        if (syncDropdown && shipmentRecipientsJournalistsDropdown) {
+          shipmentJournalistsDropdownSyncing = true;
+          const selectedOptions = Array.from(next)
+            .map((id) => shipmentJournalistIdToOption.get(id))
+            .filter(Boolean);
+          shipmentRecipientsJournalistsDropdown.selectedValues = new Set(
+            selectedOptions,
+          );
+          shipmentRecipientsJournalistsDropdown.renderChips();
+          shipmentRecipientsJournalistsDropdown.renderList();
+          shipmentRecipientsJournalistsDropdown.updateClearVisibility();
+          shipmentJournalistsDropdownSyncing = false;
+        }
+      }
+
+      function renderShipmentSelectedListsChips() {
+        if (!shipmentSelectedListsChips) return;
+        shipmentSelectedListsChips.innerHTML = "";
+
+        const selectedLists = getShipmentSelectedRecipientLists();
+        selectedLists.forEach((list) => {
+          const listId = String(list?.id || "").trim();
+          const isActive = shipmentActiveRecipientListIds.has(listId);
+          const chip = document.createElement("span");
+          chip.className = `chip shipment-list-chip${isActive ? "" : " is-off"}`;
+          chip.setAttribute("role", "button");
+          chip.setAttribute("tabindex", "0");
+          chip.setAttribute("aria-pressed", isActive ? "true" : "false");
+
+          const text = document.createElement("span");
+          text.textContent = String(list?.name || "").trim();
+          chip.appendChild(text);
+
+          const toggleChip = () => {
+            if (!listId) return;
+            if (shipmentActiveRecipientListIds.has(listId)) {
+              shipmentActiveRecipientListIds.delete(listId);
+            } else {
+              shipmentActiveRecipientListIds.add(listId);
+            }
+            renderShipmentSelectedListsChips();
+            scheduleRender();
+          };
+
+          chip.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleChip();
+          });
+          chip.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            e.stopPropagation();
+            toggleChip();
+          });
+
+          shipmentSelectedListsChips.appendChild(chip);
+        });
+      }
+
       function getSpedizioneByName(name) {
         const k = String(name || "").trim();
         if (!k) return null;
@@ -5357,6 +6497,45 @@
             (x) => String(x?.name || "") === k,
           ) || null
         );
+      }
+
+      const SHIPMENT_HEADER_MAX_CHARS = 40;
+
+      function truncateWithEllipsis(value, maxChars) {
+        const text = String(value || "");
+        const limit = Math.max(1, Number(maxChars) || 1);
+        if (text.length <= limit) return text;
+        if (limit === 1) return "…";
+        return `${text.slice(0, limit - 1)}…`;
+      }
+
+      function getShipmentNameRaw(spedizioneSourceList = null) {
+        const fromState = String(appState.activeSpedizioneName || "").trim();
+        if (fromState) return fromState;
+        const sourceName = String(spedizioneSourceList?.name || "").trim();
+        if (sourceName) return `spedizione a ${sourceName}`;
+        return "spedizione";
+      }
+
+      function getShipmentHeaderTitle(spedizioneSourceList = null) {
+        return truncateWithEllipsis(
+          getShipmentNameRaw(spedizioneSourceList),
+          SHIPMENT_HEADER_MAX_CHARS,
+        );
+      }
+
+      function renameActiveShipmentFromSubjectInput(rawName) {
+        const previousName = String(appState.activeSpedizioneName || "").trim();
+        const nextName = String(rawName || "");
+        const idx = getActiveSpedizioneIndex(previousName);
+        if (idx !== -1) {
+          appState.spedizioni[idx] = {
+            ...appState.spedizioni[idx],
+            name: nextName,
+          };
+          activeSpedizioneRef = appState.spedizioni[idx];
+        }
+        appState.activeSpedizioneName = nextName;
       }
 
       let toastHideTimer = 0;
@@ -5456,6 +6635,106 @@
         if (addToShipmentError) addToShipmentError.style.display = "none";
       };
 
+      const shipmentRecipientsJournalistsDropdown = new FilterableDropdown(
+        "shipmentRecipientsJournalistsInput",
+        [],
+        {
+          inputWrapperId: "shipmentRecipientsJournalistsInputWrapper",
+          chipContainerId: "shipmentRecipientsJournalistsDropdownChipSink",
+          autocompleteInlineId:
+            "shipmentRecipientsJournalistsAutocompleteInline",
+          autocompleteSuffixId:
+            "shipmentRecipientsJournalistsAutocompleteSuffix",
+          autocompleteTipId: "shipmentRecipientsJournalistsAutocompleteTip",
+          arrowId: "shipmentRecipientsJournalistsDropdownArrow",
+          clearId: null,
+          listId: "shipmentRecipientsJournalistsDropdownList",
+          closeLinkId: null,
+          suggestionsId: "shipmentRecipientsJournalistsDropdownSuggestions",
+          resultsId: "shipmentRecipientsJournalistsDropdownResults",
+          synonymsByFilter: {},
+          renderChipsInInput: false,
+          renderCheckboxes: true,
+          singleSelect: false,
+          closeOnSelect: false,
+          writeSelectedToInput: false,
+          enableHighlight: true,
+          minFilterChars: 1,
+        },
+      );
+      shipmentRecipientsJournalistsDropdown.updateAutocompleteHint("");
+      shipmentRecipientsJournalistsDropdown.onSelectionChange = (
+        selectedOptions,
+      ) => {
+        if (shipmentJournalistsDropdownSyncing) return;
+
+        const ids = (Array.isArray(selectedOptions) ? selectedOptions : [])
+          .map((option) =>
+            shipmentJournalistOptionToId.get(String(option || "")),
+          )
+          .filter(Boolean);
+
+        applyShipmentSelectedRecipientJournalistIds(ids, {
+          syncDropdown: false,
+        });
+        scheduleRender();
+      };
+
+      const shipmentRecipientsListsDropdown = new FilterableDropdown(
+        "shipmentRecipientsListsInput",
+        [],
+        {
+          inputWrapperId: "shipmentRecipientsListsInputWrapper",
+          chipContainerId: "shipmentRecipientsListsDropdownChipSink",
+          autocompleteInlineId: "shipmentRecipientsListsAutocompleteInline",
+          autocompleteSuffixId: "shipmentRecipientsListsAutocompleteSuffix",
+          autocompleteTipId: "shipmentRecipientsListsAutocompleteTip",
+          arrowId: "shipmentRecipientsListsDropdownArrow",
+          clearId: null,
+          listId: "shipmentRecipientsListsDropdownList",
+          closeLinkId: null,
+          suggestionsId: "shipmentRecipientsListsDropdownSuggestions",
+          resultsId: "shipmentRecipientsListsDropdownResults",
+          synonymsByFilter: {},
+          renderChipsInInput: false,
+          renderCheckboxes: true,
+          singleSelect: false,
+          closeOnSelect: false,
+          writeSelectedToInput: false,
+          enableHighlight: true,
+          minFilterChars: 1,
+          sortComparator: (a, b) => {
+            const ra = shipmentListOrder.get(String(a || ""));
+            const rb = shipmentListOrder.get(String(b || ""));
+            const safeRa = Number.isFinite(ra) ? ra : Number.POSITIVE_INFINITY;
+            const safeRb = Number.isFinite(rb) ? rb : Number.POSITIVE_INFINITY;
+            return (
+              safeRa - safeRb ||
+              String(a || "").localeCompare(String(b || ""), "it", {
+                sensitivity: "base",
+              })
+            );
+          },
+        },
+      );
+      shipmentRecipientsListsDropdown.updateAutocompleteHint("");
+      shipmentRecipientsListsDropdown.onSelectionChange = (selectedNames) => {
+        if (shipmentListsDropdownSyncing) return;
+
+        const ids = (Array.isArray(selectedNames) ? selectedNames : [])
+          .map((name) => getMailingListByName(name))
+          .filter(Boolean)
+          .map((list) => String(list.id || "").trim())
+          .filter(Boolean);
+
+        applyShipmentSelectedRecipientListIds(ids, {
+          save: true,
+          syncDropdown: false,
+        });
+        renderShipmentSelectedListsChips();
+        scheduleRender();
+      };
+
       const smartFiltersOpenLink = document.getElementById(
         "smartFiltersOpenLink",
       );
@@ -5466,6 +6745,7 @@
       const smartFiltersModalClose = document.getElementById(
         "smartFiltersModalClose",
       );
+      const smartFiltersApiKey = document.getElementById("smartFiltersApiKey");
       const smartFiltersText = document.getElementById("smartFiltersText");
       const smartFiltersSuggestBtn = document.getElementById(
         "smartFiltersSuggestBtn",
@@ -5478,6 +6758,28 @@
       );
 
       let smartFiltersLastSuggested = [];
+
+      function getStoredOpenAiKey() {
+        return String(
+          window.localStorage.getItem("openai_api_key") ||
+            window.localStorage.getItem("OPENAI_API_KEY") ||
+            "",
+        ).trim();
+      }
+
+      function persistOpenAiKeyFromInput() {
+        if (!smartFiltersApiKey) return;
+        const value = String(smartFiltersApiKey.value || "").trim();
+        if (value) {
+          window.localStorage.setItem("openai_api_key", value);
+          window.localStorage.setItem("OPENAI_API_KEY", value);
+        }
+      }
+
+      function hydrateOpenAiKeyInput() {
+        if (!smartFiltersApiKey) return;
+        smartFiltersApiKey.value = getStoredOpenAiKey();
+      }
 
       function setLinkDisabled(link, disabled) {
         if (!link) return;
@@ -5492,6 +6794,7 @@
         smartFiltersModalOverlay.setAttribute("aria-hidden", "false");
         smartFiltersModal.setAttribute("aria-hidden", "false");
 
+        hydrateOpenAiKeyInput();
         updateSmartFiltersModeHint();
         if (smartFiltersText) smartFiltersText.focus();
       }
@@ -5592,11 +6895,7 @@
 
       async function fetchOpenAiSubjectsFromText(text) {
         const inputText = String(text || "").trim();
-        const key = String(
-          window.localStorage.getItem("openai_api_key") ||
-            window.localStorage.getItem("OPENAI_API_KEY") ||
-            "",
-        ).trim();
+        const key = getStoredOpenAiKey();
         if (!inputText) throw new Error("Testo mancante");
         if (!key) {
           throw new Error("API key mancante (localStorage: openai_api_key)");
@@ -5856,6 +7155,7 @@
           try {
             setLinkDisabled(smartFiltersSuggestBtn, true);
             setLinkDisabled(smartFiltersApplyBtn, true);
+            persistOpenAiKeyFromInput();
             smartFiltersLastSuggested = [];
             renderSmartFiltersResults([], { loading: true });
 
@@ -5879,6 +7179,12 @@
           e.stopPropagation();
           if (smartFiltersApplyBtn.classList.contains("is-disabled")) return;
           applySmartFiltersSuggestedSubjects();
+        });
+      }
+
+      if (smartFiltersApiKey) {
+        smartFiltersApiKey.addEventListener("blur", () => {
+          persistOpenAiKeyFromInput();
         });
       }
 
@@ -6063,6 +7369,205 @@
         }
       }
 
+      function closeShipmentPressEmailModal() {
+        if (!shipmentPressEmailModal || !shipmentPressEmailModalOverlay) return;
+        shipmentPressEmailModalOverlay.classList.remove("show");
+        shipmentPressEmailModal.classList.remove("show");
+        shipmentPressEmailModalOverlay.setAttribute("aria-hidden", "true");
+        shipmentPressEmailModal.setAttribute("aria-hidden", "true");
+      }
+
+      function openShipmentPressEmailModal() {
+        if (!shipmentPressEmailModal || !shipmentPressEmailModalOverlay) return;
+        shipmentPressEmailModalOverlay.classList.add("show");
+        shipmentPressEmailModal.classList.add("show");
+        shipmentPressEmailModalOverlay.setAttribute("aria-hidden", "false");
+        shipmentPressEmailModal.setAttribute("aria-hidden", "false");
+      }
+
+      function renderShipmentPressOptions() {
+        if (!shipmentPressSelect) return;
+        const prevValue = String(shipmentPressSelect.value || "").trim();
+        const items = getComunicatiItems();
+
+        shipmentPressSelect.innerHTML = "";
+        if (!items.length) {
+          const opt = document.createElement("option");
+          opt.value = "";
+          opt.textContent = "Nessun comunicato disponibile";
+          shipmentPressSelect.appendChild(opt);
+          updateShipmentPressLinksState();
+          return;
+        }
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Seleziona comunicato";
+        shipmentPressSelect.appendChild(placeholder);
+
+        for (const item of items) {
+          const opt = document.createElement("option");
+          opt.value = item.id;
+          opt.textContent = item.label;
+          shipmentPressSelect.appendChild(opt);
+        }
+
+        if (prevValue && items.some((x) => x.id === prevValue)) {
+          shipmentPressSelect.value = prevValue;
+        }
+
+        updateShipmentPressLinksState();
+      }
+
+      function hasSelectedShipmentPressComunicato() {
+        return !!String(shipmentPressSelect?.value || "").trim();
+      }
+
+      function updateShipmentSelectedComunicatoReadonly() {
+        if (
+          !shipmentSelectedComunicatoWrap ||
+          !shipmentSelectedComunicatoText
+        ) {
+          return;
+        }
+
+        const shouldAppendComunicato =
+          !!shipmentAppendComunicatoCheckbox?.checked;
+        if (!shouldAppendComunicato) {
+          shipmentSelectedComunicatoWrap.style.display = "none";
+          shipmentSelectedComunicatoText.textContent = "";
+          if (shipmentSelectedComunicatoTitle) {
+            shipmentSelectedComunicatoTitle.textContent =
+              "Comunicato selezionato";
+          }
+          return;
+        }
+
+        const selectedId = String(shipmentPressSelect?.value || "").trim();
+        if (!selectedId) {
+          shipmentSelectedComunicatoWrap.style.display = "none";
+          shipmentSelectedComunicatoText.textContent = "";
+          if (shipmentSelectedComunicatoTitle) {
+            shipmentSelectedComunicatoTitle.textContent =
+              "Comunicato selezionato";
+          }
+          return;
+        }
+
+        let bodyText = "";
+        const idx = getComunicatoIndexById(selectedId);
+        if (idx >= 0 && Array.isArray(appState.comunicati)) {
+          const item = appState.comunicati[idx];
+          if (item && typeof item === "object") {
+            bodyText = String(item.bodyText || "");
+          }
+        }
+
+        const selectedLabel = getComunicatoLabelById(selectedId);
+        if (shipmentSelectedComunicatoTitle) {
+          shipmentSelectedComunicatoTitle.textContent = selectedLabel
+            ? `Comunicato selezionato · ${selectedLabel}`
+            : "Comunicato selezionato";
+        }
+        shipmentSelectedComunicatoText.textContent = bodyText;
+        shipmentSelectedComunicatoWrap.style.display = "flex";
+      }
+
+      function getShipmentSelectedComunicatoPublicUrl() {
+        const selectedId = String(shipmentPressSelect?.value || "").trim();
+        if (!selectedId) return "";
+
+        const idx = getComunicatoIndexById(selectedId);
+        if (idx < 0 || !Array.isArray(appState.comunicati)) return "";
+
+        const item = appState.comunicati[idx];
+        if (!item || typeof item !== "object") return "";
+
+        const title = String(getComunicatoLabelById(selectedId) || "").trim();
+        const body = String(item.bodyText || "");
+        const url = new URL("public-comunicato.html", window.location.href);
+        url.searchParams.set("id", selectedId);
+        url.searchParams.set("title", title);
+        url.searchParams.set("body", body);
+        return url.toString();
+      }
+
+      function updateShipmentComunicatoPublicLinksState() {
+        const hasSelectedComunicato = hasSelectedShipmentPressComunicato();
+        const publicUrl = hasSelectedComunicato
+          ? getShipmentSelectedComunicatoPublicUrl()
+          : "";
+        const hasPublicUrl = !!String(publicUrl || "").trim();
+
+        if (shipmentComunicatoPublicLink) {
+          shipmentComunicatoPublicLink.href = hasPublicUrl ? publicUrl : "#";
+          shipmentComunicatoPublicLink.classList.toggle(
+            "is-link-disabled",
+            !hasPublicUrl,
+          );
+          shipmentComunicatoPublicLink.setAttribute(
+            "aria-disabled",
+            hasPublicUrl ? "false" : "true",
+          );
+        }
+
+        if (shipmentComunicatoCopyLink) {
+          shipmentComunicatoCopyLink.classList.toggle(
+            "is-link-disabled",
+            !hasPublicUrl,
+          );
+          shipmentComunicatoCopyLink.setAttribute(
+            "aria-disabled",
+            hasPublicUrl ? "false" : "true",
+          );
+        }
+      }
+
+      function updateShipmentPressLinksState() {
+        const hasSelectedComunicato = hasSelectedShipmentPressComunicato();
+
+        if (shipmentAppendComunicatoCheckbox) {
+          shipmentAppendComunicatoCheckbox.disabled = !hasSelectedComunicato;
+          if (!hasSelectedComunicato) {
+            shipmentAppendComunicatoCheckbox.checked = false;
+          }
+        }
+
+        updateShipmentSelectedComunicatoReadonly();
+        updateShipmentComunicatoPublicLinksState();
+
+        if (shipmentPressOpenLink) {
+          shipmentPressOpenLink.classList.toggle(
+            "is-link-disabled",
+            !hasSelectedComunicato,
+          );
+          shipmentPressOpenLink.setAttribute(
+            "aria-disabled",
+            hasSelectedComunicato ? "false" : "true",
+          );
+        }
+
+        const grid = document.getElementById("cardsGrid");
+        if (!grid) return;
+        grid.querySelectorAll(".card-customize-press-link").forEach((link) => {
+          link.classList.toggle("is-link-disabled", !hasSelectedComunicato);
+          link.setAttribute(
+            "aria-disabled",
+            hasSelectedComunicato ? "false" : "true",
+          );
+        });
+      }
+
+      function updateShipmentPressModeUI() {
+        if (shipmentPressSelectWrap) {
+          shipmentPressSelectWrap.style.display = "block";
+        }
+        if (shipmentPressInstructionsWrap) {
+          shipmentPressInstructionsWrap.style.display = "block";
+        }
+        updateShipmentPressLinksState();
+      }
+
       function computeUniqueSpedizioneName(baseName) {
         const base = String(baseName || "").trim();
         if (!base) return "";
@@ -6190,40 +7695,445 @@
         const list = getMailingListById(id);
         if (!list) return;
         appState.activeMailingListId = list.id;
+        appState.activeSpedizioneSourceListId = "";
+        appState.activeSpedizioneName = "";
         saveAppState(appState);
         window.location.hash = "#mailing-list";
         setActiveView("mailing-list", { save: true });
         scheduleRender();
       }
 
-      function renderDashboardMailingLists() {
-        if (!dashboardMailingListsEl) return;
-        dashboardMailingListsEl.innerHTML = "";
+      function createSpedizioneFromMailingList(list) {
+        if (!list) return null;
+        const baseName = `Spedizione a ${String(list.name || "").trim()}`;
+        const uniqueName = computeUniqueSpedizioneName(baseName);
+        const shipment = {
+          name: uniqueName,
+          journalistIds: Array.isArray(list.journalistIds)
+            ? Array.from(list.journalistIds)
+            : [],
+          createdAt: Date.now(),
+          sourceMailingListId: String(list.id || "").trim(),
+        };
+        if (!Array.isArray(appState.spedizioni)) {
+          appState.spedizioni = [];
+        }
+        appState.spedizioni.unshift(shipment);
+        return shipment;
+      }
 
+      function createDashboardShipment() {
+        const baseName = "nuova spedizione";
+        const uniqueName = computeUniqueSpedizioneName(baseName);
+        const shipment = {
+          name: uniqueName,
+          journalistIds: [],
+          createdAt: Date.now(),
+          sourceMailingListId: "",
+        };
+
+        if (!Array.isArray(appState.spedizioni)) {
+          appState.spedizioni = [];
+        }
+        appState.spedizioni.unshift(shipment);
+
+        activeSpedizioneRef = shipment;
+        appState.activeSpedizioneName = uniqueName;
+        appState.activeSpedizioneSourceListId = "";
+        applyShipmentSelectedRecipientListIds([], {
+          save: false,
+          syncDropdown: true,
+        });
+        applyShipmentSelectedRecipientJournalistIds([], {
+          syncDropdown: true,
+        });
+
+        saveAppState(appState);
+        renderDashboardSpedizioni();
+        window.location.hash = "#spedisci-lista";
+        setActiveView("spedisci-lista", { save: true });
+      }
+
+      function createSpedizioneFromSelectedJournalists() {
+        const selectionSnapshot = selectedJournalistOrder.filter((jid) =>
+          selectedJournalistIds.has(jid),
+        );
+        if (!selectionSnapshot.length) return;
+
+        const activeList = getMailingListById(appState.activeMailingListId);
+        const baseName = activeList
+          ? `Spedizione a ${String(activeList.name || "").trim()}`
+          : "Spedizione";
+        const uniqueName = computeUniqueSpedizioneName(baseName);
+
+        const shipment = {
+          name: uniqueName,
+          journalistIds: Array.from(selectionSnapshot),
+          createdAt: Date.now(),
+          sourceMailingListId: "",
+        };
+        if (!Array.isArray(appState.spedizioni)) {
+          appState.spedizioni = [];
+        }
+        appState.spedizioni.unshift(shipment);
+
+        activeSpedizioneRef = shipment;
+        appState.activeSpedizioneName = uniqueName;
+        appState.activeSpedizioneSourceListId = "";
+        applyShipmentSelectedRecipientListIds([], {
+          save: false,
+          syncDropdown: true,
+        });
+        applyShipmentSelectedRecipientJournalistIds(selectionSnapshot, {
+          syncDropdown: true,
+        });
+
+        saveAppState(appState);
+        renderDashboardSpedizioni();
+
+        selectedJournalistIds.clear();
+        selectedJournalistOrder.length = 0;
+        renderSelectedPanelList();
+        closeSelectedPanel();
+
+        window.location.hash = "#spedisci-lista";
+        setActiveView("spedisci-lista", { save: true });
+      }
+
+      function openSpedisciListaView() {
+        const list = getMailingListById(appState.activeMailingListId);
+        if (!list) return;
+
+        const created = createSpedizioneFromMailingList(list);
+        activeSpedizioneRef = created || null;
+        appState.activeSpedizioneSourceListId = String(list.id || "");
+        appState.activeSpedizioneName = String(created?.name || "");
+        saveAppState(appState);
+        renderDashboardSpedizioni();
+        window.location.hash = "#spedisci-lista";
+        setActiveView("spedisci-lista", { save: true });
+      }
+
+      function openSpedizioneByName(name) {
+        const shipment = getSpedizioneByName(name);
+        if (!shipment) return;
+        activeSpedizioneRef = shipment;
+
+        const shipmentJournalistIds = Array.isArray(shipment.journalistIds)
+          ? shipment.journalistIds
+          : [];
+        applyShipmentSelectedRecipientListIds([], {
+          save: false,
+          syncDropdown: true,
+        });
+        applyShipmentSelectedRecipientJournalistIds(shipmentJournalistIds, {
+          syncDropdown: true,
+        });
+
+        const sourceListId = String(shipment.sourceMailingListId || "").trim();
+        appState.activeSpedizioneName = String(shipment.name || "").trim();
+        appState.activeSpedizioneSourceListId = sourceListId;
+        if (sourceListId) {
+          appState.activeMailingListId = sourceListId;
+        }
+        saveAppState(appState);
+
+        window.location.hash = "#spedisci-lista";
+        setActiveView("spedisci-lista", { save: true });
+      }
+
+      function renderDashboardMailingLists() {
         const lists = Array.isArray(appState.mailingLists)
           ? appState.mailingLists
           : [];
 
-        if (lists.length === 0) {
+        function renderMailingListsInto(targetEl) {
+          if (!targetEl) return;
+          targetEl.innerHTML = "";
+          const isDashboardList = targetEl === dashboardMailingListsEl;
+          const filterTerm = isDashboardList
+            ? String(dashboardMailingListsFilterInput?.value || "")
+                .trim()
+                .toLowerCase()
+            : "";
+          const visibleLists = filterTerm
+            ? lists.filter((ml) =>
+                String(ml?.name || "")
+                  .toLowerCase()
+                  .includes(filterTerm),
+              )
+            : lists;
+
+          if (visibleLists.length === 0) {
+            const empty = document.createElement("div");
+            empty.className = "muted";
+            empty.textContent = filterTerm
+              ? "Nessuna mailing list trovata"
+              : "Nessuna mailing list salvata";
+            targetEl.appendChild(empty);
+            return;
+          }
+
+          const container = document.createElement("div");
+          container.className = "dashboard-mailing-lists";
+
+          for (const ml of visibleLists) {
+            if (!ml || typeof ml !== "object") continue;
+            const id = String(ml.id || "").trim();
+            const name = String(ml.name || "").trim();
+            const count = Array.isArray(ml.journalistIds)
+              ? ml.journalistIds.length
+              : 0;
+            const createdAt = Number(ml.createdAt || 0);
+            if (!id || !name) continue;
+
+            const row = document.createElement("div");
+            row.className = "dashboard-mailing-list-item";
+
+            const left = document.createElement("div");
+            left.className = "dashboard-mailing-list-left";
+
+            const title = document.createElement("a");
+            title.href = "#";
+            title.className = "dashboard-mailing-list-link";
+            if (isDashboardList && filterTerm) {
+              title.innerHTML = highlightHtml(name, filterTerm);
+            } else {
+              title.textContent = name;
+            }
+            title.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (typeof clearAllFilters === "function") {
+                clearAllFilters();
+              }
+              openMailingListById(id);
+            });
+
+            const meta = document.createElement("div");
+            meta.className = "dashboard-mailing-list-meta";
+            if (Number.isFinite(createdAt) && createdAt > 0) {
+              const stamp = new Date(createdAt).toLocaleDateString("it-IT");
+              meta.textContent = `creata il ${stamp}`;
+            } else {
+              meta.textContent = "";
+            }
+
+            left.appendChild(title);
+            if (meta.textContent) left.appendChild(meta);
+
+            const pill = document.createElement("span");
+            pill.className = "pill";
+            pill.textContent = String(count);
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.type = "button";
+            deleteBtn.className = "dashboard-mailing-list-delete";
+            deleteBtn.setAttribute("aria-label", `Elimina ${name}`);
+            deleteBtn.textContent = "×";
+            deleteBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const ok = window.confirm(`Eliminare la mailing list "${name}"?`);
+              if (!ok) return;
+
+              appState.mailingLists = (appState.mailingLists || []).filter(
+                (x) => String(x?.id || "") !== id,
+              );
+              if (String(appState.activeMailingListId || "") === id) {
+                appState.activeMailingListId = "";
+              }
+              saveAppState(appState);
+              renderDashboardMailingLists();
+            });
+
+            const actions = document.createElement("div");
+            actions.className = "dashboard-mailing-list-actions";
+            actions.appendChild(pill);
+            actions.appendChild(deleteBtn);
+
+            row.appendChild(left);
+            row.appendChild(actions);
+            container.appendChild(row);
+          }
+
+          targetEl.appendChild(container);
+        }
+
+        renderMailingListsInto(dashboardMailingListsEl);
+        renderMailingListsInto(mailingListsMailingListsEl);
+      }
+
+      function renderDashboardSpedizioni() {
+        const shipments = Array.isArray(appState.spedizioni)
+          ? appState.spedizioni
+          : [];
+
+        function renderSpedizioniInto(targetEl) {
+          if (!targetEl) return;
+          targetEl.innerHTML = "";
+          const isDashboardList = targetEl === dashboardShipmentsEl;
+          const filterTerm = isDashboardList
+            ? String(dashboardShipmentsFilterInput?.value || "")
+                .trim()
+                .toLowerCase()
+            : "";
+          const visibleShipments = filterTerm
+            ? shipments.filter((s) =>
+                String(s?.name || "")
+                  .toLowerCase()
+                  .includes(filterTerm),
+              )
+            : shipments;
+
+          if (!visibleShipments.length) {
+            const empty = document.createElement("div");
+            empty.className = "muted";
+            empty.textContent = filterTerm
+              ? "Nessuna spedizione trovata"
+              : "Nessuna spedizione salvata";
+            targetEl.appendChild(empty);
+            return;
+          }
+
+          const container = document.createElement("div");
+          container.className = "dashboard-mailing-lists";
+
+          for (const s of visibleShipments) {
+            if (!s || typeof s !== "object") continue;
+            const name = String(s.name || "").trim();
+            if (!name) continue;
+            const count = Array.isArray(s.journalistIds)
+              ? s.journalistIds.length
+              : 0;
+            const createdAt = Number(s.createdAt || 0);
+
+            const row = document.createElement("div");
+            row.className = "dashboard-mailing-list-item";
+
+            const left = document.createElement("div");
+            left.className = "dashboard-mailing-list-left";
+
+            const title = document.createElement("a");
+            title.href = "#";
+            title.className = "dashboard-mailing-list-link";
+            if (isDashboardList && filterTerm) {
+              title.innerHTML = highlightHtml(name, filterTerm);
+            } else {
+              title.textContent = name;
+            }
+            title.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              openSpedizioneByName(name);
+            });
+
+            const meta = document.createElement("div");
+            meta.className = "dashboard-mailing-list-meta";
+            if (Number.isFinite(createdAt) && createdAt > 0) {
+              const stamp = new Date(createdAt).toLocaleDateString("it-IT");
+              meta.textContent = `creata il ${stamp}`;
+            }
+
+            left.appendChild(title);
+            if (meta.textContent) left.appendChild(meta);
+
+            const actions = document.createElement("div");
+            actions.className = "dashboard-mailing-list-actions";
+
+            const pill = document.createElement("span");
+            pill.className = "pill";
+            pill.textContent = String(count);
+            actions.appendChild(pill);
+
+            if (isDashboardList) {
+              const deleteBtn = document.createElement("button");
+              deleteBtn.type = "button";
+              deleteBtn.className = "dashboard-mailing-list-delete";
+              deleteBtn.setAttribute("aria-label", `Elimina ${name}`);
+              deleteBtn.textContent = "×";
+              deleteBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const ok = window.confirm(`Eliminare la spedizione "${name}"?`);
+                if (!ok) return;
+
+                appState.spedizioni = (appState.spedizioni || []).filter(
+                  (x) => x !== s,
+                );
+                if (activeSpedizioneRef === s) {
+                  activeSpedizioneRef = null;
+                  appState.activeSpedizioneName = "";
+                  appState.activeSpedizioneSourceListId = "";
+                }
+                saveAppState(appState);
+                renderDashboardSpedizioni();
+              });
+              actions.appendChild(deleteBtn);
+            }
+
+            row.appendChild(left);
+            row.appendChild(actions);
+            container.appendChild(row);
+          }
+
+          targetEl.appendChild(container);
+        }
+
+        renderSpedizioniInto(dashboardShipmentsEl);
+        renderSpedizioniInto(spedizioniShipmentsEl);
+      }
+
+      function renderDashboardComunicati() {
+        if (!dashboardComunicatiEl) return;
+        dashboardComunicatiEl.innerHTML = "";
+
+        const filterTerm = String(dashboardComunicatiFilterInput?.value || "")
+          .trim()
+          .toLowerCase();
+        const allItems = getComunicatiItems();
+        const items = filterTerm
+          ? allItems.filter((item) =>
+              String(item?.label || "")
+                .toLowerCase()
+                .includes(filterTerm),
+            )
+          : allItems;
+        if (!items.length) {
           const empty = document.createElement("div");
           empty.className = "muted";
-          empty.textContent = "Nessuna mailing list salvata";
-          dashboardMailingListsEl.appendChild(empty);
+          empty.textContent = filterTerm
+            ? "Nessun comunicato trovato"
+            : "Nessun comunicato salvato";
+          dashboardComunicatiEl.appendChild(empty);
           return;
         }
+
+        const comunicatiById = new Map(
+          (Array.isArray(appState.comunicati) ? appState.comunicati : [])
+            .map((item, i) => {
+              if (!item || typeof item !== "object") return null;
+              const label = String(
+                item.title || item.name || item.subject || item.oggetto || "",
+              ).trim();
+              const id = String(item.id || label || i).trim();
+              if (!id) return null;
+              return [id, item];
+            })
+            .filter(Boolean),
+        );
 
         const container = document.createElement("div");
         container.className = "dashboard-mailing-lists";
 
-        for (const ml of lists) {
-          if (!ml || typeof ml !== "object") continue;
-          const id = String(ml.id || "").trim();
-          const name = String(ml.name || "").trim();
-          const count = Array.isArray(ml.journalistIds)
-            ? ml.journalistIds.length
-            : 0;
-          const createdAt = Number(ml.createdAt || 0);
+        for (const item of items) {
+          const id = String(item?.id || "").trim();
+          const name = String(item?.label || "").trim();
           if (!id || !name) continue;
+          const full = comunicatiById.get(id);
+          const createdAt = Number(full?.createdAt || 0);
 
           const row = document.createElement("div");
           row.className = "dashboard-mailing-list-item";
@@ -6234,31 +8144,31 @@
           const title = document.createElement("a");
           title.href = "#";
           title.className = "dashboard-mailing-list-link";
-          title.textContent = name;
+          if (filterTerm) {
+            title.innerHTML = highlightHtml(name, filterTerm);
+          } else {
+            title.textContent = name;
+          }
           title.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (typeof clearAllFilters === "function") {
-              clearAllFilters();
-            }
-            openMailingListById(id);
+            activeComunicatoId = id;
+            setNewPressPanelTitle(name);
+            openNewPressPanel({ source: "dashboard" });
           });
 
           const meta = document.createElement("div");
           meta.className = "dashboard-mailing-list-meta";
           if (Number.isFinite(createdAt) && createdAt > 0) {
             const stamp = new Date(createdAt).toLocaleDateString("it-IT");
-            meta.textContent = `creata il ${stamp}`;
-          } else {
-            meta.textContent = "";
+            meta.textContent = `creato il ${stamp}`;
           }
 
           left.appendChild(title);
           if (meta.textContent) left.appendChild(meta);
 
-          const pill = document.createElement("span");
-          pill.className = "pill";
-          pill.textContent = String(count);
+          const actions = document.createElement("div");
+          actions.className = "dashboard-mailing-list-actions";
 
           const deleteBtn = document.createElement("button");
           deleteBtn.type = "button";
@@ -6269,22 +8179,35 @@
             e.preventDefault();
             e.stopPropagation();
 
-            const ok = window.confirm(`Eliminare la mailing list "${name}"?`);
+            const ok = window.confirm(`Eliminare il comunicato "${name}"?`);
             if (!ok) return;
 
-            appState.mailingLists = (appState.mailingLists || []).filter(
-              (x) => String(x?.id || "") !== id,
-            );
-            if (String(appState.activeMailingListId || "") === id) {
-              appState.activeMailingListId = "";
+            const before = Array.isArray(appState.comunicati)
+              ? appState.comunicati
+              : [];
+            appState.comunicati = before.filter((entry, i) => {
+              if (typeof entry === "string") {
+                return String(entry || "").trim() !== id;
+              }
+              if (!entry || typeof entry !== "object") return true;
+              const label = String(
+                entry.title ||
+                  entry.name ||
+                  entry.subject ||
+                  entry.oggetto ||
+                  "",
+              ).trim();
+              const entryId = String(entry.id || label || i).trim();
+              return entryId !== id;
+            });
+
+            if (String(activeComunicatoId || "").trim() === id) {
+              activeComunicatoId = "";
             }
             saveAppState(appState);
-            renderDashboardMailingLists();
+            renderShipmentPressOptions();
+            renderDashboardComunicati();
           });
-
-          const actions = document.createElement("div");
-          actions.className = "dashboard-mailing-list-actions";
-          actions.appendChild(pill);
           actions.appendChild(deleteBtn);
 
           row.appendChild(left);
@@ -6292,7 +8215,7 @@
           container.appendChild(row);
         }
 
-        dashboardMailingListsEl.appendChild(container);
+        dashboardComunicatiEl.appendChild(container);
       }
 
       function escapeRegExp(s) {
@@ -6628,7 +8551,7 @@
         });
       }
 
-      function createCard(j) {
+      function createCard(j, externalHighlightTerms = []) {
         const card = document.createElement("div");
         card.className = "card";
         card.dataset.servizio = j.servizio;
@@ -6752,6 +8675,56 @@
           return at(0);
         })();
 
+        const cardEmailOptions = (() => {
+          const out = [];
+          const seen = new Set();
+          const pushUnique = (value) => {
+            const v = normalizeText(value);
+            if (!v) return;
+            const key = v.toLowerCase();
+            if (seen.has(key)) return;
+            seen.add(key);
+            out.push(v);
+          };
+
+          const custom = Array.isArray(j?.customEmails) ? j.customEmails : [];
+          for (const it of custom) {
+            if (it && typeof it === "object") {
+              pushUnique(it.email ?? it.value);
+            } else {
+              pushUnique(it);
+            }
+          }
+
+          const program = Array.isArray(j?.programEmails)
+            ? j.programEmails
+            : [];
+          for (const it of program) {
+            if (it && typeof it === "object") {
+              pushUnique(it.email ?? it.value);
+            } else {
+              pushUnique(it);
+            }
+          }
+
+          pushUnique(j?.email);
+
+          const preferred = normalizeText(cardEmail);
+          if (preferred) {
+            const idx = out.findIndex(
+              (x) => x.toLowerCase() === preferred.toLowerCase(),
+            );
+            if (idx > 0) {
+              const [item] = out.splice(idx, 1);
+              out.unshift(item);
+            } else if (idx < 0) {
+              out.unshift(preferred);
+            }
+          }
+
+          return out;
+        })();
+
         const jid = getJournalistId(j);
         card.dataset.jid = jid;
         const isSelected = selectedJournalistIds.has(jid);
@@ -6761,7 +8734,13 @@
 
         const checkboxId = `card-select-${jid.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
 
-        const activeTerms = getHighlightTextTerms();
+        const activeTerms = (() => {
+          const base = getHighlightTextTerms();
+          const extra = Array.isArray(externalHighlightTerms)
+            ? externalHighlightTerms
+            : [];
+          return [...base, ...extra].filter((x) => String(x || "").trim());
+        })();
         const highlightedFirstName = highlightHtmlMulti(
           rawFirstName,
           activeTerms,
@@ -6770,9 +8749,23 @@
           rawLastName,
           activeTerms,
         );
+        const isSpedizioneCardView = appState.view === "spedisci-lista";
         const highlightedEmail = cardEmail
           ? highlightHtmlMulti(cardEmail, activeTerms)
           : '<span class="muted">n/d</span>';
+        const emailFieldHtml = isSpedizioneCardView
+          ? cardEmailOptions.length > 1
+            ? `<select class="card-email-select" aria-label="email destinatario">${cardEmailOptions
+                .map((email, idx) => {
+                  const isSelected =
+                    idx === 0 ||
+                    normalizeText(email).toLowerCase() ===
+                      normalizeText(cardEmail).toLowerCase();
+                  return `<option value="${escapeHtml(email)}"${isSelected ? " selected" : ""}>${escapeHtml(email)}</option>`;
+                })
+                .join("")}</select>`
+            : `<span class="t-value t-no-transform card-email-inline-text">${highlightedEmail}</span>`
+          : highlightedEmail;
         const testate = getJournalistTestate(j);
         const testatePreviewHtml = testate.length
           ? testate
@@ -6784,64 +8777,96 @@
               })
               .join(" • ")
           : '<span class="muted">n/d</span>';
-        const notesArr = normalizeNotes(j.note);
+        const testateRowHtml = isSpedizioneCardView
+          ? ""
+          : `<div class="card-row"><div class="card-label"><span class="card-journalist-testate-label" data-jid="${jid}">Testate</span></div><div class="card-value card-testate">${testatePreviewHtml}</div></div>`;
+        let noteRowHtml = "";
+        if (!isSpedizioneCardView) {
+          const notesArr = normalizeNotes(j.note);
 
-        const notesCombined = combineNotes(notesArr);
-        const notePreviewBaseRaw = (() => {
-          if (!notesArr.length) return "nessuna nota";
+          const notesCombined = combineNotes(notesArr);
+          const notePreviewBaseRaw = (() => {
+            if (!notesArr.length) return "nessuna nota";
 
-          const best = findBestMatchTerm(notesCombined, activeTerms);
-          if (best)
-            return makeSnippet(notesCombined, best, NOTE_MATCH_MAX_CHARS);
+            const best = findBestMatchTerm(notesCombined, activeTerms);
+            if (best)
+              return makeSnippet(notesCombined, best, NOTE_MATCH_MAX_CHARS);
 
-          if (notesArr.length === 1) {
-            if (notesCombined.length > NOTE_MAX_CHARS) {
-              return makeSnippet(notesCombined, "", NOTE_MAX_CHARS);
+            if (notesArr.length === 1) {
+              if (notesCombined.length > NOTE_MAX_CHARS) {
+                return makeSnippet(notesCombined, "", NOTE_MAX_CHARS);
+              }
+              return notesCombined;
             }
-            return notesCombined;
-          }
 
-          return String(notesArr[0] || "");
-        })();
+            return String(notesArr[0] || "");
+          })();
 
-        const hasHiddenNotesContent =
-          notesArr.length > 1 ||
-          (notesCombined &&
-            notePreviewBaseRaw &&
-            notesCombined.length > notePreviewBaseRaw.length);
+          const hasHiddenNotesContent =
+            notesArr.length > 1 ||
+            (notesCombined &&
+              notePreviewBaseRaw &&
+              notesCombined.length > notePreviewBaseRaw.length);
 
-        const noteDisplayRaw =
-          notesArr.length &&
-          hasHiddenNotesContent &&
-          !notePreviewBaseRaw.endsWith("...")
-            ? `${notePreviewBaseRaw}...`
-            : notePreviewBaseRaw;
+          const noteDisplayRaw =
+            notesArr.length &&
+            hasHiddenNotesContent &&
+            !notePreviewBaseRaw.endsWith("...")
+              ? `${notePreviewBaseRaw}...`
+              : notePreviewBaseRaw;
 
-        const noteShowsEllipsis =
-          notesArr.length &&
-          typeof noteDisplayRaw === "string" &&
-          noteDisplayRaw.includes("...");
+          const noteShowsEllipsis =
+            notesArr.length &&
+            typeof noteDisplayRaw === "string" &&
+            noteDisplayRaw.includes("...");
 
-        const highlightedNote = notesArr.length
-          ? highlightHtmlMulti(noteDisplayRaw, activeTerms)
-          : '<em class="muted">nessuna nota</em>';
+          const highlightedNote = notesArr.length
+            ? highlightHtmlMulti(noteDisplayRaw, activeTerms)
+            : '<em class="muted">nessuna nota</em>';
+
+          noteRowHtml = `<div class="card-row"><div class="card-label">${
+            noteShowsEllipsis
+              ? `<a href="#" class="card-label-link card-notes-open" data-jid="${jid}">Note</a>`
+              : "Note"
+          }</div><div class="card-value muted card-note">${highlightedNote}</div></div>`;
+        }
 
         const removeFromListHtml =
           appState.view === "mailing-list"
             ? `<button type="button" class="c-pill card-remove-from-list" data-remove-from-list-jid="${jid}" aria-label="rimuovi da lista">×</button>`
             : "";
 
-        card.innerHTML = `
-          ${removeFromListHtml}
-          <div class="card-top">
-            <div class="card-name-row">
-              <input
+        const customizeComunicatoHtml = "";
+        const servizioRowHtml = isSpedizioneCardView
+          ? ""
+          : `<div class="card-row"><div class="card-label">Servizio</div><div class="card-value">${j.servizio}</div></div>`;
+        const telefonoRowHtml = isSpedizioneCardView
+          ? ""
+          : `<div class="card-row"><div class="card-label">Telefono</div><div class="card-value">${cardPhone}</div></div>`;
+        const emailInlineHtml = isSpedizioneCardView
+          ? `<div class="card-email-inline-wrap">${emailFieldHtml}</div>`
+          : "";
+        const emailRowHtml = isSpedizioneCardView
+          ? ""
+          : `<div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${emailFieldHtml}</div></div>`;
+        const ruoloHtml = isSpedizioneCardView
+          ? ""
+          : `<p class="card-role">${j.ruolo}</p>`;
+        const cardSelectCheckboxHtml = isSpedizioneCardView
+          ? ""
+          : `<input
                 class="card-select"
                 type="checkbox"
                 id="${checkboxId}"
                 data-jid="${jid}"
                 ${isSelected ? "checked" : ""}
-              />
+              />`;
+
+        card.innerHTML = `
+          ${removeFromListHtml}
+          <div class="card-top">
+            <div class="card-name-row">
+              ${cardSelectCheckboxHtml}
               <a
                 href="#"
                 class="journalist-link card-name-link"
@@ -6851,24 +8876,16 @@
               >
                 <h3 class="card-name card-name--person"><span class="card-first-name">${highlightedFirstName}</span><span class="card-last-name" title="${escapeHtml(fullName)}">${highlightedLastName}</span></h3>
               </a>
-              <p class="card-role">${j.ruolo}</p>
+              ${ruoloHtml}
             </div>
+            ${emailInlineHtml}
           </div>
-          <div class="card-row"><div class="card-label">Servizio</div><div class="card-value">${
-            j.servizio
-          }</div></div>
-          <div class="card-row"><div class="card-label">Telefono</div><div class="card-value">${
-            cardPhone
-          }</div></div>
-          <div class="card-row"><div class="card-label">E-mail</div><div class="card-value">${
-            highlightedEmail
-          }</div></div>
-          <div class="card-row"><div class="card-label"><span class="card-journalist-testate-label" data-jid="${jid}">Testate</span></div><div class="card-value card-testate">${testatePreviewHtml}</div></div>
-          <div class="card-row"><div class="card-label">${
-            noteShowsEllipsis
-              ? `<a href="#" class="card-label-link card-notes-open" data-jid="${jid}">Note</a>`
-              : "Note"
-          }</div><div class="card-value muted card-note">${highlightedNote}</div></div>
+          ${servizioRowHtml}
+          ${telefonoRowHtml}
+          ${emailRowHtml}
+          ${testateRowHtml}
+          ${noteRowHtml}
+          ${customizeComunicatoHtml}
         `;
         return card;
       }
@@ -7082,6 +9099,30 @@
       const globalHelpLink = document.getElementById("globalHelpLink");
       const helpPanel = document.getElementById("helpPanel");
       const helpPanelClose = document.getElementById("helpPanelClose");
+      const newPressPanelTitle = document.getElementById("newPressPanelTitle");
+      const newPressPanelBodyTitle = document.getElementById(
+        "newPressPanelBodyTitle",
+      );
+      const newPressPanelOverlay = document.getElementById(
+        "newPressPanelOverlay",
+      );
+      const newPressPanel = document.getElementById("newPressPanel");
+      const newPressPanelClose = document.getElementById("newPressPanelClose");
+      const newPressPanelJournalistTag = document.getElementById(
+        "newPressPanelJournalistTag",
+      );
+      const newPressPanelEmailHeaderTextarea = document.getElementById(
+        "newPressPanelEmailHeaderTextarea",
+      );
+      const newPressPanelTextarea = document.getElementById(
+        "newPressPanelTextarea",
+      );
+      const newPressPanelDropzone = document.getElementById(
+        "newPressPanelDropzone",
+      );
+      const newPressPanelDroppedFilesList = document.getElementById(
+        "newPressPanelDroppedFilesList",
+      );
       const showHelpCheckbox = document.getElementById("showHelpCheckbox");
 
       function isShowHelpEnabled() {
@@ -7110,6 +9151,235 @@
         helpPanel.classList.remove("show");
         helpPanel.setAttribute("aria-hidden", "true");
         document.body.classList.remove("help-panel-open");
+      }
+
+      function autoSizeShipmentEmailTextarea() {
+        if (!newPressPanelEmailHeaderTextarea) return;
+        const el = newPressPanelEmailHeaderTextarea;
+        el.style.height = "auto";
+        const cs = window.getComputedStyle(el);
+        const lineHeight =
+          parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) || 16;
+        const paddingTop = parseFloat(cs.paddingTop) || 0;
+        const paddingBottom = parseFloat(cs.paddingBottom) || 0;
+        const minHeight = lineHeight + paddingTop + paddingBottom;
+        const nextHeight = Math.max(el.scrollHeight || 0, minHeight);
+        el.style.height = `${nextHeight}px`;
+
+        if (isShipmentEmailSpotlightOpen) {
+          requestAnimationFrame(updateShipmentEmailSpotlightMask);
+        }
+      }
+
+      function updateShipmentEmailSpotlightMask() {
+        if (
+          !isShipmentEmailSpotlightOpen ||
+          !newPressPanelEmailHeaderTextarea ||
+          !shipmentEmailSpotlightTop ||
+          !shipmentEmailSpotlightLeft ||
+          !shipmentEmailSpotlightRight ||
+          !shipmentEmailSpotlightBottom
+        ) {
+          return;
+        }
+
+        const rect = newPressPanelEmailHeaderTextarea.getBoundingClientRect();
+        const viewportWidth = Math.max(0, window.innerWidth || 0);
+        const viewportHeight = Math.max(0, window.innerHeight || 0);
+
+        const top = Math.max(0, Math.floor(rect.top));
+        const left = Math.max(0, Math.floor(rect.left));
+        const right = Math.max(
+          left,
+          Math.min(viewportWidth, Math.ceil(rect.right)),
+        );
+        const bottom = Math.max(
+          top,
+          Math.min(viewportHeight, Math.ceil(rect.bottom)),
+        );
+        const middleHeight = Math.max(0, bottom - top);
+
+        shipmentEmailSpotlightTop.style.top = "0px";
+        shipmentEmailSpotlightTop.style.left = "0px";
+        shipmentEmailSpotlightTop.style.width = `${viewportWidth}px`;
+        shipmentEmailSpotlightTop.style.height = `${top}px`;
+
+        shipmentEmailSpotlightLeft.style.top = `${top}px`;
+        shipmentEmailSpotlightLeft.style.left = "0px";
+        shipmentEmailSpotlightLeft.style.width = `${left}px`;
+        shipmentEmailSpotlightLeft.style.height = `${middleHeight}px`;
+
+        shipmentEmailSpotlightRight.style.top = `${top}px`;
+        shipmentEmailSpotlightRight.style.left = `${right}px`;
+        shipmentEmailSpotlightRight.style.width = `${Math.max(0, viewportWidth - right)}px`;
+        shipmentEmailSpotlightRight.style.height = `${middleHeight}px`;
+
+        shipmentEmailSpotlightBottom.style.top = `${bottom}px`;
+        shipmentEmailSpotlightBottom.style.left = "0px";
+        shipmentEmailSpotlightBottom.style.width = `${viewportWidth}px`;
+        shipmentEmailSpotlightBottom.style.height = `${Math.max(0, viewportHeight - bottom)}px`;
+      }
+
+      function openShipmentEmailHeaderSpotlight(journalistId) {
+        const jid = String(journalistId || "").trim();
+        if (!jid || !newPressPanelEmailHeaderTextarea) return;
+
+        const selectedId = String(shipmentPressSelect?.value || "").trim();
+        if (!selectedId) return;
+        const selectedLabel = getComunicatoLabelById(selectedId);
+        if (!selectedLabel) return;
+
+        activeComunicatoId = selectedId;
+        setNewPressPanelTitle(selectedLabel);
+
+        const record = ensureComunicatoRecord(activeComunicatoId);
+        if (!record) return;
+
+        shipmentEmailSpotlightPreviousContext = newPressPanelOpenContext;
+        shipmentEmailSpotlightPreviousJournalistId = newPressPanelJournalistId;
+
+        newPressPanelOpenContext = "card";
+        newPressPanelJournalistId = jid;
+
+        const emailHeaderValue = getComunicatoDisplayEmailHeader(record, jid);
+        newPressPanelEmailHeaderTextarea.value = emailHeaderValue;
+        newPressPanelEmailHeaderTextarea.disabled = false;
+        autoSizeShipmentEmailTextarea();
+
+        isShipmentEmailSpotlightOpen = true;
+        document.body.classList.add("is-shipment-email-spotlight");
+        if (shipmentEmailSpotlight) {
+          shipmentEmailSpotlight.classList.add("show");
+          shipmentEmailSpotlight.setAttribute("aria-hidden", "false");
+        }
+
+        requestAnimationFrame(() => {
+          updateShipmentEmailSpotlightMask();
+          newPressPanelEmailHeaderTextarea.focus({ preventScroll: true });
+          const valueLength = String(
+            newPressPanelEmailHeaderTextarea.value || "",
+          ).length;
+          newPressPanelEmailHeaderTextarea.setSelectionRange(
+            valueLength,
+            valueLength,
+          );
+        });
+      }
+
+      function closeShipmentEmailHeaderSpotlight() {
+        if (!isShipmentEmailSpotlightOpen) return;
+
+        isShipmentEmailSpotlightOpen = false;
+        document.body.classList.remove("is-shipment-email-spotlight");
+
+        if (shipmentEmailSpotlight) {
+          shipmentEmailSpotlight.classList.remove("show");
+          shipmentEmailSpotlight.setAttribute("aria-hidden", "true");
+        }
+
+        const prevContext =
+          shipmentEmailSpotlightPreviousContext === "card" ? "card" : "global";
+        newPressPanelOpenContext = prevContext;
+        newPressPanelJournalistId =
+          prevContext === "card"
+            ? String(shipmentEmailSpotlightPreviousJournalistId || "")
+            : "";
+        shipmentEmailSpotlightPreviousContext = "global";
+        shipmentEmailSpotlightPreviousJournalistId = "";
+
+        if (!newPressPanelEmailHeaderTextarea) return;
+        const record = ensureComunicatoRecord(activeComunicatoId);
+        if (!record) return;
+
+        const jid =
+          newPressPanelOpenContext === "card" ? newPressPanelJournalistId : "";
+        newPressPanelEmailHeaderTextarea.value =
+          getComunicatoDisplayEmailHeader(record, jid);
+        autoSizeShipmentEmailTextarea();
+      }
+
+      function openNewPressPanel(options = {}) {
+        if (!newPressPanel || !newPressPanelOverlay) return;
+        const source = String(options?.source || "global")
+          .trim()
+          .toLowerCase();
+        const journalistId = String(options?.journalistId || "").trim();
+        const isCardContext = source === "card" && !!journalistId;
+        newPressPanelOpenContext = isCardContext ? "card" : "global";
+        newPressPanelJournalistId = isCardContext ? journalistId : "";
+
+        const activeTitle = getComunicatoLabelById(activeComunicatoId);
+        if (activeTitle) {
+          setNewPressPanelTitle(activeTitle);
+        }
+
+        const record = ensureComunicatoRecord(activeComunicatoId);
+        const emailHeaderValue = getComunicatoDisplayEmailHeader(
+          record,
+          newPressPanelJournalistId,
+        );
+        const bodyTextValue = String(record?.bodyText || "");
+
+        if (newPressPanelEmailHeaderTextarea) {
+          newPressPanelEmailHeaderTextarea.value = emailHeaderValue;
+          newPressPanelEmailHeaderTextarea.disabled = false;
+          autoSizeShipmentEmailTextarea();
+        }
+
+        if (newPressPanelTextarea) {
+          newPressPanelTextarea.value = bodyTextValue;
+          newPressPanelTextarea.disabled = isCardContext;
+        }
+
+        if (newPressPanelJournalistTag) {
+          if (isCardContext) {
+            const name = getJournalistNameById(journalistId);
+            newPressPanelJournalistTag.textContent = `@${String(name || journalistId).trim()}`;
+            newPressPanelJournalistTag.style.display = "inline-flex";
+          } else {
+            newPressPanelJournalistTag.textContent = "";
+            newPressPanelJournalistTag.style.display = "none";
+          }
+        }
+
+        if (record) {
+          saveAppState(appState);
+        }
+
+        newPressPanelOverlay.classList.add("show");
+        newPressPanel.classList.add("show");
+        newPressPanelOverlay.setAttribute("aria-hidden", "false");
+        newPressPanel.setAttribute("aria-hidden", "false");
+      }
+
+      function closeNewPressPanel() {
+        if (!newPressPanel || !newPressPanelOverlay) return;
+        newPressPanelOverlay.classList.remove("show");
+        newPressPanel.classList.remove("show");
+        newPressPanelOverlay.setAttribute("aria-hidden", "true");
+        newPressPanel.setAttribute("aria-hidden", "true");
+      }
+
+      function appendDroppedMediaKitFiles(fileList) {
+        if (!newPressPanelDroppedFilesList || !fileList) return;
+        const files = Array.from(fileList).filter(Boolean);
+        if (files.length === 0) return;
+
+        files.forEach((file) => {
+          const fileName = String(file?.name || "").trim() || "untitled-file";
+
+          const li = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = "#";
+          link.className = "new-press-panel-dropped-file-link";
+          link.textContent = fileName;
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+          });
+
+          li.appendChild(link);
+          newPressPanelDroppedFilesList.appendChild(li);
+        });
       }
 
       function setShowHelpEnabled(enabled) {
@@ -7153,6 +9423,95 @@
         });
       }
 
+      if (newPressPanelClose) {
+        newPressPanelClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeNewPressPanel();
+        });
+      }
+
+      if (newPressPanelEmailHeaderTextarea) {
+        newPressPanelEmailHeaderTextarea.addEventListener("input", () => {
+          autoSizeShipmentEmailTextarea();
+          const record = ensureComunicatoRecord(activeComunicatoId);
+          if (!record) return;
+          const value = String(newPressPanelEmailHeaderTextarea.value || "");
+          if (newPressPanelOpenContext === "card") {
+            const jid = String(newPressPanelJournalistId || "").trim();
+            if (!jid) return;
+            if (
+              !record.journalistEmailHeaders ||
+              typeof record.journalistEmailHeaders !== "object"
+            ) {
+              record.journalistEmailHeaders = {};
+            }
+            record.journalistEmailHeaders[jid] = value;
+            saveAppState(appState);
+            return;
+          }
+
+          record.emailHeader = value;
+          saveAppState(appState);
+        });
+
+        autoSizeShipmentEmailTextarea();
+      }
+
+      if (newPressPanelTextarea) {
+        newPressPanelTextarea.addEventListener("input", () => {
+          if (newPressPanelOpenContext === "card") return;
+          const record = ensureComunicatoRecord(activeComunicatoId);
+          if (!record) return;
+          record.bodyText = String(newPressPanelTextarea.value || "");
+          saveAppState(appState);
+          updateShipmentSelectedComunicatoReadonly();
+        });
+      }
+
+      if (newPressPanelDropzone) {
+        let dropzoneDragDepth = 0;
+
+        const setDragOver = (isOver) => {
+          newPressPanelDropzone.classList.toggle("is-drag-over", !!isOver);
+        };
+
+        ["dragenter", "dragover"].forEach((eventName) => {
+          newPressPanelDropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzoneDragDepth += 1;
+            setDragOver(true);
+          });
+        });
+
+        ["dragleave", "dragend"].forEach((eventName) => {
+          newPressPanelDropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzoneDragDepth = Math.max(0, dropzoneDragDepth - 1);
+            if (dropzoneDragDepth === 0) {
+              setDragOver(false);
+            }
+          });
+        });
+
+        newPressPanelDropzone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzoneDragDepth = 0;
+          setDragOver(false);
+          appendDroppedMediaKitFiles(e.dataTransfer?.files);
+        });
+      }
+
+      if (newPressPanelOverlay) {
+        newPressPanelOverlay.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeNewPressPanel();
+        });
+      }
+
       document.addEventListener(
         "click",
         (e) => {
@@ -7169,6 +9528,62 @@
         showHelpCheckbox.checked = isShowHelpEnabled();
         showHelpCheckbox.addEventListener("change", () => {
           setShowHelpEnabled(!!showHelpCheckbox.checked);
+        });
+      }
+
+      if (shipmentEmailSubjectInput) {
+        shipmentEmailSubjectInput.addEventListener("input", () => {
+          if (appState.view !== "spedisci-lista") return;
+          renameActiveShipmentFromSubjectInput(shipmentEmailSubjectInput.value);
+          saveAppState(appState);
+          if (mainTitleEl) {
+            mainTitleEl.textContent = getShipmentHeaderTitle(
+              getSpedizioneSourceList(),
+            );
+          }
+          renderDashboardSpedizioni();
+        });
+      }
+
+      if (shipmentCardsFilterInput) {
+        shipmentCardsFilterInput.addEventListener("input", () => {
+          if (appState.view !== "spedisci-lista") return;
+          scheduleRender();
+        });
+      }
+
+      if (dashboardMailingListsFilterInput) {
+        dashboardMailingListsFilterInput.addEventListener("input", () => {
+          renderDashboardMailingLists();
+        });
+      }
+
+      if (dashboardShipmentsFilterInput) {
+        dashboardShipmentsFilterInput.addEventListener("input", () => {
+          renderDashboardSpedizioni();
+        });
+      }
+
+      if (dashboardComunicatiFilterInput) {
+        dashboardComunicatiFilterInput.addEventListener("input", () => {
+          renderDashboardComunicati();
+        });
+      }
+
+      if (dashboardShipmentsNewLink) {
+        dashboardShipmentsNewLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          createDashboardShipment();
+        });
+      }
+
+      if (dashboardComunicatiNewLink) {
+        dashboardComunicatiNewLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          createNewComunicato();
+          openNewPressPanel({ source: "dashboard" });
         });
       }
 
@@ -7292,7 +9707,7 @@
               return;
             }
             if (action === "add-to-new-shipment") {
-              openAddToNewShipmentModal();
+              createSpedizioneFromSelectedJournalists();
               return;
             }
           },
@@ -7397,6 +9812,154 @@
         addToNewShipmentModalOverlay.addEventListener("click", (e) => {
           e.preventDefault();
           closeAddToNewShipmentModal();
+        });
+      }
+
+      if (shipmentPressEmailModalClose) {
+        shipmentPressEmailModalClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeShipmentPressEmailModal();
+        });
+      }
+
+      if (shipmentPressEmailModalOverlay) {
+        shipmentPressEmailModalOverlay.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeShipmentPressEmailModal();
+        });
+      }
+
+      if (shipmentPressInstructionsLink) {
+        shipmentPressInstructionsLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openShipmentPressEmailModal();
+        });
+      }
+
+      if (shipmentPressOpenLink) {
+        shipmentPressOpenLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (shipmentPressOpenLink.classList.contains("is-link-disabled")) {
+            return;
+          }
+          const selectedId = String(shipmentPressSelect?.value || "").trim();
+          if (!selectedId) return;
+          const selectedLabel = getComunicatoLabelById(selectedId);
+          if (!selectedLabel) return;
+          activeComunicatoId = selectedId;
+          setNewPressPanelTitle(selectedLabel);
+          openNewPressPanel({ source: "sidebar" });
+        });
+      }
+
+      if (shipmentPressNewLink) {
+        shipmentPressNewLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          createNewComunicato();
+          openNewPressPanel({ source: "sidebar" });
+        });
+      }
+
+      if (shipmentPressSelect) {
+        shipmentPressSelect.addEventListener("change", () => {
+          updateShipmentPressLinksState();
+        });
+      }
+
+      if (shipmentAppendComunicatoCheckbox) {
+        shipmentAppendComunicatoCheckbox.addEventListener("change", () => {
+          updateShipmentSelectedComunicatoReadonly();
+        });
+      }
+
+      if (shipmentComunicatoPublicLink) {
+        shipmentComunicatoPublicLink.addEventListener("click", (e) => {
+          if (
+            shipmentComunicatoPublicLink.classList.contains("is-link-disabled")
+          ) {
+            e.preventDefault();
+          }
+        });
+      }
+
+      if (shipmentComunicatoCopyLink) {
+        shipmentComunicatoCopyLink.addEventListener("click", async (e) => {
+          e.preventDefault();
+          if (
+            shipmentComunicatoCopyLink.classList.contains("is-link-disabled")
+          ) {
+            return;
+          }
+          const url = getShipmentSelectedComunicatoPublicUrl();
+          if (!url) return;
+          try {
+            await navigator.clipboard.writeText(url);
+          } catch (_err) {}
+        });
+      }
+
+      if (shipmentEmailSpotlight) {
+        shipmentEmailSpotlight.addEventListener("click", (e) => {
+          const closeTarget = e.target?.closest?.(
+            '[data-shipment-email-spotlight-close="true"]',
+          );
+          if (closeTarget) {
+            closeShipmentEmailHeaderSpotlight();
+          }
+        });
+      }
+
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          if (!isShipmentEmailSpotlightOpen) return;
+          if (e.key !== "Escape") return;
+          e.preventDefault();
+          e.stopPropagation();
+          closeShipmentEmailHeaderSpotlight();
+        },
+        true,
+      );
+
+      window.addEventListener("resize", () => {
+        updateShipmentEmailSpotlightMask();
+      });
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          updateShipmentEmailSpotlightMask();
+        },
+        true,
+      );
+
+      if (shipmentPressEmailCopyLink) {
+        shipmentPressEmailCopyLink.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const email = String(
+            shipmentPressEmailAddress?.textContent || "",
+          ).trim();
+          if (!email) return;
+          try {
+            await navigator.clipboard.writeText(email);
+          } catch (_err) {}
+        });
+      }
+
+      if (shipmentPressModeSelectRadio) {
+        shipmentPressModeSelectRadio.addEventListener("change", () => {
+          updateShipmentPressModeUI();
+        });
+      }
+
+      if (shipmentPressModeEmailRadio) {
+        shipmentPressModeEmailRadio.addEventListener("change", () => {
+          updateShipmentPressModeUI();
         });
       }
 
@@ -7533,6 +10096,7 @@
           }
           appState.spedizioni.unshift(shipment);
           saveAppState(appState);
+          renderDashboardSpedizioni();
           closeAddToNewShipmentModal();
 
           selectedJournalistIds.clear();
@@ -7567,6 +10131,52 @@
             name: rawName,
           };
           saveAppState(appState);
+
+          closeSaveListModal();
+          scheduleRender();
+          return;
+        }
+
+        if (saveListModalMode === "rename-comunicato") {
+          const targetId = String(saveListModalTargetId || "").trim();
+          if (!targetId) return;
+          if (!Array.isArray(appState.comunicati)) return;
+
+          let didRename = false;
+          appState.comunicati = appState.comunicati.map((item, i) => {
+            if (typeof item === "string") {
+              const id = String(item || "").trim();
+              if (id !== targetId) return item;
+              didRename = true;
+              return {
+                id: targetId,
+                title: rawName,
+                createdAt: Date.now(),
+              };
+            }
+            if (!item || typeof item !== "object") return item;
+            const existingLabel = String(
+              item.title || item.name || item.subject || item.oggetto || "",
+            ).trim();
+            const itemId = String(item.id || existingLabel || i).trim();
+            if (itemId !== targetId) return item;
+            didRename = true;
+            return {
+              ...item,
+              id: String(item.id || targetId),
+              title: rawName,
+            };
+          });
+          if (!didRename) return;
+
+          activeComunicatoId = targetId;
+          saveAppState(appState);
+          setNewPressPanelTitle(rawName);
+          renderShipmentPressOptions();
+          renderDashboardComunicati();
+          if (shipmentPressSelect) {
+            shipmentPressSelect.value = targetId;
+          }
 
           closeSaveListModal();
           scheduleRender();
@@ -10961,8 +13571,25 @@
           }
           saveAppState(appState);
           renderDashboardMailingLists();
+          renderDashboardSpedizioni();
+          renderDashboardComunicati();
 
           window.location.hash = "#dashboard";
+        });
+      }
+
+      if (mailingListSendLink) {
+        mailingListSendLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openSpedisciListaView();
+        });
+      }
+
+      if (shipmentAiSuggestionsLink) {
+        shipmentAiSuggestionsLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
         });
       }
 
@@ -12928,6 +15555,18 @@
             closeAddToListModal();
             return;
           }
+          if (shipmentPressEmailModal?.classList?.contains("show")) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeShipmentPressEmailModal();
+            return;
+          }
+          if (newPressPanel?.classList?.contains("show")) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeNewPressPanel();
+            return;
+          }
           if (saveListModal?.classList?.contains("show")) {
             e.preventDefault();
             e.stopPropagation();
@@ -13351,19 +15990,72 @@
         } = getFilterState();
 
         const isMailingListView = appState.view === "mailing-list";
-        const activeList = isMailingListView
-          ? getMailingListById(appState.activeMailingListId)
+        const isSpedisciListaView = appState.view === "spedisci-lista";
+        const cardsHost =
+          isSpedisciListaView && shipmentCardsColumn
+            ? shipmentCardsColumn
+            : grid;
+        const shipmentCardsFilterTerm = isSpedisciListaView
+          ? String(shipmentCardsFilterInput?.value || "")
+              .trim()
+              .toLowerCase()
+          : "";
+
+        renderShipmentPressOptions();
+        updateShipmentPressModeUI();
+
+        const activeList =
+          isMailingListView || isSpedisciListaView
+            ? getMailingListById(appState.activeMailingListId)
+            : null;
+        const spedizioneSourceList = isSpedisciListaView
+          ? getSpedizioneSourceList()
           : null;
+        if (
+          isSpedisciListaView &&
+          !wasSpedisciListaView &&
+          shipmentSelectedRecipientJournalistIds.size === 0
+        ) {
+          const seedId = String(
+            appState.activeSpedizioneSourceListId || "",
+          ).trim();
+          applyShipmentSelectedRecipientListIds(seedId ? [seedId] : [], {
+            save: false,
+            syncDropdown: true,
+          });
+        }
+
+        const selectedShipmentLists = isSpedisciListaView
+          ? getShipmentActiveRecipientLists()
+          : [];
+        const selectedShipmentJournalistIds = new Set();
+        selectedShipmentLists.forEach((list) => {
+          (list?.journalistIds || []).forEach((jid) => {
+            const safeId = String(jid || "").trim();
+            if (safeId) selectedShipmentJournalistIds.add(safeId);
+          });
+        });
+        Array.from(shipmentSelectedRecipientJournalistIds).forEach((jid) => {
+          const safeId = String(jid || "").trim();
+          if (safeId) selectedShipmentJournalistIds.add(safeId);
+        });
+
+        const listForView = isSpedisciListaView
+          ? { journalistIds: Array.from(selectedShipmentJournalistIds) }
+          : activeList;
 
         applySidebarModeUI();
 
         const sidebarMode = getSidebarMode();
         const mainMode = getMainMode();
-        const isSidebarTestateMode = sidebarMode === "testate";
-        const isMainTestateMode = mainMode === "testate";
+        const isSidebarTestateMode =
+          !isSpedisciListaView && sidebarMode === "testate";
+        const isMainTestateMode =
+          !isSpedisciListaView && mainMode === "testate";
 
         if (bulkSelectControls) {
-          bulkSelectControls.style.display = isMainTestateMode ? "none" : "";
+          bulkSelectControls.style.display =
+            isMainTestateMode && !isSpedisciListaView ? "none" : "";
         }
 
         let sortMode = getSortMode();
@@ -13416,7 +16108,13 @@
             Array.isArray(arr) ? arr.map((x) => String(x || "")).join(",") : "";
           const mailingListKey = isMailingListView
             ? safeJoin(activeList?.journalistIds)
-            : "";
+            : isSpedisciListaView
+              ? [
+                  safeJoin(Array.from(shipmentSelectedRecipientListIds)),
+                  safeJoin(Array.from(shipmentActiveRecipientListIds)),
+                  safeJoin(Array.from(shipmentSelectedRecipientJournalistIds)),
+                ].join("|")
+              : "";
           const qk = [
             isMainTestateMode ? "testate" : "giornalisti",
             String(appState.view || ""),
@@ -13430,6 +16128,7 @@
             safeJoin(selectedTestataTipoMedia),
             safeJoin(selectedTestataFrequenze),
             safeJoin(selectedTestataDiffusioni),
+            shipmentCardsFilterTerm,
           ].join("||");
 
           if (qk !== lastCardsQueryKey) {
@@ -13452,26 +16151,122 @@
           lastRenderedTestateCount = 0;
         }
 
+        const resetCardsGridScaffold = () => {
+          if (!grid) return;
+          if (isSpedisciListaView && shipmentCardsColumn) {
+            const shouldRestoreShipmentFilterFocus =
+              !!shipmentCardsFilterInput &&
+              document.activeElement === shipmentCardsFilterInput;
+            const shipmentFilterSelectionStart =
+              shouldRestoreShipmentFilterFocus
+                ? shipmentCardsFilterInput.selectionStart
+                : null;
+            const shipmentFilterSelectionEnd = shouldRestoreShipmentFilterFocus
+              ? shipmentCardsFilterInput.selectionEnd
+              : null;
+
+            const outerScaffold = [shipmentCardsColumn];
+            if (shipmentEmailHeaderColumn) {
+              outerScaffold.push(shipmentEmailHeaderColumn);
+            }
+            grid.replaceChildren(...outerScaffold);
+
+            const shipmentScaffold = [];
+            if (shipmentSelectedListsChips) {
+              shipmentScaffold.push(shipmentSelectedListsChips);
+            }
+            if (shipmentCardsFilterInput) {
+              shipmentScaffold.push(shipmentCardsFilterInput);
+            }
+            if (cardsLoader) shipmentScaffold.push(cardsLoader);
+            if (loadMoreWrap) shipmentScaffold.push(loadMoreWrap);
+            if (shipmentScaffold.length > 0) {
+              shipmentCardsColumn.replaceChildren(...shipmentScaffold);
+            } else {
+              shipmentCardsColumn.innerHTML = "";
+            }
+
+            if (shouldRestoreShipmentFilterFocus && shipmentCardsFilterInput) {
+              shipmentCardsFilterInput.focus({ preventScroll: true });
+              if (
+                typeof shipmentFilterSelectionStart === "number" &&
+                typeof shipmentFilterSelectionEnd === "number"
+              ) {
+                shipmentCardsFilterInput.setSelectionRange(
+                  shipmentFilterSelectionStart,
+                  shipmentFilterSelectionEnd,
+                );
+              }
+            }
+            return;
+          }
+
+          const scaffold = [];
+          if (cardsLoader) scaffold.push(cardsLoader);
+          if (loadMoreWrap) scaffold.push(loadMoreWrap);
+          if (scaffold.length > 0) {
+            grid.replaceChildren(...scaffold);
+          } else {
+            grid.innerHTML = "";
+          }
+        };
+
         if (shouldClearGrid && grid && cardsLoader) {
           const qkNow = String(lastCardsQueryKey || "");
           if (qkNow && lastLoaderYieldKey !== qkNow) {
             lastLoaderYieldKey = qkNow;
             cardsLoader.style.display = "block";
-            if (loadMoreWrap) {
-              grid.replaceChildren(cardsLoader, loadMoreWrap);
-            } else {
-              grid.replaceChildren(cardsLoader);
-            }
+            resetCardsGridScaffold();
             scheduleRender();
             return;
           }
         }
 
-        if (grid && cardsLoader && cardsLoader.parentElement !== grid) {
-          grid.appendChild(cardsLoader);
+        if (
+          isSpedisciListaView &&
+          cardsHost &&
+          shipmentSelectedListsChips &&
+          shipmentSelectedListsChips.parentElement !== cardsHost
+        ) {
+          cardsHost.appendChild(shipmentSelectedListsChips);
         }
-        if (grid && loadMoreWrap && loadMoreWrap.parentElement !== grid) {
-          grid.appendChild(loadMoreWrap);
+        if (
+          isSpedisciListaView &&
+          cardsHost &&
+          shipmentCardsFilterInput &&
+          shipmentCardsFilterInput.parentElement !== cardsHost
+        ) {
+          cardsHost.appendChild(shipmentCardsFilterInput);
+        }
+        if (
+          cardsHost &&
+          cardsLoader &&
+          cardsLoader.parentElement !== cardsHost
+        ) {
+          cardsHost.appendChild(cardsLoader);
+        }
+        if (
+          cardsHost &&
+          loadMoreWrap &&
+          loadMoreWrap.parentElement !== cardsHost
+        ) {
+          cardsHost.appendChild(loadMoreWrap);
+        }
+        if (
+          isSpedisciListaView &&
+          grid &&
+          shipmentCardsColumn &&
+          shipmentCardsColumn.parentElement !== grid
+        ) {
+          grid.appendChild(shipmentCardsColumn);
+        }
+        if (
+          isSpedisciListaView &&
+          grid &&
+          shipmentEmailHeaderColumn &&
+          shipmentEmailHeaderColumn.parentElement !== grid
+        ) {
+          grid.appendChild(shipmentEmailHeaderColumn);
         }
 
         const myJobId = ++renderCardsJobId;
@@ -13485,7 +16280,7 @@
         }) => {
           const safeStart = Math.max(0, Number(startIndex || 0));
           const safeEnd = Math.max(safeStart, Number(endIndex || 0));
-          if (!grid) return;
+          if (!cardsHost) return;
 
           const firstBatchSize = 15;
           const batchSize = 20;
@@ -13495,10 +16290,10 @@
               const item = items[i];
               if (!item) continue;
               const el = createElement(item);
-              if (loadMoreWrap && loadMoreWrap.parentElement === grid) {
-                grid.insertBefore(el, loadMoreWrap);
+              if (loadMoreWrap && loadMoreWrap.parentElement === cardsHost) {
+                cardsHost.insertBefore(el, loadMoreWrap);
               } else {
-                grid.appendChild(el);
+                cardsHost.appendChild(el);
               }
             }
           };
@@ -13692,57 +16487,130 @@
         }
 
         if (mainTitleEl) {
-          if (isMailingListView && activeList) {
+          if (isSpedisciListaView) {
+            mainTitleEl.textContent =
+              getShipmentHeaderTitle(spedizioneSourceList);
+          } else if (isMailingListView && activeList) {
             mainTitleEl.textContent = activeList.name;
           } else {
             mainTitleEl.textContent = "Banca Dati";
           }
         }
 
+        if (shipmentEmailSubjectInput && isSpedisciListaView) {
+          const subjectValue = getShipmentNameRaw(spedizioneSourceList);
+          if (shipmentEmailSubjectInput.value !== subjectValue) {
+            shipmentEmailSubjectInput.value = subjectValue;
+          }
+        }
+
         if (mainTitleIconEl) {
           mainTitleIconEl.style.display =
-            isMailingListView && activeList ? "inline-block" : "none";
+            (isMailingListView || isSpedisciListaView) && listForView
+              ? "inline-block"
+              : "none";
         }
 
         document.body.classList.toggle(
           "is-mailing-list-view",
           !!(isMailingListView && activeList),
         );
+        document.body.classList.toggle(
+          "is-spedisci-lista-view",
+          !!isSpedisciListaView,
+        );
 
-        if (isMailingListView && activeList) {
+        if ((isMailingListView && activeList) || isSpedisciListaView) {
+          const currentList = isSpedisciListaView
+            ? { journalistIds: Array.from(selectedShipmentJournalistIds) }
+            : activeList;
           if (chooseDatabaseLink) chooseDatabaseLink.style.display = "none";
           if (mailingListActions) mailingListActions.style.display = "flex";
 
-          const count = Array.isArray(activeList.journalistIds)
-            ? activeList.journalistIds.length
-            : 0;
+          if (mailingListRenameLink) {
+            mailingListRenameLink.style.display = isSpedisciListaView
+              ? "none"
+              : "";
+          }
+
+          if (mailingListExportLink) {
+            mailingListExportLink.style.display = isSpedisciListaView
+              ? "none"
+              : "";
+          }
+          if (mailingListDuplicateLink) {
+            mailingListDuplicateLink.style.display = isSpedisciListaView
+              ? "none"
+              : "";
+          }
+          if (mailingListDeleteLink) {
+            mailingListDeleteLink.style.display = isSpedisciListaView
+              ? "none"
+              : "";
+          }
+          if (mailingListSendLink) {
+            mailingListSendLink.style.display = isSpedisciListaView
+              ? "none"
+              : "";
+          }
+
+          const count = isSpedisciListaView
+            ? selectedShipmentJournalistIds.size
+            : Array.isArray(currentList?.journalistIds)
+              ? currentList.journalistIds.length
+              : 0;
           if (mailingListCountPill) {
             mailingListCountPill.textContent = String(count);
-            mailingListCountPill.style.display = "inline-block";
+            mailingListCountPill.style.display = isSpedisciListaView
+              ? "none"
+              : "inline-block";
+          }
+          if (shipmentRecipientsCountPill) {
+            shipmentRecipientsCountPill.textContent = String(count);
+            shipmentRecipientsCountPill.style.display = isSpedisciListaView
+              ? "inline-block"
+              : "none";
           }
 
           if (mailingListCreatedAtSubtitle) {
-            const createdAt = Number(activeList.createdAt || 0);
-            if (Number.isFinite(createdAt) && createdAt > 0) {
-              const stamp = new Date(createdAt).toLocaleDateString("it-IT");
-              const sharedWith = Array.isArray(activeList.sharedWith)
-                ? activeList.sharedWith
-                : [];
-              const n = sharedWith.filter(Boolean).length;
-              const status = n > 0 ? `lista condivisa (${n})` : "lista privata";
-              mailingListCreatedAtSubtitle.innerHTML = `creata il ${stamp} da @ugo <span class="sidebar-mode-separator" aria-hidden="true">&nbsp;•&nbsp;</span> ${status} &nbsp;<a href="#" class="c-link c-link--nav" id="mailingListShareLink">condividi</a>`;
+            if (isSpedisciListaView) {
+              mailingListCreatedAtSubtitle.textContent =
+                "creata il 17/02/2026 da @ugo";
               mailingListCreatedAtSubtitle.style.display = "block";
             } else {
-              mailingListCreatedAtSubtitle.textContent = "";
-              mailingListCreatedAtSubtitle.style.display = "none";
+              const createdAt = Number(currentList?.createdAt || 0);
+              if (Number.isFinite(createdAt) && createdAt > 0) {
+                const stamp = new Date(createdAt).toLocaleDateString("it-IT");
+                const sharedWith = Array.isArray(currentList?.sharedWith)
+                  ? currentList.sharedWith
+                  : [];
+                const n = sharedWith.filter(Boolean).length;
+                const status =
+                  n > 0 ? `lista condivisa (${n})` : "lista privata";
+                mailingListCreatedAtSubtitle.innerHTML = `creata il ${stamp} da @ugo <span class="sidebar-mode-separator" aria-hidden="true">&nbsp;•&nbsp;</span> ${status} &nbsp;<a href="#" class="c-link c-link--nav" id="mailingListShareLink">condividi</a>`;
+                mailingListCreatedAtSubtitle.style.display = "block";
+              } else {
+                mailingListCreatedAtSubtitle.textContent = "";
+                mailingListCreatedAtSubtitle.style.display = "none";
+              }
             }
           }
         } else {
           if (chooseDatabaseLink) chooseDatabaseLink.style.display = "";
           if (mailingListActions) mailingListActions.style.display = "none";
+          if (mailingListRenameLink) mailingListRenameLink.style.display = "";
+          if (mailingListExportLink) mailingListExportLink.style.display = "";
+          if (mailingListDuplicateLink)
+            mailingListDuplicateLink.style.display = "";
+          if (mailingListDeleteLink) mailingListDeleteLink.style.display = "";
+          if (mailingListSendLink) mailingListSendLink.style.display = "";
           if (mailingListCountPill) {
             mailingListCountPill.textContent = "";
             mailingListCountPill.style.display = "none";
+          }
+          if (shipmentRecipientsCountPill) {
+            shipmentRecipientsCountPill.textContent = "0";
+            shipmentRecipientsCountPill.style.display = "none";
           }
           if (mailingListCreatedAtSubtitle) {
             mailingListCreatedAtSubtitle.textContent = "";
@@ -13754,7 +16622,7 @@
           const shareLink = mailingListCreatedAtSubtitle.querySelector(
             "#mailingListShareLink",
           );
-          if (shareLink) {
+          if (shareLink && !isSpedisciListaView) {
             shareLink.addEventListener("click", (e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -13763,15 +16631,76 @@
           }
         }
 
+        if (isSpedisciListaView) {
+          refreshShipmentRecipientsJournalistsDropdownOptions();
+          applyShipmentSelectedRecipientJournalistIds(
+            Array.from(shipmentSelectedRecipientJournalistIds),
+            {
+              syncDropdown: true,
+            },
+          );
+
+          if (
+            shipmentRecipientsJournalistsInput &&
+            document.activeElement !== shipmentRecipientsJournalistsInput
+          ) {
+            shipmentRecipientsJournalistsInput.value = "";
+          }
+
+          const recentLists = getRecentMailingLists();
+          const listOptions = recentLists
+            .map((x) => String(x?.name || "").trim())
+            .filter(Boolean);
+          shipmentListOrder.clear();
+          listOptions.forEach((name, idx) => {
+            shipmentListOrder.set(name, idx);
+          });
+          const nextOptionsKey = listOptions.join("||");
+          if (nextOptionsKey !== lastShipmentListOptionsKey) {
+            shipmentListsDropdownSyncing = true;
+            shipmentRecipientsListsDropdown.setOptions(listOptions);
+            shipmentListsDropdownSyncing = false;
+            lastShipmentListOptionsKey = nextOptionsKey;
+          }
+          applyShipmentSelectedRecipientListIds(
+            Array.from(shipmentSelectedRecipientListIds),
+            {
+              save: false,
+              syncDropdown: true,
+            },
+          );
+
+          if (
+            shipmentRecipientsListsInput &&
+            document.activeElement !== shipmentRecipientsListsInput
+          ) {
+            shipmentRecipientsListsInput.value = "";
+          }
+
+          renderShipmentSelectedListsChips();
+        } else {
+          if (shipmentRecipientsListsDropdown?.isOpen) {
+            shipmentRecipientsListsDropdown.close();
+          }
+          if (shipmentRecipientsJournalistsDropdown?.isOpen) {
+            shipmentRecipientsJournalistsDropdown.close();
+          }
+        }
+
         const baseJournalists = (() => {
-          if (!isMailingListView || !activeList) return journalists;
-          const allowed = new Set(activeList.journalistIds || []);
+          if (isSpedisciListaView && !listForView) {
+            return [];
+          }
+          if (!(isMailingListView || isSpedisciListaView) || !listForView) {
+            return journalists;
+          }
+          const allowed = new Set(listForView.journalistIds || []);
           return journalists.filter((j) => allowed.has(getJournalistId(j)));
         })();
 
         const mailingAllowedJids =
-          isMailingListView && activeList
-            ? new Set(activeList.journalistIds || [])
+          (isMailingListView || isSpedisciListaView) && listForView
+            ? new Set(listForView.journalistIds || [])
             : null;
 
         const matchesTextTerm = (haystack, term) => {
@@ -14088,15 +17017,7 @@
             if (cardsLoader) {
               cardsLoader.style.display = "block";
             }
-            if (loadMoreWrap) {
-              if (cardsLoader) {
-                grid.replaceChildren(cardsLoader, loadMoreWrap);
-              } else {
-                grid.replaceChildren(loadMoreWrap);
-              }
-            } else {
-              grid.innerHTML = "";
-            }
+            resetCardsGridScaffold();
           }
 
           renderIncremental({
@@ -14280,7 +17201,13 @@
           return;
         }
 
-        const filtered = filteredJournalistsForCount;
+        const filtered = (filteredJournalistsForCount || []).filter((j) => {
+          if (!isSpedisciListaView || !shipmentCardsFilterTerm) return true;
+          const fullName = `${j?.nome || ""} ${j?.cognome || ""}`
+            .trim()
+            .toLowerCase();
+          return fullName.includes(shipmentCardsFilterTerm);
+        });
         const sorted = [...filtered].sort((a, b) => {
           if (effectiveSortMode === "relevance") {
             const score = (j) => {
@@ -14378,22 +17305,19 @@
           if (cardsLoader) {
             cardsLoader.style.display = "block";
           }
-          if (loadMoreWrap) {
-            if (cardsLoader) {
-              grid.replaceChildren(cardsLoader, loadMoreWrap);
-            } else {
-              grid.replaceChildren(loadMoreWrap);
-            }
-          } else {
-            grid.innerHTML = "";
-          }
+          resetCardsGridScaffold();
         }
+
+        const shipmentHighlightTerms =
+          isSpedisciListaView && shipmentCardsFilterTerm
+            ? [shipmentCardsFilterTerm]
+            : [];
 
         renderIncremental({
           items: sorted,
           startIndex,
           endIndex,
-          createElement: (j) => createCard(j),
+          createElement: (j) => createCard(j, shipmentHighlightTerms),
           onDone: () => {
             lastRenderedJournalistCount = endIndex;
             requestAnimationFrame(() => {
@@ -14417,8 +17341,8 @@
           .map((j) => String(getJournalistId(j) || "").trim())
           .filter(Boolean);
 
-        if (!active) {
-          subtitleEl.textContent = "";
+        if (isMainTestateMode) {
+          subtitleEl.textContent = `${filteredAndSorted.length} testate`;
         } else {
           subtitleEl.innerHTML = "";
 
@@ -14563,6 +17487,8 @@
 
           subtitleEl.appendChild(bar);
         }
+
+        wasSpedisciListaView = isSpedisciListaView;
       }
 
       const clearAllFilters = () => {
@@ -14665,10 +17591,16 @@
           const checkbox = e.target?.closest?.(".card-select");
           if (checkbox) return;
 
+          const emailSelect = e.target?.closest?.(".card-email-select");
+          if (emailSelect) return;
+
           const removeFromListBtn = e.target?.closest?.(
             ".card-remove-from-list[data-remove-from-list-jid]",
           );
           const notesLink = e.target?.closest?.(".card-notes-open");
+          const customizePressLink = e.target?.closest?.(
+            ".card-customize-press-link",
+          );
           const journalistsLink = e.target?.closest?.(
             ".card-testata-journalists-open",
           );
@@ -14680,6 +17612,7 @@
           if (
             !removeFromListBtn &&
             !notesLink &&
+            !customizePressLink &&
             !journalistsLink &&
             !testateLabelLink &&
             !testataLink &&
@@ -14687,6 +17620,12 @@
           ) {
             const card = e.target?.closest?.(".card");
             if (!card) return;
+            if (appState.view === "spedisci-lista") {
+              const journalistId = String(card?.dataset?.jid || "").trim();
+              if (!journalistId) return;
+              openShipmentEmailHeaderSpotlight(journalistId);
+              return;
+            }
             const checkbox = card.querySelector(".card-select");
             if (!checkbox) return;
             checkbox.checked = !checkbox.checked;
@@ -14728,6 +17667,17 @@
 
             showToast(formatRemovedFromListToast(1));
             scheduleRender();
+            return;
+          }
+
+          if (customizePressLink) {
+            if (customizePressLink.classList.contains("is-link-disabled")) {
+              return;
+            }
+            const card = customizePressLink.closest(".card");
+            const journalistId = String(card?.dataset?.jid || "").trim();
+            if (!journalistId) return;
+            openShipmentEmailHeaderSpotlight(journalistId);
             return;
           }
 
