@@ -1502,17 +1502,13 @@
         </button>
       </div>
       <div class="notes-modal-body">
-        <label class="field-label" for="smartFiltersApiKey"
-          >OpenAI API key</label
+        <label class="field-label" for="smartFiltersComunicatoSelect"
+          >Comunicati Stampa</label
         >
         <div class="dropdown-input">
-          <input
-            type="password"
-            class="chip-text-input"
-            id="smartFiltersApiKey"
-            autocomplete="off"
-            placeholder="sk-..."
-          />
+          <select class="chip-text-input" id="smartFiltersComunicatoSelect">
+            <option value="">seleziona comunicato</option>
+          </select>
         </div>
 
         <label class="field-label" for="smartFiltersText">Testo</label>
@@ -1564,7 +1560,31 @@
           ×
         </button>
       </div>
-      <div class="selected-panel-body"></div>
+      <div class="selected-panel-body">
+        <details class="help-panel-details">
+          <summary>Cosa sono i filtri intelligenti?</summary>
+          <div class="help-panel-video-wrap">
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/2Ib52G8o4SE?si=KCJxXcyFEjcFm1b2"
+              title="YouTube video player"
+              frameborder="0"
+              allow="
+                accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture;
+                web-share;
+              "
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </details>
+      </div>
     </aside>
 
     <div
@@ -1577,9 +1597,19 @@
         <div class="selected-panel-header-left">
           <div class="selected-panel-title-row">
             <span class="selected-panel-title-row-left">
-              <p class="selected-panel-title" id="newPressPanelTitle">
+              <p
+                class="selected-panel-title new-press-panel-title-display"
+                id="newPressPanelTitle"
+              >
                 Nuovo comunicato
               </p>
+              <input
+                type="text"
+                class="new-press-panel-title-input"
+                id="newPressPanelTitleInput"
+                aria-label="Nome comunicato"
+                style="display: none"
+              />
             </span>
             <span
               class="new-press-panel-journalist-tag"
@@ -5761,6 +5791,8 @@
       let activeSpedizioneRef = null;
       let newPressPanelOpenContext = "global";
       let newPressPanelJournalistId = "";
+      let isNewPressPanelTitleEditing = false;
+      let newPressPanelTitleBeforeEdit = "";
       let isShipmentEmailSpotlightOpen = false;
       let shipmentEmailSpotlightPreviousContext = "global";
       let shipmentEmailSpotlightPreviousJournalistId = "";
@@ -6033,14 +6065,118 @@
         return String(record.emailHeader || "");
       }
 
+      function renameComunicatoById(targetId, nextName) {
+        const safeId = String(targetId || "").trim();
+        const rawName = String(nextName || "").trim();
+        if (!safeId || !rawName) return false;
+        if (!Array.isArray(appState.comunicati)) return false;
+
+        let didRename = false;
+        appState.comunicati = appState.comunicati.map((item, i) => {
+          if (typeof item === "string") {
+            const id = String(item || "").trim();
+            if (id !== safeId) return item;
+            didRename = true;
+            return {
+              id: safeId,
+              title: rawName,
+              createdAt: Date.now(),
+              emailHeader: "",
+              bodyText: "",
+              journalistEmailHeaders: {},
+            };
+          }
+          if (!item || typeof item !== "object") return item;
+          const existingLabel = String(
+            item.title || item.name || item.subject || item.oggetto || "",
+          ).trim();
+          const itemId = String(item.id || existingLabel || i).trim();
+          if (itemId !== safeId) return item;
+          didRename = true;
+          return {
+            ...item,
+            id: String(item.id || safeId),
+            title: rawName,
+          };
+        });
+        if (!didRename) return false;
+
+        activeComunicatoId = safeId;
+        saveAppState(appState);
+        setNewPressPanelTitle(rawName);
+        renderShipmentPressOptions();
+        renderDashboardComunicati();
+        if (shipmentPressSelect) {
+          shipmentPressSelect.value = safeId;
+        }
+        updateShipmentSelectedComunicatoReadonly();
+        return true;
+      }
+
       function setNewPressPanelTitle(name) {
         const next = String(name || "").trim() || "Nuovo comunicato";
         if (newPressPanelTitle) {
           newPressPanelTitle.textContent = next;
         }
+        if (newPressPanelTitleInput && !isNewPressPanelTitleEditing) {
+          newPressPanelTitleInput.value = next;
+        }
         if (newPressPanelBodyTitle) {
           newPressPanelBodyTitle.textContent = next;
         }
+      }
+
+      function getActiveComunicatoTargetId() {
+        const byState = String(activeComunicatoId || "").trim();
+        if (byState) return byState;
+        const bySelect = String(shipmentPressSelect?.value || "").trim();
+        return bySelect;
+      }
+
+      function openNewPressPanelTitleInlineEditor() {
+        if (!newPressPanelTitle || !newPressPanelTitleInput) return;
+        const targetId = getActiveComunicatoTargetId();
+        if (!targetId) return;
+
+        const currentName =
+          getComunicatoLabelById(targetId) ||
+          String(newPressPanelTitle.textContent || "").trim() ||
+          "Nuovo comunicato";
+
+        isNewPressPanelTitleEditing = true;
+        newPressPanelTitleBeforeEdit = currentName;
+        newPressPanelTitle.style.display = "none";
+        newPressPanelTitleInput.style.display = "inline-block";
+        newPressPanelTitleInput.value = currentName;
+        newPressPanelTitleInput.focus();
+        try {
+          newPressPanelTitleInput.setSelectionRange(
+            0,
+            String(newPressPanelTitleInput.value || "").length,
+          );
+        } catch (_) {}
+      }
+
+      function closeNewPressPanelTitleInlineEditor({ commit = true } = {}) {
+        if (!newPressPanelTitle || !newPressPanelTitleInput) return;
+        if (!isNewPressPanelTitleEditing) return;
+
+        const targetId = getActiveComunicatoTargetId();
+        const draft = String(newPressPanelTitleInput.value || "").trim();
+        const fallbackName =
+          newPressPanelTitleBeforeEdit ||
+          String(newPressPanelTitle.textContent || "").trim() ||
+          "Nuovo comunicato";
+
+        isNewPressPanelTitleEditing = false;
+        newPressPanelTitleInput.style.display = "none";
+        newPressPanelTitle.style.display = "";
+
+        if (commit && targetId && draft) {
+          if (renameComunicatoById(targetId, draft)) return;
+        }
+
+        setNewPressPanelTitle(fallbackName);
       }
 
       function createNewComunicato() {
@@ -6745,7 +6881,9 @@
       const smartFiltersModalClose = document.getElementById(
         "smartFiltersModalClose",
       );
-      const smartFiltersApiKey = document.getElementById("smartFiltersApiKey");
+      const smartFiltersComunicatoSelect = document.getElementById(
+        "smartFiltersComunicatoSelect",
+      );
       const smartFiltersText = document.getElementById("smartFiltersText");
       const smartFiltersSuggestBtn = document.getElementById(
         "smartFiltersSuggestBtn",
@@ -6767,18 +6905,42 @@
         ).trim();
       }
 
-      function persistOpenAiKeyFromInput() {
-        if (!smartFiltersApiKey) return;
-        const value = String(smartFiltersApiKey.value || "").trim();
-        if (value) {
-          window.localStorage.setItem("openai_api_key", value);
-          window.localStorage.setItem("OPENAI_API_KEY", value);
-        }
+      function getComunicatoBodyTextById(id) {
+        const key = String(id || "").trim();
+        if (!key) return "";
+        const idx = getComunicatoIndexById(key);
+        if (idx < 0 || !Array.isArray(appState.comunicati)) return "";
+        const item = appState.comunicati[idx];
+        if (!item || typeof item !== "object") return "";
+        return String(item.bodyText || "");
       }
 
-      function hydrateOpenAiKeyInput() {
-        if (!smartFiltersApiKey) return;
-        smartFiltersApiKey.value = getStoredOpenAiKey();
+      function renderSmartFiltersComunicatoOptions() {
+        if (!smartFiltersComunicatoSelect) return;
+        const currentValue = String(
+          smartFiltersComunicatoSelect.value || "",
+        ).trim();
+        const items = getComunicatiItems();
+
+        smartFiltersComunicatoSelect.innerHTML =
+          '<option value="">seleziona comunicato</option>';
+
+        items.forEach((item) => {
+          const id = String(item?.id || "").trim();
+          const label = String(item?.label || "").trim();
+          if (!id || !label) return;
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = label;
+          smartFiltersComunicatoSelect.appendChild(option);
+        });
+
+        if (
+          currentValue &&
+          items.some((x) => String(x?.id || "").trim() === currentValue)
+        ) {
+          smartFiltersComunicatoSelect.value = currentValue;
+        }
       }
 
       function setLinkDisabled(link, disabled) {
@@ -6794,7 +6956,7 @@
         smartFiltersModalOverlay.setAttribute("aria-hidden", "false");
         smartFiltersModal.setAttribute("aria-hidden", "false");
 
-        hydrateOpenAiKeyInput();
+        renderSmartFiltersComunicatoOptions();
         updateSmartFiltersModeHint();
         if (smartFiltersText) smartFiltersText.focus();
       }
@@ -7155,7 +7317,6 @@
           try {
             setLinkDisabled(smartFiltersSuggestBtn, true);
             setLinkDisabled(smartFiltersApplyBtn, true);
-            persistOpenAiKeyFromInput();
             smartFiltersLastSuggested = [];
             renderSmartFiltersResults([], { loading: true });
 
@@ -7182,9 +7343,13 @@
         });
       }
 
-      if (smartFiltersApiKey) {
-        smartFiltersApiKey.addEventListener("blur", () => {
-          persistOpenAiKeyFromInput();
+      if (smartFiltersComunicatoSelect) {
+        smartFiltersComunicatoSelect.addEventListener("change", () => {
+          const selectedId = String(
+            smartFiltersComunicatoSelect.value || "",
+          ).trim();
+          if (!smartFiltersText) return;
+          smartFiltersText.value = getComunicatoBodyTextById(selectedId);
         });
       }
 
@@ -9100,6 +9265,9 @@
       const helpPanel = document.getElementById("helpPanel");
       const helpPanelClose = document.getElementById("helpPanelClose");
       const newPressPanelTitle = document.getElementById("newPressPanelTitle");
+      const newPressPanelTitleInput = document.getElementById(
+        "newPressPanelTitleInput",
+      );
       const newPressPanelBodyTitle = document.getElementById(
         "newPressPanelBodyTitle",
       );
@@ -9466,6 +9634,31 @@
           record.bodyText = String(newPressPanelTextarea.value || "");
           saveAppState(appState);
           updateShipmentSelectedComunicatoReadonly();
+        });
+      }
+
+      if (newPressPanelTitle) {
+        newPressPanelTitle.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openNewPressPanelTitleInlineEditor();
+        });
+      }
+
+      if (newPressPanelTitleInput) {
+        newPressPanelTitleInput.addEventListener("blur", () => {
+          closeNewPressPanelTitleInlineEditor({ commit: true });
+        });
+        newPressPanelTitleInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            closeNewPressPanelTitleInlineEditor({ commit: true });
+            return;
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            closeNewPressPanelTitleInlineEditor({ commit: false });
+          }
         });
       }
 
@@ -10140,43 +10333,7 @@
         if (saveListModalMode === "rename-comunicato") {
           const targetId = String(saveListModalTargetId || "").trim();
           if (!targetId) return;
-          if (!Array.isArray(appState.comunicati)) return;
-
-          let didRename = false;
-          appState.comunicati = appState.comunicati.map((item, i) => {
-            if (typeof item === "string") {
-              const id = String(item || "").trim();
-              if (id !== targetId) return item;
-              didRename = true;
-              return {
-                id: targetId,
-                title: rawName,
-                createdAt: Date.now(),
-              };
-            }
-            if (!item || typeof item !== "object") return item;
-            const existingLabel = String(
-              item.title || item.name || item.subject || item.oggetto || "",
-            ).trim();
-            const itemId = String(item.id || existingLabel || i).trim();
-            if (itemId !== targetId) return item;
-            didRename = true;
-            return {
-              ...item,
-              id: String(item.id || targetId),
-              title: rawName,
-            };
-          });
-          if (!didRename) return;
-
-          activeComunicatoId = targetId;
-          saveAppState(appState);
-          setNewPressPanelTitle(rawName);
-          renderShipmentPressOptions();
-          renderDashboardComunicati();
-          if (shipmentPressSelect) {
-            shipmentPressSelect.value = targetId;
-          }
+          if (!renameComunicatoById(targetId, rawName)) return;
 
           closeSaveListModal();
           scheduleRender();
