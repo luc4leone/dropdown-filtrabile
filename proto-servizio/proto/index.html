@@ -792,7 +792,22 @@
                         id="mainTitleIcon"
                         aria-hidden="true"
                       ></span>
-                      <h1 class="main-title" id="mainTitle">Banca Dati</h1>
+                      <span class="sidebar-section-title shipment-title-prefix"
+                        >oggetto</span
+                      >
+                      <h1
+                        class="main-title shipment-title-display"
+                        id="mainTitle"
+                      >
+                        Banca Dati
+                      </h1>
+                      <input
+                        type="text"
+                        class="shipment-title-input"
+                        id="shipmentTitleInput"
+                        aria-label="Nome spedizione"
+                        style="display: none"
+                      />
                     </div>
                     <span
                       class="pill"
@@ -1113,12 +1128,6 @@
                     >
                   </span>
                 </div>
-                <input
-                  type="text"
-                  id="shipmentEmailSubjectInput"
-                  class="shipment-email-subject-input"
-                  placeholder="oggetto"
-                />
                 <textarea
                   id="newPressPanelEmailHeaderTextarea"
                   class="new-press-panel-textarea new-press-panel-textarea--email-header"
@@ -1251,6 +1260,12 @@
               <div class="dashboard-mailing-lists-col">
                 <div class="dashboard-subtitle-row">
                   <div class="main-subtitle dashboard-main-subtitle">liste</div>
+                  <a
+                    href="#"
+                    id="dashboardMailingListsNewLink"
+                    class="dashboard-subtitle-link"
+                    >nuova</a
+                  >
                 </div>
                 <input
                   type="text"
@@ -1409,6 +1424,91 @@
               </div>
             </div>
             <div class="muted">work in progress</div>
+          </main>
+        </div>
+
+        <div
+          class="app-view"
+          data-view="crea-lista-futuro"
+          id="viewCreaListaFuturo"
+        >
+          <main class="main crea-lista-futuro-main">
+            <div class="crea-lista-futuro-split">
+              <section
+                class="crea-lista-futuro-pane crea-lista-futuro-pane--left"
+              >
+                <h1 class="main-title">Crea lista (futuro)</h1>
+
+                <label class="field-label" for="creaListaFuturoApiKey"
+                  >OpenAI API key</label
+                >
+                <div class="dropdown-input">
+                  <input
+                    class="chip-text-input"
+                    id="creaListaFuturoApiKey"
+                    type="password"
+                    autocomplete="off"
+                    placeholder="sk-..."
+                  />
+                </div>
+
+                <label class="field-label" for="creaListaFuturoComunicatoSelect"
+                  >Comunicati Stampa</label
+                >
+                <div class="dropdown-input">
+                  <select
+                    class="chip-text-input"
+                    id="creaListaFuturoComunicatoSelect"
+                  >
+                    <option value="">seleziona comunicato</option>
+                  </select>
+                </div>
+
+                <label class="field-label" for="creaListaFuturoText"
+                  >Testo</label
+                >
+                <div class="dropdown-input">
+                  <textarea
+                    class="chip-text-input smart-filters-textarea"
+                    id="creaListaFuturoText"
+                    autocomplete="off"
+                  ></textarea>
+                </div>
+
+                <div class="smart-filters-actions">
+                  <a
+                    href="#"
+                    class="c-link c-link--action"
+                    id="creaListaFuturoCreateLink"
+                    >crea lista</a
+                  >
+                </div>
+
+                <div
+                  class="smart-filters-results"
+                  id="creaListaFuturoResults"
+                ></div>
+              </section>
+
+              <div
+                class="crea-lista-futuro-separator"
+                role="separator"
+                aria-orientation="vertical"
+              ></div>
+
+              <section
+                class="crea-lista-futuro-pane crea-lista-futuro-pane--right"
+              >
+                <div class="crea-lista-futuro-right-header">
+                  <h2 class="main-subtitle">giornalisti filtrati</h2>
+                  <span class="pill" id="creaListaFuturoCountPill">0</span>
+                </div>
+                <div
+                  class="cards-grid crea-lista-futuro-cards-grid"
+                  id="creaListaFuturoCardsGrid"
+                ></div>
+              </section>
+            </div>
           </main>
         </div>
       </div>
@@ -2020,6 +2120,34 @@
         }
       }
 
+      function renderCreaListaFuturoComunicatoOptions() {
+        if (!creaListaFuturoComunicatoSelect) return;
+        const currentValue = String(
+          creaListaFuturoComunicatoSelect.value || "",
+        ).trim();
+        const items = getComunicatiItems();
+
+        creaListaFuturoComunicatoSelect.innerHTML =
+          '<option value="">seleziona comunicato</option>';
+
+        items.forEach((item) => {
+          const id = String(item?.id || "").trim();
+          const label = String(item?.label || "").trim();
+          if (!id || !label) return;
+          const option = document.createElement("option");
+          option.value = id;
+          option.textContent = label;
+          creaListaFuturoComunicatoSelect.appendChild(option);
+        });
+
+        if (
+          currentValue &&
+          items.some((x) => String(x?.id || "").trim() === currentValue)
+        ) {
+          creaListaFuturoComunicatoSelect.value = currentValue;
+        }
+      }
+
       function saveAppState(state) {
         try {
           localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(state || {}));
@@ -2246,6 +2374,7 @@
       const ENABLED_VIEWS = new Set([
         "filtra",
         "mailing-list",
+        "crea-lista-futuro",
         "dashboard",
         "mailing-lists",
         "spedisci-lista",
@@ -2347,6 +2476,8 @@
 
         if (v === "filtra" || v === "mailing-list" || v === "spedisci-lista") {
           scheduleRender();
+        } else if (v === "crea-lista-futuro") {
+          openCreaListaFuturoView();
         } else if (
           v === "dashboard" ||
           v === "mailing-lists" ||
@@ -5632,6 +5763,7 @@
         "addToNewShipmentError",
       );
       const mainTitleEl = document.getElementById("mainTitle");
+      const shipmentTitleInput = document.getElementById("shipmentTitleInput");
       const mainTitleIconEl = document.getElementById("mainTitleIcon");
       const mailingListCountPill = document.getElementById(
         "mailingListCountPill",
@@ -5672,6 +5804,9 @@
       const dashboardComunicatiFilterInput = document.getElementById(
         "dashboardComunicatiFilterInput",
       );
+      const dashboardMailingListsNewLink = document.getElementById(
+        "dashboardMailingListsNewLink",
+      );
       const dashboardShipmentsNewLink = document.getElementById(
         "dashboardShipmentsNewLink",
       );
@@ -5704,9 +5839,6 @@
       );
       const shipmentEmailHeaderColumn = document.getElementById(
         "shipmentEmailHeaderColumn",
-      );
-      const shipmentEmailSubjectInput = document.getElementById(
-        "shipmentEmailSubjectInput",
       );
       const shipmentAppendComunicatoCheckbox = document.getElementById(
         "shipmentAppendComunicatoCheckbox",
@@ -5789,6 +5921,8 @@
       let saveListModalTargetId = "";
       let activeComunicatoId = "";
       let activeSpedizioneRef = null;
+      let isShipmentTitleEditing = false;
+      let shipmentTitleBeforeEdit = "";
       let newPressPanelOpenContext = "global";
       let newPressPanelJournalistId = "";
       let isNewPressPanelTitleEditing = false;
@@ -6660,18 +6794,81 @@
         );
       }
 
-      function renameActiveShipmentFromSubjectInput(rawName) {
-        const previousName = String(appState.activeSpedizioneName || "").trim();
-        const nextName = String(rawName || "");
+      function renameActiveShipmentName(rawName, currentNameHint = "") {
+        const previousName = String(
+          appState.activeSpedizioneName || currentNameHint || "",
+        ).trim();
+        const nextName = String(rawName || "").trim();
+        if (!nextName) return false;
         const idx = getActiveSpedizioneIndex(previousName);
-        if (idx !== -1) {
-          appState.spedizioni[idx] = {
-            ...appState.spedizioni[idx],
-            name: nextName,
-          };
-          activeSpedizioneRef = appState.spedizioni[idx];
+        if (idx === -1) {
+          appState.activeSpedizioneName = nextName;
+          saveAppState(appState);
+          renderDashboardSpedizioni();
+          return true;
         }
+        appState.spedizioni[idx] = {
+          ...appState.spedizioni[idx],
+          name: nextName,
+        };
+        activeSpedizioneRef = appState.spedizioni[idx];
         appState.activeSpedizioneName = nextName;
+        saveAppState(appState);
+        renderDashboardSpedizioni();
+        return true;
+      }
+
+      function openShipmentTitleInlineEditor() {
+        if (!mainTitleEl || !shipmentTitleInput) return;
+        if (appState.view !== "spedisci-lista") return;
+
+        const currentName = getShipmentNameRaw(getSpedizioneSourceList());
+        isShipmentTitleEditing = true;
+        shipmentTitleBeforeEdit = currentName;
+
+        mainTitleEl.style.display = "none";
+        shipmentTitleInput.style.display = "inline-block";
+        shipmentTitleInput.value = currentName;
+        shipmentTitleInput.focus();
+        try {
+          shipmentTitleInput.setSelectionRange(
+            0,
+            String(shipmentTitleInput.value || "").length,
+          );
+        } catch (_) {}
+      }
+
+      function closeShipmentTitleInlineEditor({ commit = true } = {}) {
+        if (!mainTitleEl || !shipmentTitleInput) return;
+        if (!isShipmentTitleEditing) return;
+
+        const draft = String(shipmentTitleInput.value || "").trim();
+        const fallbackName =
+          shipmentTitleBeforeEdit ||
+          getShipmentNameRaw(getSpedizioneSourceList());
+
+        isShipmentTitleEditing = false;
+        shipmentTitleInput.style.display = "none";
+        mainTitleEl.style.display = "";
+
+        if (commit && draft) {
+          if (renameActiveShipmentName(draft, fallbackName)) {
+            mainTitleEl.textContent = getShipmentHeaderTitle(
+              getSpedizioneSourceList(),
+            );
+            shipmentTitleInput.value = getShipmentNameRaw(
+              getSpedizioneSourceList(),
+            );
+            return;
+          }
+          return;
+        }
+
+        mainTitleEl.textContent = truncateWithEllipsis(
+          fallbackName,
+          SHIPMENT_HEADER_MAX_CHARS,
+        );
+        shipmentTitleInput.value = fallbackName;
       }
 
       let toastHideTimer = 0;
@@ -6894,8 +7091,30 @@
       const smartFiltersResults = document.getElementById(
         "smartFiltersResults",
       );
+      const creaListaFuturoComunicatoSelect = document.getElementById(
+        "creaListaFuturoComunicatoSelect",
+      );
+      const creaListaFuturoApiKeyInput = document.getElementById(
+        "creaListaFuturoApiKey",
+      );
+      const creaListaFuturoText = document.getElementById(
+        "creaListaFuturoText",
+      );
+      const creaListaFuturoCreateLink = document.getElementById(
+        "creaListaFuturoCreateLink",
+      );
+      const creaListaFuturoResults = document.getElementById(
+        "creaListaFuturoResults",
+      );
+      const creaListaFuturoCardsGrid = document.getElementById(
+        "creaListaFuturoCardsGrid",
+      );
+      const creaListaFuturoCountPill = document.getElementById(
+        "creaListaFuturoCountPill",
+      );
 
       let smartFiltersLastSuggested = [];
+      let creaListaFuturoLastSuggested = [];
 
       function getStoredOpenAiKey() {
         return String(
@@ -6903,6 +7122,13 @@
             window.localStorage.getItem("OPENAI_API_KEY") ||
             "",
         ).trim();
+      }
+
+      function setStoredOpenAiKey(nextKey) {
+        const key = String(nextKey || "").trim();
+        if (!key) return;
+        window.localStorage.setItem("openai_api_key", key);
+        window.localStorage.setItem("OPENAI_API_KEY", key);
       }
 
       function getComunicatoBodyTextById(id) {
@@ -7055,9 +7281,179 @@
         }
       }
 
-      async function fetchOpenAiSubjectsFromText(text) {
+      function renderCreaListaFuturoResults(subjects = [], meta = {}) {
+        if (!creaListaFuturoResults) return;
+        const items = Array.isArray(subjects)
+          ? subjects.map((x) => String(x || "").trim()).filter(Boolean)
+          : [];
+        const selectedServices = dropdown
+          ? canonicalizeSubjects(items, dropdown)
+          : [];
+
+        creaListaFuturoResults.innerHTML = "";
+        const title = document.createElement("div");
+        title.className = "smart-filters-results-title";
+        title.textContent = "Suggerimenti";
+        creaListaFuturoResults.appendChild(title);
+
+        if (!items.length) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.textContent = meta?.loading
+            ? "Analisi in corso…"
+            : "Nessun suggerimento";
+          creaListaFuturoResults.appendChild(empty);
+          return;
+        }
+
+        const list = document.createElement("div");
+        list.className = "smart-filters-chip-list";
+        for (const s of items) {
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          const text = document.createElement("span");
+          text.textContent = s;
+          chip.appendChild(text);
+          list.appendChild(chip);
+        }
+        creaListaFuturoResults.appendChild(list);
+
+        const servicesTitle = document.createElement("div");
+        servicesTitle.className = "smart-filters-apply-title";
+        servicesTitle.textContent = "Servizi giornalistici selezionati";
+        creaListaFuturoResults.appendChild(servicesTitle);
+
+        if (!selectedServices.length) {
+          const emptyServices = document.createElement("div");
+          emptyServices.className = "muted";
+          emptyServices.textContent = "Nessun servizio applicabile";
+          creaListaFuturoResults.appendChild(emptyServices);
+          return;
+        }
+
+        const servicesList = document.createElement("div");
+        servicesList.className = "smart-filters-chip-list";
+        for (const service of selectedServices) {
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          const text = document.createElement("span");
+          text.textContent = service;
+          chip.appendChild(text);
+          servicesList.appendChild(chip);
+        }
+        creaListaFuturoResults.appendChild(servicesList);
+      }
+
+      function renderCreaListaFuturoCards(items = [], highlightTerms = []) {
+        if (!creaListaFuturoCardsGrid) return;
+        const safeItems = Array.isArray(items) ? items : [];
+        creaListaFuturoCardsGrid.innerHTML = "";
+
+        if (!safeItems.length) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.textContent = "Nessun giornalista trovato";
+          creaListaFuturoCardsGrid.appendChild(empty);
+        } else {
+          safeItems.forEach((j) => {
+            creaListaFuturoCardsGrid.appendChild(createCard(j, highlightTerms));
+          });
+        }
+
+        if (creaListaFuturoCountPill) {
+          creaListaFuturoCountPill.textContent = String(safeItems.length);
+        }
+      }
+
+      function getCreaListaFuturoFilteredJournalists(subjects = []) {
+        const source = Array.isArray(subjects) ? subjects : [];
+        const serviceCanon = canonicalizeSubjects(source, dropdown);
+
+        const serviceSet = new Set(
+          serviceCanon.map((x) =>
+            String(x || "")
+              .trim()
+              .toLowerCase(),
+          ),
+        );
+
+        if (serviceSet.size === 0) {
+          return [];
+        }
+
+        const out = (Array.isArray(journalists) ? journalists : []).filter(
+          (j) => {
+            const servizio = String(j?.servizio || "")
+              .trim()
+              .toLowerCase();
+            return !!servizio && serviceSet.has(servizio);
+          },
+        );
+
+        return out.sort((a, b) => compareJournalistsByName(a, b));
+      }
+
+      async function createCreaListaFuturo() {
+        if (!creaListaFuturoCreateLink) return;
+        try {
+          setLinkDisabled(creaListaFuturoCreateLink, true);
+          creaListaFuturoLastSuggested = [];
+          renderCreaListaFuturoResults([], { loading: true });
+          renderCreaListaFuturoCards([], []);
+
+          const text = creaListaFuturoText?.value || "";
+          const inputKey = String(
+            creaListaFuturoApiKeyInput?.value || "",
+          ).trim();
+          if (inputKey) {
+            setStoredOpenAiKey(inputKey);
+          }
+
+          const { subjects } = await fetchOpenAiSubjectsFromText(
+            text,
+            inputKey,
+          );
+
+          creaListaFuturoLastSuggested = subjects;
+          renderCreaListaFuturoResults(subjects, { loading: false });
+
+          const filtered = getCreaListaFuturoFilteredJournalists(subjects);
+          renderCreaListaFuturoCards(filtered, subjects);
+        } catch (err) {
+          renderCreaListaFuturoResults([], { loading: false });
+          showToast(String(err?.message || err || "Errore"));
+        } finally {
+          setLinkDisabled(creaListaFuturoCreateLink, false);
+        }
+      }
+
+      function openCreaListaFuturoView() {
+        renderCreaListaFuturoComunicatoOptions();
+        if (creaListaFuturoApiKeyInput) {
+          creaListaFuturoApiKeyInput.value = getStoredOpenAiKey();
+        }
+
+        if (
+          Array.isArray(creaListaFuturoLastSuggested) &&
+          creaListaFuturoLastSuggested.length > 0
+        ) {
+          renderCreaListaFuturoResults(creaListaFuturoLastSuggested, {
+            loading: false,
+          });
+          const filtered = getCreaListaFuturoFilteredJournalists(
+            creaListaFuturoLastSuggested,
+          );
+          renderCreaListaFuturoCards(filtered, creaListaFuturoLastSuggested);
+          return;
+        }
+
+        renderCreaListaFuturoResults([], { loading: false });
+        renderCreaListaFuturoCards([], []);
+      }
+
+      async function fetchOpenAiSubjectsFromText(text, apiKeyOverride = "") {
         const inputText = String(text || "").trim();
-        const key = getStoredOpenAiKey();
+        const key = String(apiKeyOverride || "").trim() || getStoredOpenAiKey();
         if (!inputText) throw new Error("Testo mancante");
         if (!key) {
           throw new Error("API key mancante (localStorage: openai_api_key)");
@@ -7350,6 +7746,32 @@
           ).trim();
           if (!smartFiltersText) return;
           smartFiltersText.value = getComunicatoBodyTextById(selectedId);
+        });
+      }
+
+      if (creaListaFuturoComunicatoSelect) {
+        creaListaFuturoComunicatoSelect.addEventListener("change", () => {
+          const selectedId = String(
+            creaListaFuturoComunicatoSelect.value || "",
+          ).trim();
+          if (!creaListaFuturoText) return;
+          creaListaFuturoText.value = getComunicatoBodyTextById(selectedId);
+        });
+      }
+
+      if (creaListaFuturoCreateLink) {
+        creaListaFuturoCreateLink.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await createCreaListaFuturo();
+        });
+      }
+
+      if (creaListaFuturoApiKeyInput) {
+        creaListaFuturoApiKeyInput.addEventListener("blur", () => {
+          const key = String(creaListaFuturoApiKeyInput.value || "").trim();
+          if (!key) return;
+          setStoredOpenAiKey(key);
         });
       }
 
@@ -8031,10 +8453,13 @@
 
           if (visibleLists.length === 0) {
             const empty = document.createElement("div");
-            empty.className = "muted";
-            empty.textContent = filterTerm
-              ? "Nessuna mailing list trovata"
-              : "Nessuna mailing list salvata";
+            const isSavedEmptyState = !filterTerm;
+            empty.className = isSavedEmptyState
+              ? "muted dashboard-empty-state"
+              : "muted";
+            empty.textContent = isSavedEmptyState
+              ? "Nessuna mailing list salvata"
+              : "Nessuna mailing list trovata";
             targetEl.appendChild(empty);
             return;
           }
@@ -8154,10 +8579,13 @@
 
           if (!visibleShipments.length) {
             const empty = document.createElement("div");
-            empty.className = "muted";
-            empty.textContent = filterTerm
-              ? "Nessuna spedizione trovata"
-              : "Nessuna spedizione salvata";
+            const isSavedEmptyState = !filterTerm;
+            empty.className = isSavedEmptyState
+              ? "muted dashboard-empty-state"
+              : "muted";
+            empty.textContent = isSavedEmptyState
+              ? "Nessuna spedizione salvata"
+              : "Nessuna spedizione trovata";
             targetEl.appendChild(empty);
             return;
           }
@@ -8268,10 +8696,13 @@
           : allItems;
         if (!items.length) {
           const empty = document.createElement("div");
-          empty.className = "muted";
-          empty.textContent = filterTerm
-            ? "Nessun comunicato trovato"
-            : "Nessun comunicato salvato";
+          const isSavedEmptyState = !filterTerm;
+          empty.className = isSavedEmptyState
+            ? "muted dashboard-empty-state"
+            : "muted";
+          empty.textContent = isSavedEmptyState
+            ? "Nessun comunicato salvato"
+            : "Nessun comunicato trovato";
           dashboardComunicatiEl.appendChild(empty);
           return;
         }
@@ -9662,6 +10093,31 @@
         });
       }
 
+      if (mainTitleEl) {
+        mainTitleEl.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openShipmentTitleInlineEditor();
+        });
+      }
+
+      if (shipmentTitleInput) {
+        shipmentTitleInput.addEventListener("blur", () => {
+          closeShipmentTitleInlineEditor({ commit: true });
+        });
+        shipmentTitleInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            closeShipmentTitleInlineEditor({ commit: true });
+            return;
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            closeShipmentTitleInlineEditor({ commit: false });
+          }
+        });
+      }
+
       if (newPressPanelDropzone) {
         let dropzoneDragDepth = 0;
 
@@ -9724,21 +10180,10 @@
         });
       }
 
-      if (shipmentEmailSubjectInput) {
-        shipmentEmailSubjectInput.addEventListener("input", () => {
-          if (appState.view !== "spedisci-lista") return;
-          renameActiveShipmentFromSubjectInput(shipmentEmailSubjectInput.value);
-          saveAppState(appState);
-          if (mainTitleEl) {
-            mainTitleEl.textContent = getShipmentHeaderTitle(
-              getSpedizioneSourceList(),
-            );
-          }
-          renderDashboardSpedizioni();
-        });
-      }
-
       if (shipmentCardsFilterInput) {
+        shipmentCardsFilterInput.addEventListener("focus", () => {
+          closeAllFilterableDropdowns();
+        });
         shipmentCardsFilterInput.addEventListener("input", () => {
           if (appState.view !== "spedisci-lista") return;
           scheduleRender();
@@ -9760,6 +10205,15 @@
       if (dashboardComunicatiFilterInput) {
         dashboardComunicatiFilterInput.addEventListener("input", () => {
           renderDashboardComunicati();
+        });
+      }
+
+      if (dashboardMailingListsNewLink) {
+        dashboardMailingListsNewLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.hash = "#filtra";
+          setActiveView("filtra", { save: true });
         });
       }
 
@@ -16654,10 +17108,14 @@
           }
         }
 
-        if (shipmentEmailSubjectInput && isSpedisciListaView) {
-          const subjectValue = getShipmentNameRaw(spedizioneSourceList);
-          if (shipmentEmailSubjectInput.value !== subjectValue) {
-            shipmentEmailSubjectInput.value = subjectValue;
+        if (shipmentTitleInput) {
+          if (isSpedisciListaView) {
+            if (!isShipmentTitleEditing) {
+              shipmentTitleInput.value =
+                getShipmentNameRaw(spedizioneSourceList);
+            }
+          } else {
+            closeShipmentTitleInlineEditor({ commit: false });
           }
         }
 

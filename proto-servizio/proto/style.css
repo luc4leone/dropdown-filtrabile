@@ -603,8 +603,89 @@ body.is-spedisci-lista-view
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  padding-left: 20px;
   padding-right: 0;
+}
+
+#viewCreaListaFuturo .crea-lista-futuro-main {
+  display: flex;
+  min-height: 0;
+  padding: 20px;
+}
+
+.crea-lista-futuro-split {
+  display: grid;
+  grid-template-columns: minmax(300px, 420px) 1px minmax(0, 1fr);
+  width: 100%;
+  min-height: 0;
+}
+
+.crea-lista-futuro-pane {
+  min-height: 0;
+}
+
+.crea-lista-futuro-pane--left {
+  padding-right: 20px;
+  overflow-y: auto;
+}
+
+.crea-lista-futuro-pane--left .main-title {
+  margin-bottom: 12px;
+}
+
+.crea-lista-futuro-pane--left .field-label {
+  margin-top: 14px;
+}
+
+.crea-lista-futuro-pane--left .field-label:first-of-type {
+  margin-top: 0;
+}
+
+.crea-lista-futuro-separator {
+  width: 1px;
+  background: var(--grey-200);
+}
+
+.crea-lista-futuro-pane--right {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.crea-lista-futuro-right-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.crea-lista-futuro-cards-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start;
+  padding-right: 8px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 980px) {
+  .crea-lista-futuro-split {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 16px;
+  }
+
+  .crea-lista-futuro-separator {
+    display: none;
+  }
+
+  .crea-lista-futuro-pane--left {
+    padding-right: 0;
+  }
+
+  .crea-lista-futuro-pane--right {
+    padding-left: 0;
+  }
 }
 
 #viewFiltra .main-header {
@@ -805,7 +886,7 @@ body.is-spedisci-lista-view .main-title-icon {
 .main-title-with-icon {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -1660,6 +1741,10 @@ body.is-spedisci-lista-view .card-email-inline-wrap .card-email-select {
 
 .muted {
   color: var(--grey-750);
+}
+
+.dashboard-empty-state {
+  font-style: italic;
 }
 
 .c-text {
@@ -3543,6 +3628,43 @@ body.is-shipment-email-spotlight #newPressPanelEmailHeaderTextarea {
   background: var(--white);
   color: var(--grey-900);
   font-size: var(--fs-base);
+  font-weight: 800;
+  padding: 4px 8px;
+}
+
+body.is-spedisci-lista-view .shipment-title-display {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-xs);
+  cursor: text;
+}
+
+body.is-spedisci-lista-view .shipment-title-display:hover {
+  background: var(--grey-100);
+}
+
+.shipment-title-prefix {
+  display: none;
+  margin: 0 0px 0px 8px;
+  font-size: var(--fs-14);
+}
+
+body.is-spedisci-lista-view .shipment-title-prefix {
+  display: inline-block;
+}
+
+.shipment-title-input {
+  min-width: min(420px, calc(100vw - 220px));
+  max-width: 100%;
+  height: 30px;
+  box-sizing: border-box;
+  border: 1px solid var(--grey-200);
+  border-radius: var(--border-radius-xs);
+  background: var(--white);
+  color: var(--grey-900);
+  font-size: var(--fs-2xl);
   font-weight: 800;
   padding: 4px 8px;
 }

@@ -3,13 +3,20 @@
 ## _todo_
 - [ ] *suggerimenti AI*
 - [ ] *disegnare Account*
-- [ ] *mobile view*
-- [ ] *filtro sede giornalista*
-- [ ] *nuove statistiche proposte per dashboard*
 - [ ] *scheda giornalista da "ok" a "aggiungi"*
+- [ ] *mobile view*
 
 ## _in progress_
-- [ ] *completa scheda testata*
+- [ ] *nuove statistiche proposte per dashboard*
+- [ ] *filtro sede giornalista*
+
+## 23 febbraio 2026
+- [x] in proto-servizio/proto/index.html#crea-lista-futuro ho creato proof of concept del futuro  "crea lista"
+- [x] spedizione
+- [x] comunicato
+
+## 10-22 febbraio 2026
+- [x] completa scheda testata
 
 ## 9 febbraio 2026
 - [ ] applicare stessa logica di troncatura nome giornalista in selezionati e scheda
