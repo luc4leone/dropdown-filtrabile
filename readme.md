@@ -5,6 +5,9 @@
 - [ ] *disegnare Account*
 - [ ] *scheda giornalista da "ok" a "aggiungi"*
 - [ ] *mobile view*
+- [ ] *feedback test: alcuni testi sono poco leggibili*
+- [ ] *feedback test: con autosave testo non ho feedback se il cs è stato salvato*
+- [ ] *feedback test: table view gradita come opzione a card view*
 
 ## _in progress_
 - [ ] *nuove statistiche proposte per dashboard*

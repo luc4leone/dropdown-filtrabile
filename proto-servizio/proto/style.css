@@ -108,6 +108,16 @@ body {
   min-width: 0;
 }
 
+/*
+  Fallback pre-boot view:
+  when JS has not set body[data-active-view] yet, keep main content visible
+  to avoid blank page perception during long hard-refresh bootstrap.
+*/
+body:not([data-active-view]) .app-view[data-view="filtra"] {
+  display: flex;
+  min-height: 0;
+}
+
 .app-view.is-active {
   display: flex;
   min-height: 0;
@@ -826,6 +836,10 @@ body.is-spedisci-lista-view #cardsSubtitle {
   display: none !important;
 }
 
+body.is-spedisci-lista-view #chooseDatabaseLink {
+  display: none !important;
+}
+
 body.is-spedisci-lista-view .bulk-sort-controls-row {
   display: none !important;
 }
@@ -835,6 +849,7 @@ body.is-spedisci-lista-view #mainMode {
 }
 
 body.is-spedisci-lista-view .main-title-icon {
+  display: inline-block;
   -webkit-mask: url("icons/send.svg") no-repeat center / contain;
   mask: url("icons/send.svg") no-repeat center / contain;
 }
@@ -1286,28 +1301,37 @@ body.is-spedisci-lista-view #viewFiltra #shipmentEmailHeaderColumn {
 body.is-spedisci-lista-view
   #viewFiltra
   #shipmentEmailHeaderColumn
-  .new-press-panel-textarea--email-header {
-  flex: 0 0 auto;
-  height: auto;
-  min-height: calc(1em + 20px);
-  border: none;
+  .shipment-email-rich-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
   border-radius: var(--border-radius-xs);
   background: var(--grey-100);
-  resize: none;
-  overflow: hidden;
 }
 
 body.is-spedisci-lista-view
   #viewFiltra
   #shipmentEmailHeaderColumn
-  .new-press-panel-textarea--email-header:focus,
+  .shipment-email-rich-editor.is-focused,
 body.is-spedisci-lista-view
   #viewFiltra
   #shipmentEmailHeaderColumn
-  .new-press-panel-textarea--email-header:focus-visible {
+  .shipment-email-rich-editor:focus-within {
+  box-shadow: inset 0 0 0 1px var(--grey-300);
+}
+
+body.is-spedisci-lista-view
+  #viewFiltra
+  #shipmentEmailHeaderColumn
+  .shipment-email-rich-editor-content:focus,
+body.is-spedisci-lista-view
+  #viewFiltra
+  #shipmentEmailHeaderColumn
+  .shipment-email-rich-editor-content:focus-visible {
   outline: none;
   box-shadow: none;
-  background: var(--grey-100);
+  background: var(--white);
 }
 
 .shipment-email-subject-input,
@@ -1407,10 +1431,123 @@ body.is-spedisci-lista-view
   body.is-spedisci-lista-view
     #viewFiltra
     #shipmentEmailHeaderColumn
-    .new-press-panel-textarea--email-header {
+    .shipment-email-rich-editor {
     flex: 1 1 auto;
-    height: auto;
   }
+}
+
+.shipment-email-rich-editor-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.shipment-email-rich-editor-btn {
+  appearance: none;
+  border: 1px solid var(--grey-250);
+  background: var(--white);
+  color: var(--grey-800);
+  border-radius: var(--border-radius-xs);
+  font-size: var(--fs-sm);
+  line-height: 1;
+  min-height: 28px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.shipment-email-rich-editor-btn:hover {
+  border-color: var(--grey-400);
+}
+
+.shipment-email-rich-editor-btn.is-active {
+  background: var(--grey-200);
+  border-color: var(--grey-400);
+}
+
+.shipment-email-rich-editor-btn--size.is-active {
+  background: var(--grey-200);
+  border-color: var(--grey-400);
+}
+
+.shipment-email-rich-editor-divider {
+  color: var(--grey-500);
+  margin: 0 2px;
+}
+
+.shipment-email-font-size-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shipment-email-rich-editor-btn--size {
+  min-width: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.shipment-email-color-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shipment-email-rich-editor-color-input {
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0;
+  border: 1px solid var(--grey-300);
+  border-radius: 999px;
+  background: var(--white);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.shipment-email-rich-editor-color-input::-webkit-color-swatch-wrapper {
+  padding: 3px;
+  border-radius: 999px;
+}
+
+.shipment-email-rich-editor-color-input::-webkit-color-swatch {
+  border: 0;
+  border-radius: 999px;
+}
+
+.shipment-email-rich-editor-color-input::-moz-color-swatch {
+  border: 0;
+  border-radius: 999px;
+}
+
+.shipment-email-rich-editor-content {
+  flex: 0 0 auto;
+  min-height: 88px;
+  height: auto;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-xs);
+  background: var(--white);
+  overflow: hidden;
+  resize: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.shipment-email-rich-editor-content[contenteditable="false"] {
+  background: var(--grey-080);
+  color: var(--grey-600);
+  cursor: not-allowed;
+}
+
+.shipment-email-rich-editor-content:empty::before {
+  content: attr(data-placeholder);
+  color: var(--grey-500);
+  pointer-events: none;
 }
 
 .card {
@@ -1482,6 +1619,20 @@ body[data-active-view="filtra"] .card-remove-from-list {
   display: inline-block;
   white-space: nowrap;
   font-size: 2em;
+}
+
+.cards-loader-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  color: var(--grey-850);
+}
+
+.cards-loader-placeholder .c-blink-loader {
+  font-size: 1.25rem;
+  font-weight: var(--fw-600);
+  letter-spacing: 0.02em;
 }
 
 .c-blink-loader__cursor {

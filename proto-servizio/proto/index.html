@@ -4,18 +4,73 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>M__</title>
+    <script>
+      window.__APP_EARLY_BOOT_MS = performance.now();
+      (function applyPreBootViewClass() {
+        try {
+          const rawHash = String(window.location.hash || "")
+            .trim()
+            .toLowerCase();
+          const view = rawHash.startsWith("#") ? rawHash.slice(1) : "";
+          const className =
+            view === "spedisci-lista"
+              ? "is-spedisci-lista-view"
+              : view === "mailing-list"
+                ? "is-mailing-list-view"
+                : "";
+          if (!className) return;
+
+          const applyToBody = () => {
+            if (!document.body) return false;
+            document.body.classList.add(className);
+            return true;
+          };
+
+          if (applyToBody()) return;
+          const tick = () => {
+            if (applyToBody()) return;
+            if (typeof requestAnimationFrame === "function") {
+              requestAnimationFrame(tick);
+              return;
+            }
+            setTimeout(tick, 16);
+          };
+          tick();
+        } catch (e) {
+          // no-op: preboot classing is best-effort only
+        }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
     />
     <link
       href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet"
+      />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
     <link rel="stylesheet" href="tokens.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -801,6 +856,37 @@
                       >
                         Banca Dati
                       </h1>
+                      <script>
+                        (function prebootShipmentTitleHydration() {
+                          try {
+                            const rawHash = String(window.location.hash || "")
+                              .trim()
+                              .toLowerCase();
+                            const view = rawHash.startsWith("#")
+                              ? rawHash.slice(1)
+                              : "";
+                            if (view !== "spedisci-lista") return;
+
+                            const rawState = localStorage.getItem(
+                              "proto-servizio-app-state-v1",
+                            );
+                            if (!rawState) return;
+
+                            const parsedState = JSON.parse(rawState);
+                            const activeName = String(
+                              parsedState?.activeSpedizioneName || "",
+                            ).trim();
+                            if (!activeName) return;
+
+                            const titleEl =
+                              document.getElementById("mainTitle");
+                            if (!titleEl) return;
+                            titleEl.textContent = activeName;
+                          } catch (e) {
+                            // no-op: preboot hydration is best-effort only
+                          }
+                        })();
+                      </script>
                       <input
                         type="text"
                         class="shipment-title-input"
@@ -1073,7 +1159,7 @@
                 />
                 <div
                   id="cardsLoader"
-                  class="muted"
+                  class="cards-loader-placeholder"
                   style="display: block; text-align: center; padding: 10px 0"
                 >
                   <span class="c-blink-loader" aria-label="caricamento">
@@ -1114,25 +1200,194 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-disabled="true"
-                      >link</a
-                    >
-                    <span class="shipment-comunicato-share-text"
-                      >a comunicato</span
+                      >link a comunicato</a
                     >
                     <a
                       href="#"
                       class="c-link c-link--action shipment-comunicato-link shipment-comunicato-link--copy"
                       id="shipmentComunicatoCopyLink"
+                      aria-label="copia link a comunicato"
                       aria-disabled="true"
-                      >copia</a
-                    >
+                      ><img
+                        src="icons/copy.svg"
+                        alt=""
+                        aria-hidden="true"
+                        width="14"
+                        height="14"
+                    /></a>
                   </span>
                 </div>
-                <textarea
-                  id="newPressPanelEmailHeaderTextarea"
-                  class="new-press-panel-textarea new-press-panel-textarea--email-header"
-                  placeholder="intestazione email"
-                ></textarea>
+                <div
+                  id="newPressPanelEmailHeaderEditorShell"
+                  class="shipment-email-rich-editor"
+                >
+                  <div
+                    class="shipment-email-rich-editor-toolbar"
+                    id="shipmentEmailEditorToolbar"
+                    role="toolbar"
+                    aria-label="formattazione email"
+                  >
+                    <button
+                      type="button"
+                      class="shipment-email-rich-editor-btn"
+                      data-editor-command="bold"
+                      aria-label="grassetto"
+                      aria-pressed="false"
+                    >
+                      B
+                    </button>
+                    <button
+                      type="button"
+                      class="shipment-email-rich-editor-btn"
+                      data-editor-command="italic"
+                      aria-label="corsivo"
+                      aria-pressed="false"
+                    >
+                      I
+                    </button>
+                    <button
+                      type="button"
+                      class="shipment-email-rich-editor-btn"
+                      data-editor-command="underline"
+                      aria-label="sottolineato"
+                      aria-pressed="false"
+                    >
+                      U
+                    </button>
+                    <button
+                      type="button"
+                      class="shipment-email-rich-editor-btn"
+                      data-editor-command="insertUnorderedList"
+                      aria-label="elenco puntato"
+                      aria-pressed="false"
+                    >
+                      • lista
+                    </button>
+                    <button
+                      type="button"
+                      class="shipment-email-rich-editor-btn"
+                      data-editor-command="insertOrderedList"
+                      aria-label="elenco numerato"
+                      aria-pressed="false"
+                    >
+                      1. lista
+                    </button>
+                    <span
+                      class="shipment-email-rich-editor-divider"
+                      aria-hidden="true"
+                      >|</span
+                    >
+                    <button
+                      type="button"
+                      class="shipment-email-rich-editor-btn"
+                      data-editor-command="justifyLeft"
+                      aria-label="allinea a sinistra"
+                      aria-pressed="false"
+                    >
+                      <img
+                        src="icons/align_horizontal_left.svg"
+                        alt=""
+                        aria-hidden="true"
+                        width="16"
+                        height="16"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      class="shipment-email-rich-editor-btn"
+                      data-editor-command="justifyCenter"
+                      aria-label="allinea al centro"
+                      aria-pressed="false"
+                    >
+                      <img
+                        src="icons/align_horizontal_center.svg"
+                        alt=""
+                        aria-hidden="true"
+                        width="16"
+                        height="16"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      class="shipment-email-rich-editor-btn"
+                      data-editor-command="justifyRight"
+                      aria-label="allinea a destra"
+                      aria-pressed="false"
+                    >
+                      <img
+                        src="icons/align_horizontal_right.svg"
+                        alt=""
+                        aria-hidden="true"
+                        width="16"
+                        height="16"
+                      />
+                    </button>
+                    <span
+                      class="shipment-email-rich-editor-divider"
+                      aria-hidden="true"
+                      >|</span
+                    >
+                    <div
+                      class="shipment-email-font-size-group"
+                      role="group"
+                      aria-label="dimensione testo"
+                    >
+                      <button
+                        type="button"
+                        class="shipment-email-rich-editor-btn shipment-email-rich-editor-btn--size"
+                        data-editor-font-size="s"
+                        aria-label="testo piccolo"
+                        aria-pressed="false"
+                      >
+                        S
+                      </button>
+                      <button
+                        type="button"
+                        class="shipment-email-rich-editor-btn shipment-email-rich-editor-btn--size"
+                        data-editor-font-size="m"
+                        aria-label="testo medio"
+                        aria-pressed="true"
+                      >
+                        M
+                      </button>
+                      <button
+                        type="button"
+                        class="shipment-email-rich-editor-btn shipment-email-rich-editor-btn--size"
+                        data-editor-font-size="l"
+                        aria-label="testo grande"
+                        aria-pressed="false"
+                      >
+                        L
+                      </button>
+                    </div>
+                    <span
+                      class="shipment-email-rich-editor-divider"
+                      aria-hidden="true"
+                      >|</span
+                    >
+                    <div
+                      class="shipment-email-color-group"
+                      role="group"
+                      aria-label="colore testo"
+                    >
+                      <input
+                        type="color"
+                        id="shipmentEmailEditorColorInput"
+                        class="shipment-email-rich-editor-color-input"
+                        value="#1f2937"
+                        aria-label="scegli colore testo"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    id="newPressPanelEmailHeaderEditor"
+                    class="new-press-panel-textarea new-press-panel-textarea--email-header shipment-email-rich-editor-content"
+                    contenteditable="true"
+                    role="textbox"
+                    aria-label="intestazione email"
+                    aria-multiline="true"
+                  ></div>
+                </div>
                 <section
                   class="shipment-selected-comunicato"
                   id="shipmentSelectedComunicatoWrap"
@@ -1404,7 +1659,7 @@
             <div class="account-settings">
               <label class="account-setting" for="showHelpCheckbox">
                 <input
-                  type="checkbox"
+                  type="copdkbox"
                   class="dropdown-checkbox"
                   id="showHelpCheckbox"
                   checked
@@ -2157,6 +2412,67 @@
       }
 
       const appState = loadAppState();
+      const DEV_PERF_ENABLED = (() => {
+        const host = String(window.location.hostname || "").toLowerCase();
+        const params = new URLSearchParams(window.location.search || "");
+        if (params.get("perf") === "1") return true;
+        return (
+          window.location.protocol === "file:" ||
+          host === "localhost" ||
+          host === "127.0.0.1"
+        );
+      })();
+      const APP_BOOT_START_MS = performance.now();
+      const logDevPerf = (label, extra = {}) => {
+        if (!DEV_PERF_ENABLED) return;
+        const elapsed = (performance.now() - APP_BOOT_START_MS).toFixed(1);
+        console.info(`[perf][boot] ${label} ${elapsed}ms`, extra);
+      };
+      if (
+        DEV_PERF_ENABLED &&
+        typeof window.__APP_EARLY_BOOT_MS === "number" &&
+        Number.isFinite(window.__APP_EARLY_BOOT_MS)
+      ) {
+        const preBootstrapElapsed = (
+          APP_BOOT_START_MS - window.__APP_EARLY_BOOT_MS
+        ).toFixed(1);
+        console.info(`[perf][boot] pre-bootstrap ${preBootstrapElapsed}ms`, {
+          fromHeadMarker: true,
+        });
+      }
+      const BOOT_REQUESTED_VIEW = (() => {
+        const rawHash = String(window.location.hash || "").trim();
+        const hashView = rawHash.startsWith("#")
+          ? rawHash.slice(1).trim().toLowerCase()
+          : "";
+        const stateView = String(appState?.view || "")
+          .trim()
+          .toLowerCase();
+        return hashView || stateView || "filtra";
+      })();
+      const SHOULD_DEFER_FILTERS_INIT =
+        BOOT_REQUESTED_VIEW === "spedisci-lista";
+      let __didDeferredFiltersInit = !SHOULD_DEFER_FILTERS_INIT;
+
+      function maybeInitDeferredFiltersForView(viewId) {
+        if (__didDeferredFiltersInit) return;
+        const v = normalizeViewId(viewId || appState.view);
+        if (v !== "filtra" && v !== "mailing-list") return;
+        __didDeferredFiltersInit = true;
+        if (DEV_PERF_ENABLED) {
+          logDevPerf("filters-init-on-view-enter", { view: v });
+        }
+        __initFiltersDataIfAvailable()
+          .then(() => {
+            if (typeof __applySubjectsToDropdowns === "function") {
+              __applySubjectsToDropdowns();
+            }
+            scheduleRender();
+          })
+          .catch((e) => {
+            console.warn("filters-data init failed", String(e));
+          });
+      }
 
       if (typeof appState.activeMailingListId !== "string") {
         appState.activeMailingListId = "";
@@ -2473,6 +2789,8 @@
         if (v !== "spedisci-lista") {
           closeNewPressPanel();
         }
+
+        maybeInitDeferredFiltersForView(v);
 
         if (v === "filtra" || v === "mailing-list" || v === "spedisci-lista") {
           scheduleRender();
@@ -4789,8 +5107,9 @@
       }
 
       async function __loadJsonArray(url) {
+        const t0 = DEV_PERF_ENABLED ? performance.now() : 0;
         try {
-          const res = await fetch(url, { cache: "no-store" });
+          const res = await fetch(url, { cache: "force-cache" });
           if (!res.ok) {
             console.warn("filters-data fetch not ok", {
               url,
@@ -4806,9 +5125,22 @@
             });
             return null;
           }
+          if (DEV_PERF_ENABLED) {
+            const elapsed = (performance.now() - t0).toFixed(1);
+            console.info(`[perf][boot] fetch ${url} ${elapsed}ms`, {
+              items: parsed.length,
+            });
+          }
           return parsed;
         } catch (e) {
-          console.warn("filters-data fetch failed", { url, error: String(e) });
+          console.warn("filters-data fetch failed", {
+            url,
+            error: String(e),
+          });
+          if (DEV_PERF_ENABLED) {
+            const elapsed = (performance.now() - t0).toFixed(1);
+            console.info(`[perf][boot] fetch-failed ${url} ${elapsed}ms`);
+          }
           return null;
         }
       }
@@ -5181,165 +5513,214 @@
         roleDropdown.updateAutocompleteHint("");
       }
 
+      let __filtersDataInitPromise = null;
       async function __initFiltersDataIfAvailable() {
-        const needsSubjects = !__subjectsIndex;
-        const needsStaff = !__staffPositionsIndex;
-        const needsMedia = !__mediaTypesIndex;
-        const needsFreq = !__frequenciesIndex;
-        const needsCov = !__coveragesIndex;
+        if (__filtersDataInitPromise) return __filtersDataInitPromise;
 
-        if (
-          !needsSubjects &&
-          !needsStaff &&
-          !needsMedia &&
-          !needsFreq &&
-          !needsCov
-        ) {
-          __applySubjectsToDropdowns();
-          __applyStaffPositionsToRoleDropdown();
+        const initStart = DEV_PERF_ENABLED ? performance.now() : 0;
+        __filtersDataInitPromise = (async () => {
+          const needsSubjects = !__subjectsIndex;
+          const needsStaff = !__staffPositionsIndex;
+          const needsMedia = !__mediaTypesIndex;
+          const needsFreq = !__frequenciesIndex;
+          const needsCov = !__coveragesIndex;
+
+          if (
+            !needsSubjects &&
+            !needsStaff &&
+            !needsMedia &&
+            !needsFreq &&
+            !needsCov
+          ) {
+            __applySubjectsToDropdowns();
+            __applyStaffPositionsToRoleDropdown();
+            if (typeof __applyTestataMetaDropdownsIfReady === "function") {
+              __applyTestataMetaDropdownsIfReady();
+            }
+            if (DEV_PERF_ENABLED) {
+              const elapsed = (performance.now() - initStart).toFixed(1);
+              console.info(`[perf][boot] filters-init-skip ${elapsed}ms`);
+            }
+            return;
+          }
+
+          const [subjectsArr, staffArr, mediaArr, freqArr, covArr] =
+            await Promise.all([
+              needsSubjects
+                ? __loadJsonArray("./filters-data/subjects.json")
+                : null,
+              needsStaff
+                ? __loadJsonArray("./filters-data/staff-positions.json")
+                : null,
+              needsMedia
+                ? __loadJsonArray("./filters-data/media-types.json")
+                : null,
+              needsFreq
+                ? __loadJsonArray("./filters-data/frequencies.json")
+                : null,
+              needsCov
+                ? __loadJsonArray("./filters-data/coverages.json")
+                : null,
+            ]);
+
+          if (needsSubjects && !subjectsArr) {
+            console.warn("subjects json not loaded");
+          }
+          if (needsStaff && !staffArr) {
+            console.warn("staff positions json not loaded");
+          }
+
+          if (needsSubjects && subjectsArr) {
+            try {
+              __subjectsIndex = __buildSubjectsIndex(subjectsArr);
+            } catch (e) {
+              console.warn("subjects index build failed", String(e));
+            }
+          }
+          if (needsStaff && staffArr) {
+            try {
+              __staffPositionsIndex = __buildStaffPositionsIndex(staffArr);
+            } catch (e) {
+              console.warn("staff positions index build failed", String(e));
+            }
+          }
+
+          if (needsMedia && mediaArr) {
+            try {
+              __mediaTypesIndex = __buildMediaTypesIndex(mediaArr);
+            } catch (e) {
+              console.warn("media types index build failed", String(e));
+            }
+          }
+          if (needsFreq && freqArr) {
+            try {
+              __frequenciesIndex = __buildSimpleValueIndex(freqArr);
+            } catch (e) {
+              console.warn("frequencies index build failed", String(e));
+            }
+          }
+          if (needsCov && covArr) {
+            try {
+              __coveragesIndex = __buildSimpleValueIndex(covArr);
+            } catch (e) {
+              console.warn("coverages index build failed", String(e));
+            }
+          }
+
+          let didMapHumanLabels = false;
+          try {
+            didMapHumanLabels = __applyHumanLabelsToJournalists();
+          } catch (e) {
+            console.warn("apply human labels failed", String(e));
+          }
+
+          if (Array.isArray(window.__PROTO_DATA__?.testate)) {
+            if (typeof __applyArgomentoToTestate === "function") {
+              try {
+                __applyArgomentoToTestate(window.__PROTO_DATA__.testate);
+              } catch (e) {
+                console.warn("apply argomento to testate failed", String(e));
+              }
+            }
+            if (typeof __applyTestataMetaLabelsToTestate === "function") {
+              try {
+                __applyTestataMetaLabelsToTestate(
+                  window.__PROTO_DATA__.testate,
+                );
+              } catch (e) {
+                console.warn("apply testata meta labels failed", String(e));
+              }
+            }
+          }
+
+          try {
+            __applySubjectsToDropdowns();
+          } catch (e) {
+            console.warn("apply subjects to dropdowns failed", String(e));
+          }
+          try {
+            __applyStaffPositionsToRoleDropdown();
+          } catch (e) {
+            console.warn(
+              "apply staff positions to role dropdown failed",
+              String(e),
+            );
+          }
           if (typeof __applyTestataMetaDropdownsIfReady === "function") {
-            __applyTestataMetaDropdownsIfReady();
-          }
-          return;
-        }
-
-        const [subjectsArr, staffArr, mediaArr, freqArr, covArr] =
-          await Promise.all([
-            needsSubjects
-              ? __loadJsonArray("./filters-data/subjects.json")
-              : null,
-            needsStaff
-              ? __loadJsonArray("./filters-data/staff-positions.json")
-              : null,
-            needsMedia
-              ? __loadJsonArray("./filters-data/media-types.json")
-              : null,
-            needsFreq
-              ? __loadJsonArray("./filters-data/frequencies.json")
-              : null,
-            needsCov ? __loadJsonArray("./filters-data/coverages.json") : null,
-          ]);
-
-        if (needsSubjects && !subjectsArr) {
-          console.warn("subjects json not loaded");
-        }
-        if (needsStaff && !staffArr) {
-          console.warn("staff positions json not loaded");
-        }
-
-        if (needsSubjects && subjectsArr) {
-          try {
-            __subjectsIndex = __buildSubjectsIndex(subjectsArr);
-          } catch (e) {
-            console.warn("subjects index build failed", String(e));
-          }
-        }
-        if (needsStaff && staffArr) {
-          try {
-            __staffPositionsIndex = __buildStaffPositionsIndex(staffArr);
-          } catch (e) {
-            console.warn("staff positions index build failed", String(e));
-          }
-        }
-
-        if (needsMedia && mediaArr) {
-          try {
-            __mediaTypesIndex = __buildMediaTypesIndex(mediaArr);
-          } catch (e) {
-            console.warn("media types index build failed", String(e));
-          }
-        }
-        if (needsFreq && freqArr) {
-          try {
-            __frequenciesIndex = __buildSimpleValueIndex(freqArr);
-          } catch (e) {
-            console.warn("frequencies index build failed", String(e));
-          }
-        }
-        if (needsCov && covArr) {
-          try {
-            __coveragesIndex = __buildSimpleValueIndex(covArr);
-          } catch (e) {
-            console.warn("coverages index build failed", String(e));
-          }
-        }
-
-        let didMapHumanLabels = false;
-        try {
-          didMapHumanLabels = __applyHumanLabelsToJournalists();
-        } catch (e) {
-          console.warn("apply human labels failed", String(e));
-        }
-
-        if (Array.isArray(window.__PROTO_DATA__?.testate)) {
-          if (typeof __applyArgomentoToTestate === "function") {
             try {
-              __applyArgomentoToTestate(window.__PROTO_DATA__.testate);
+              __applyTestataMetaDropdownsIfReady();
             } catch (e) {
-              console.warn("apply argomento to testate failed", String(e));
+              console.warn("apply testata meta dropdowns failed", String(e));
             }
           }
-          if (typeof __applyTestataMetaLabelsToTestate === "function") {
-            try {
-              __applyTestataMetaLabelsToTestate(window.__PROTO_DATA__.testate);
-            } catch (e) {
-              console.warn("apply testata meta labels failed", String(e));
-            }
+
+          if (didMapHumanLabels) {
+            lastCardsQueryKey = "";
+            lastRenderedMode = "";
+            lastRenderedJournalistCount = 0;
+            lastRenderedTestateCount = 0;
+            visibleJournalistLimit = CARD_PAGE_SIZE;
+            visibleTestateLimit = CARD_PAGE_SIZE;
           }
-        }
 
-        try {
-          __applySubjectsToDropdowns();
-        } catch (e) {
-          console.warn("apply subjects to dropdowns failed", String(e));
-        }
-        try {
-          __applyStaffPositionsToRoleDropdown();
-        } catch (e) {
-          console.warn(
-            "apply staff positions to role dropdown failed",
-            String(e),
-          );
-        }
-        if (typeof __applyTestataMetaDropdownsIfReady === "function") {
-          try {
-            __applyTestataMetaDropdownsIfReady();
-          } catch (e) {
-            console.warn("apply testata meta dropdowns failed", String(e));
+          if (!__subjectsIndex) {
+            console.warn("subjects index not available");
           }
+          if (!__staffPositionsIndex) {
+            console.warn("staff positions index not available");
+          }
+
+          let sampleSvc = "";
+          let sampleRole = "";
+          for (const j of journalists || []) {
+            const s = String(j?.servizio || "").trim();
+            const r = String(j?.ruolo || "").trim();
+            if (!sampleSvc && s.startsWith("subject:")) sampleSvc = s;
+            if (!sampleRole && r.startsWith("staff_position:")) sampleRole = r;
+            if (sampleSvc && sampleRole) break;
+          }
+          if (sampleSvc || sampleRole) {
+            console.warn("human labels not fully applied", {
+              sampleServizio: sampleSvc,
+              sampleRuolo: sampleRole,
+            });
+          }
+
+          if (DEV_PERF_ENABLED) {
+            const elapsed = (performance.now() - initStart).toFixed(1);
+            console.info(`[perf][boot] filters-init-done ${elapsed}ms`, {
+              loaded: {
+                subjects: !!subjectsArr,
+                staff: !!staffArr,
+                media: !!mediaArr,
+                freq: !!freqArr,
+                cov: !!covArr,
+              },
+            });
+          }
+        })();
+
+        return __filtersDataInitPromise;
+      }
+
+      let __filtersInitBootstrapPromise = null;
+      function __initFiltersDataForBootstrap() {
+        if (__filtersInitBootstrapPromise) return __filtersInitBootstrapPromise;
+
+        if (!SHOULD_DEFER_FILTERS_INIT) {
+          __filtersInitBootstrapPromise = __initFiltersDataIfAvailable();
+          return __filtersInitBootstrapPromise;
         }
 
-        if (didMapHumanLabels) {
-          lastCardsQueryKey = "";
-          lastRenderedMode = "";
-          lastRenderedJournalistCount = 0;
-          lastRenderedTestateCount = 0;
-          visibleJournalistLimit = CARD_PAGE_SIZE;
-          visibleTestateLimit = CARD_PAGE_SIZE;
-        }
-
-        if (!__subjectsIndex) {
-          console.warn("subjects index not available");
-        }
-        if (!__staffPositionsIndex) {
-          console.warn("staff positions index not available");
-        }
-
-        let sampleSvc = "";
-        let sampleRole = "";
-        for (const j of journalists || []) {
-          const s = String(j?.servizio || "").trim();
-          const r = String(j?.ruolo || "").trim();
-          if (!sampleSvc && s.startsWith("subject:")) sampleSvc = s;
-          if (!sampleRole && r.startsWith("staff_position:")) sampleRole = r;
-          if (sampleSvc && sampleRole) break;
-        }
-        if (sampleSvc || sampleRole) {
-          console.warn("human labels not fully applied", {
-            sampleServizio: sampleSvc,
-            sampleRuolo: sampleRole,
+        if (DEV_PERF_ENABLED) {
+          logDevPerf("filters-init-deferred", {
+            initialBootView: BOOT_REQUESTED_VIEW,
           });
         }
+
+        __filtersInitBootstrapPromise = Promise.resolve(null);
+
+        return __filtersInitBootstrapPromise;
       }
 
       if (Array.isArray(__generated?.journalists)) {
@@ -5348,8 +5729,9 @@
           journalists.push(j);
         }
 
-        __initFiltersDataIfAvailable()
+        __initFiltersDataForBootstrap()
           .then(() => {
+            if (SHOULD_DEFER_FILTERS_INIT) return;
             if (!__subjectsIndex && !__staffPositionsIndex) {
               const uniq = (arr) => {
                 const out = [];
@@ -5410,17 +5792,32 @@
               }
             }
 
-            scheduleRender();
+            const shouldRerenderAfterFilters =
+              appState.view === "filtra" || appState.view === "mailing-list";
+            if (shouldRerenderAfterFilters) {
+              scheduleRender();
+            }
           })
           .catch((e) => {
             console.warn("filters-data init failed", String(e));
-            scheduleRender();
+            const shouldRerenderAfterFilters =
+              appState.view === "filtra" || appState.view === "mailing-list";
+            if (shouldRerenderAfterFilters) {
+              scheduleRender();
+            }
           });
       }
 
-      let testate = buildTestateFromJournalists(journalists);
-      if (Array.isArray(__generated?.testate)) {
-        testate = __generated.testate;
+      const buildTestateStart = DEV_PERF_ENABLED ? performance.now() : 0;
+      let testate = Array.isArray(__generated?.testate)
+        ? __generated.testate
+        : buildTestateFromJournalists(journalists);
+      if (DEV_PERF_ENABLED) {
+        const elapsed = (performance.now() - buildTestateStart).toFixed(1);
+        console.info(`[perf][boot] build-testate ${elapsed}ms`, {
+          journalists: Array.isArray(journalists) ? journalists.length : 0,
+          testate: Array.isArray(testate) ? testate.length : 0,
+        });
       }
 
       const redazioniCentrali = buildRedazioniCentraliFromTestate(testate);
@@ -5471,8 +5868,9 @@
       );
       testataArgomentoDropdown.updateAutocompleteHint("");
 
-      __initFiltersDataIfAvailable()
+      __initFiltersDataForBootstrap()
         .then(() => {
+          if (SHOULD_DEFER_FILTERS_INIT) return;
           __applySubjectsToDropdowns(testataArgomentoDropdown);
         })
         .catch((e) => {
@@ -5673,7 +6071,9 @@
       );
       testataDiffusioneDropdown.updateAutocompleteHint("");
 
-      __initFiltersDataIfAvailable().catch(() => {});
+      if (!SHOULD_DEFER_FILTERS_INIT) {
+        __initFiltersDataForBootstrap().catch(() => {});
+      }
 
       const selectedJournalistIds = new Set();
       const selectedJournalistOrder = [];
@@ -5938,11 +6338,14 @@
       let shipmentSelectedRecipientJournalistIds = new Set();
       const shipmentJournalistOptionToId = new Map();
       const shipmentJournalistIdToOption = new Map();
+      let shipmentEmailInlineFontSize = "m";
+      let shipmentEmailInlineTextColor = "#1f2937";
       const shipmentListOrder = new Map();
       let lastShipmentListOptionsKey = "";
       let lastShipmentJournalistOptionsKey = "";
       let lastShipmentJournalistsSourceRef = null;
       let lastShipmentJournalistsSourceLen = -1;
+      let shipmentJournalistsDropdownNeedsRefresh = true;
 
       const textFilterInput = document.getElementById("textFilterInput");
       const textFilterClear = document.getElementById("textFilterClearLink");
@@ -6002,6 +6405,13 @@
         const lastName = String(j?.cognome || "").trim();
         const full = `${firstName} ${lastName}`.trim();
         return { full, firstName, lastName };
+      }
+
+      function normalizeShipmentEmailFontSize(rawSize) {
+        const value = String(rawSize || "")
+          .trim()
+          .toLowerCase();
+        return value === "s" || value === "l" || value === "m" ? value : "m";
       }
 
       let selectedNameLayoutRaf = 0;
@@ -6587,6 +6997,7 @@
       }
 
       function refreshShipmentRecipientsJournalistsDropdownOptions() {
+        const perfStart = DEV_PERF_ENABLED ? performance.now() : 0;
         const source = Array.isArray(journalists) ? journalists : [];
         if (
           source === lastShipmentJournalistsSourceRef &&
@@ -6640,6 +7051,37 @@
 
         lastShipmentJournalistsSourceRef = source;
         lastShipmentJournalistsSourceLen = source.length;
+        if (DEV_PERF_ENABLED) {
+          const elapsed = (performance.now() - perfStart).toFixed(1);
+          console.info(
+            `[perf][spedizione] journalists-dropdown-options ${elapsed}ms`,
+            { options: journalistOptionEntries.length },
+          );
+        }
+      }
+
+      function ensureShipmentRecipientsJournalistsDropdownFresh({
+        syncSelection = true,
+      } = {}) {
+        const source = Array.isArray(journalists) ? journalists : [];
+        if (
+          source !== lastShipmentJournalistsSourceRef ||
+          source.length !== lastShipmentJournalistsSourceLen
+        ) {
+          shipmentJournalistsDropdownNeedsRefresh = true;
+        }
+        if (!shipmentJournalistsDropdownNeedsRefresh) return false;
+        refreshShipmentRecipientsJournalistsDropdownOptions();
+        shipmentJournalistsDropdownNeedsRefresh = false;
+        if (syncSelection) {
+          applyShipmentSelectedRecipientJournalistIds(
+            Array.from(shipmentSelectedRecipientJournalistIds),
+            {
+              syncDropdown: true,
+            },
+          );
+        }
+        return true;
       }
 
       function syncShipmentPrimaryListInState() {
@@ -6691,13 +7133,25 @@
         ids = [],
         options = {},
       ) {
-        const { syncDropdown = true } = options;
+        const { syncDropdown = true, save = false } = options;
         const next = new Set(
           (Array.isArray(ids) ? ids : [])
             .map((id) => String(id || "").trim())
             .filter(Boolean),
         );
         shipmentSelectedRecipientJournalistIds = next;
+
+        if (save) {
+          const idx = getActiveSpedizioneIndex();
+          if (idx !== -1 && Array.isArray(appState.spedizioni)) {
+            const shipment = appState.spedizioni[idx];
+            if (shipment && typeof shipment === "object") {
+              shipment.journalistIds = Array.from(next);
+              activeSpedizioneRef = shipment;
+            }
+          }
+          saveAppState(appState);
+        }
 
         if (syncDropdown && shipmentRecipientsJournalistsDropdown) {
           shipmentJournalistsDropdownSyncing = true;
@@ -7009,9 +7463,18 @@
 
         applyShipmentSelectedRecipientJournalistIds(ids, {
           syncDropdown: false,
+          save: true,
         });
         scheduleRender();
       };
+
+      if (shipmentRecipientsJournalistsInput) {
+        shipmentRecipientsJournalistsInput.addEventListener("focus", () => {
+          ensureShipmentRecipientsJournalistsDropdownFresh({
+            syncSelection: true,
+          });
+        });
+      }
 
       const shipmentRecipientsListsDropdown = new FilterableDropdown(
         "shipmentRecipientsListsInput",
@@ -8010,6 +8473,39 @@
         return !!String(shipmentPressSelect?.value || "").trim();
       }
 
+      function getShipmentSelectedComunicatoBodyText(selectedId) {
+        const safeId = String(selectedId || "").trim();
+        if (!safeId) return "";
+        const idx = getComunicatoIndexById(safeId);
+        if (idx < 0 || !Array.isArray(appState.comunicati)) return "";
+        const item = appState.comunicati[idx];
+        if (!item || typeof item !== "object") return "";
+        return String(item.bodyText || "");
+      }
+
+      function appendSelectedComunicatoToShipmentEmailEditor() {
+        const selectedId = String(shipmentPressSelect?.value || "").trim();
+        if (!selectedId) return;
+
+        const comunicatoBodyText =
+          getShipmentSelectedComunicatoBodyText(selectedId);
+        if (!String(comunicatoBodyText || "").trim()) return;
+
+        if (!newPressPanelEmailHeaderEditor) return;
+
+        const currentHtml = getShipmentEmailEditorHtml();
+        const appendixHtml =
+          coerceShipmentEmailHeaderToHtml(comunicatoBodyText);
+        const nextHtml = currentHtml
+          ? `${currentHtml}<br><br>${appendixHtml}`
+          : appendixHtml;
+
+        setShipmentEmailEditorHtml(nextHtml);
+        newPressPanelEmailHeaderEditor.dispatchEvent(new Event("input"));
+        autoSizeShipmentEmailTextarea();
+        updateShipmentEmailToolbarState();
+      }
+
       function updateShipmentSelectedComunicatoReadonly() {
         if (
           !shipmentSelectedComunicatoWrap ||
@@ -8018,46 +8514,12 @@
           return;
         }
 
-        const shouldAppendComunicato =
-          !!shipmentAppendComunicatoCheckbox?.checked;
-        if (!shouldAppendComunicato) {
-          shipmentSelectedComunicatoWrap.style.display = "none";
-          shipmentSelectedComunicatoText.textContent = "";
-          if (shipmentSelectedComunicatoTitle) {
-            shipmentSelectedComunicatoTitle.textContent =
-              "Comunicato selezionato";
-          }
-          return;
-        }
-
-        const selectedId = String(shipmentPressSelect?.value || "").trim();
-        if (!selectedId) {
-          shipmentSelectedComunicatoWrap.style.display = "none";
-          shipmentSelectedComunicatoText.textContent = "";
-          if (shipmentSelectedComunicatoTitle) {
-            shipmentSelectedComunicatoTitle.textContent =
-              "Comunicato selezionato";
-          }
-          return;
-        }
-
-        let bodyText = "";
-        const idx = getComunicatoIndexById(selectedId);
-        if (idx >= 0 && Array.isArray(appState.comunicati)) {
-          const item = appState.comunicati[idx];
-          if (item && typeof item === "object") {
-            bodyText = String(item.bodyText || "");
-          }
-        }
-
-        const selectedLabel = getComunicatoLabelById(selectedId);
+        shipmentSelectedComunicatoWrap.style.display = "none";
+        shipmentSelectedComunicatoText.textContent = "";
         if (shipmentSelectedComunicatoTitle) {
-          shipmentSelectedComunicatoTitle.textContent = selectedLabel
-            ? `Comunicato selezionato · ${selectedLabel}`
-            : "Comunicato selezionato";
+          shipmentSelectedComunicatoTitle.textContent =
+            "Comunicato selezionato";
         }
-        shipmentSelectedComunicatoText.textContent = bodyText;
-        shipmentSelectedComunicatoWrap.style.display = "flex";
       }
 
       function getShipmentSelectedComunicatoPublicUrl() {
@@ -9710,8 +10172,17 @@
       const newPressPanelJournalistTag = document.getElementById(
         "newPressPanelJournalistTag",
       );
-      const newPressPanelEmailHeaderTextarea = document.getElementById(
-        "newPressPanelEmailHeaderTextarea",
+      const newPressPanelEmailHeaderEditorShell = document.getElementById(
+        "newPressPanelEmailHeaderEditorShell",
+      );
+      const newPressPanelEmailHeaderEditor = document.getElementById(
+        "newPressPanelEmailHeaderEditor",
+      );
+      const shipmentEmailEditorToolbar = document.getElementById(
+        "shipmentEmailEditorToolbar",
+      );
+      const shipmentEmailEditorColorInput = document.getElementById(
+        "shipmentEmailEditorColorInput",
       );
       const newPressPanelTextarea = document.getElementById(
         "newPressPanelTextarea",
@@ -9752,9 +10223,188 @@
         document.body.classList.remove("help-panel-open");
       }
 
+      function escapeShipmentEmailHtml(raw) {
+        return String(raw || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function coerceShipmentEmailHeaderToHtml(rawValue) {
+        const value = String(rawValue || "");
+        if (!value.trim()) return "";
+        const looksLikeHtml = /<\/?[a-z][\s\S]*>/i.test(value);
+        if (looksLikeHtml) return value;
+        return escapeShipmentEmailHtml(value).replace(/\r?\n/g, "<br>");
+      }
+
+      function normalizeShipmentEmailEditorHtml(rawHtml) {
+        const root = document.createElement("div");
+        root.innerHTML = String(rawHtml || "");
+
+        root.querySelectorAll("script, style").forEach((el) => el.remove());
+        root.querySelectorAll("*").forEach((el) => {
+          Array.from(el.attributes).forEach((attr) => {
+            const name = String(attr.name || "").toLowerCase();
+            const value = String(attr.value || "")
+              .trim()
+              .toLowerCase();
+            if (name.startsWith("on")) {
+              el.removeAttribute(attr.name);
+              return;
+            }
+            if (
+              (name === "href" || name === "src") &&
+              value.startsWith("javascript:")
+            ) {
+              el.removeAttribute(attr.name);
+            }
+          });
+        });
+
+        const text = String(root.textContent || "")
+          .replace(/\u00a0/g, " ")
+          .trim();
+        if (
+          !text &&
+          !root.querySelector("img, table, ul, ol, li, blockquote")
+        ) {
+          return "";
+        }
+        return String(root.innerHTML || "").trim();
+      }
+
+      function setShipmentEmailEditorHtml(rawValue) {
+        if (!newPressPanelEmailHeaderEditor) return;
+        const coerced = coerceShipmentEmailHeaderToHtml(rawValue);
+        newPressPanelEmailHeaderEditor.innerHTML = coerced;
+      }
+
+      function getShipmentEmailLegacyFontSizeValue(rawSize) {
+        const size = normalizeShipmentEmailFontSize(rawSize);
+        if (size === "s") return "2";
+        if (size === "l") return "4";
+        return "3";
+      }
+
+      function normalizeShipmentEmailTextColor(rawColor) {
+        const value = String(rawColor || "")
+          .trim()
+          .toLowerCase();
+        if (!value) return "#1f2937";
+        if (/^#[0-9a-f]{6}$/i.test(value)) return value;
+        return "#1f2937";
+      }
+
+      function getShipmentEmailExactFontSizePx(rawSize) {
+        const size = normalizeShipmentEmailFontSize(rawSize);
+        if (size === "s") return "12px";
+        if (size === "l") return "21px";
+        return "16px";
+      }
+
+      function applyShipmentEmailInlineFontSize(rawSize) {
+        if (!newPressPanelEmailHeaderEditor) return "m";
+        const size = normalizeShipmentEmailFontSize(rawSize);
+        const legacySize = getShipmentEmailLegacyFontSizeValue(size);
+        const targetPx = getShipmentEmailExactFontSizePx(size);
+
+        newPressPanelEmailHeaderEditor.focus({ preventScroll: true });
+        if (typeof document.execCommand === "function") {
+          document.execCommand("fontSize", false, legacySize);
+        }
+
+        newPressPanelEmailHeaderEditor
+          .querySelectorAll(`font[size="${legacySize}"]`)
+          .forEach((node) => {
+            const span = document.createElement("span");
+            span.style.fontSize = targetPx;
+            span.innerHTML = node.innerHTML;
+            node.replaceWith(span);
+          });
+
+        shipmentEmailInlineFontSize = size;
+        return size;
+      }
+
+      function applyShipmentEmailInlineTextColor(rawColor) {
+        if (!newPressPanelEmailHeaderEditor) return "#1f2937";
+        const color = normalizeShipmentEmailTextColor(rawColor);
+        newPressPanelEmailHeaderEditor.focus({ preventScroll: true });
+        if (typeof document.execCommand === "function") {
+          document.execCommand("foreColor", false, color);
+        }
+        shipmentEmailInlineTextColor = color;
+        return color;
+      }
+
+      function updateShipmentEmailToolbarState() {
+        if (!shipmentEmailEditorToolbar || !newPressPanelEmailHeaderEditor)
+          return;
+
+        const hasEditorFocus =
+          document.activeElement === newPressPanelEmailHeaderEditor ||
+          newPressPanelEmailHeaderEditor.contains(document.activeElement);
+
+        shipmentEmailEditorToolbar
+          .querySelectorAll("[data-editor-command]")
+          .forEach((btn) => {
+            const command = String(btn.dataset.editorCommand || "").trim();
+            const isActive =
+              !!command &&
+              hasEditorFocus &&
+              typeof document.queryCommandState === "function" &&
+              !!document.queryCommandState(command);
+            btn.classList.toggle("is-active", isActive);
+            btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+          });
+
+        const currentSize = normalizeShipmentEmailFontSize(
+          shipmentEmailInlineFontSize,
+        );
+        shipmentEmailEditorToolbar
+          .querySelectorAll("[data-editor-font-size]")
+          .forEach((btn) => {
+            const size = normalizeShipmentEmailFontSize(
+              btn.dataset.editorFontSize,
+            );
+            const isActive = size === currentSize;
+            btn.classList.toggle("is-active", isActive);
+            btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+          });
+
+        const currentColor = normalizeShipmentEmailTextColor(
+          shipmentEmailInlineTextColor,
+        );
+        if (shipmentEmailEditorColorInput) {
+          shipmentEmailEditorColorInput.value = currentColor;
+        }
+      }
+
+      function getShipmentEmailEditorHtml() {
+        if (!newPressPanelEmailHeaderEditor) return "";
+        return normalizeShipmentEmailEditorHtml(
+          newPressPanelEmailHeaderEditor.innerHTML,
+        );
+      }
+
+      function focusShipmentEmailEditorAtEnd() {
+        if (!newPressPanelEmailHeaderEditor) return;
+        newPressPanelEmailHeaderEditor.focus({ preventScroll: true });
+        const selection = window.getSelection();
+        if (!selection) return;
+        const range = document.createRange();
+        range.selectNodeContents(newPressPanelEmailHeaderEditor);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+
       function autoSizeShipmentEmailTextarea() {
-        if (!newPressPanelEmailHeaderTextarea) return;
-        const el = newPressPanelEmailHeaderTextarea;
+        if (!newPressPanelEmailHeaderEditor) return;
+        const el = newPressPanelEmailHeaderEditor;
         el.style.height = "auto";
         const cs = window.getComputedStyle(el);
         const lineHeight =
@@ -9773,7 +10423,7 @@
       function updateShipmentEmailSpotlightMask() {
         if (
           !isShipmentEmailSpotlightOpen ||
-          !newPressPanelEmailHeaderTextarea ||
+          !newPressPanelEmailHeaderEditorShell ||
           !shipmentEmailSpotlightTop ||
           !shipmentEmailSpotlightLeft ||
           !shipmentEmailSpotlightRight ||
@@ -9782,7 +10432,8 @@
           return;
         }
 
-        const rect = newPressPanelEmailHeaderTextarea.getBoundingClientRect();
+        const rect =
+          newPressPanelEmailHeaderEditorShell.getBoundingClientRect();
         const viewportWidth = Math.max(0, window.innerWidth || 0);
         const viewportHeight = Math.max(0, window.innerHeight || 0);
 
@@ -9821,7 +10472,7 @@
 
       function openShipmentEmailHeaderSpotlight(journalistId) {
         const jid = String(journalistId || "").trim();
-        if (!jid || !newPressPanelEmailHeaderTextarea) return;
+        if (!jid || !newPressPanelEmailHeaderEditor) return;
 
         const selectedId = String(shipmentPressSelect?.value || "").trim();
         if (!selectedId) return;
@@ -9841,8 +10492,10 @@
         newPressPanelJournalistId = jid;
 
         const emailHeaderValue = getComunicatoDisplayEmailHeader(record, jid);
-        newPressPanelEmailHeaderTextarea.value = emailHeaderValue;
-        newPressPanelEmailHeaderTextarea.disabled = false;
+        setShipmentEmailEditorHtml(emailHeaderValue);
+        shipmentEmailInlineFontSize = "m";
+        shipmentEmailInlineTextColor = "#1f2937";
+        newPressPanelEmailHeaderEditor.setAttribute("contenteditable", "true");
         autoSizeShipmentEmailTextarea();
 
         isShipmentEmailSpotlightOpen = true;
@@ -9854,14 +10507,8 @@
 
         requestAnimationFrame(() => {
           updateShipmentEmailSpotlightMask();
-          newPressPanelEmailHeaderTextarea.focus({ preventScroll: true });
-          const valueLength = String(
-            newPressPanelEmailHeaderTextarea.value || "",
-          ).length;
-          newPressPanelEmailHeaderTextarea.setSelectionRange(
-            valueLength,
-            valueLength,
-          );
+          focusShipmentEmailEditorAtEnd();
+          updateShipmentEmailToolbarState();
         });
       }
 
@@ -9886,15 +10533,19 @@
         shipmentEmailSpotlightPreviousContext = "global";
         shipmentEmailSpotlightPreviousJournalistId = "";
 
-        if (!newPressPanelEmailHeaderTextarea) return;
+        if (!newPressPanelEmailHeaderEditor) return;
         const record = ensureComunicatoRecord(activeComunicatoId);
         if (!record) return;
 
         const jid =
           newPressPanelOpenContext === "card" ? newPressPanelJournalistId : "";
-        newPressPanelEmailHeaderTextarea.value =
-          getComunicatoDisplayEmailHeader(record, jid);
+        setShipmentEmailEditorHtml(
+          getComunicatoDisplayEmailHeader(record, jid),
+        );
+        shipmentEmailInlineFontSize = "m";
+        shipmentEmailInlineTextColor = "#1f2937";
         autoSizeShipmentEmailTextarea();
+        updateShipmentEmailToolbarState();
       }
 
       function openNewPressPanel(options = {}) {
@@ -9919,10 +10570,16 @@
         );
         const bodyTextValue = String(record?.bodyText || "");
 
-        if (newPressPanelEmailHeaderTextarea) {
-          newPressPanelEmailHeaderTextarea.value = emailHeaderValue;
-          newPressPanelEmailHeaderTextarea.disabled = false;
+        if (newPressPanelEmailHeaderEditor) {
+          setShipmentEmailEditorHtml(emailHeaderValue);
+          shipmentEmailInlineFontSize = "m";
+          shipmentEmailInlineTextColor = "#1f2937";
+          newPressPanelEmailHeaderEditor.setAttribute(
+            "contenteditable",
+            "true",
+          );
           autoSizeShipmentEmailTextarea();
+          updateShipmentEmailToolbarState();
         }
 
         if (newPressPanelTextarea) {
@@ -10030,12 +10687,12 @@
         });
       }
 
-      if (newPressPanelEmailHeaderTextarea) {
-        newPressPanelEmailHeaderTextarea.addEventListener("input", () => {
+      if (newPressPanelEmailHeaderEditor) {
+        newPressPanelEmailHeaderEditor.addEventListener("input", () => {
           autoSizeShipmentEmailTextarea();
           const record = ensureComunicatoRecord(activeComunicatoId);
           if (!record) return;
-          const value = String(newPressPanelEmailHeaderTextarea.value || "");
+          const value = getShipmentEmailEditorHtml();
           if (newPressPanelOpenContext === "card") {
             const jid = String(newPressPanelJournalistId || "").trim();
             if (!jid) return;
@@ -10047,14 +10704,122 @@
             }
             record.journalistEmailHeaders[jid] = value;
             saveAppState(appState);
+            updateShipmentEmailToolbarState();
             return;
           }
 
           record.emailHeader = value;
           saveAppState(appState);
+          updateShipmentEmailToolbarState();
         });
 
+        newPressPanelEmailHeaderEditor.addEventListener("paste", (event) => {
+          const e = event;
+          const pastedPlainText = String(
+            e?.clipboardData?.getData("text/plain") || "",
+          );
+          if (!pastedPlainText) return;
+          event.preventDefault();
+          document.execCommand("insertText", false, pastedPlainText);
+        });
+
+        newPressPanelEmailHeaderEditor.addEventListener("focus", () => {
+          if (newPressPanelEmailHeaderEditorShell) {
+            newPressPanelEmailHeaderEditorShell.classList.add("is-focused");
+          }
+          updateShipmentEmailToolbarState();
+        });
+
+        newPressPanelEmailHeaderEditor.addEventListener("blur", () => {
+          if (newPressPanelEmailHeaderEditorShell) {
+            newPressPanelEmailHeaderEditorShell.classList.remove("is-focused");
+          }
+          requestAnimationFrame(updateShipmentEmailToolbarState);
+        });
+
+        ["mouseup", "keyup"].forEach((eventName) => {
+          newPressPanelEmailHeaderEditor.addEventListener(eventName, () => {
+            updateShipmentEmailToolbarState();
+          });
+        });
+
+        document.addEventListener("selectionchange", () => {
+          const selection = window.getSelection();
+          const anchorNode = selection?.anchorNode;
+          if (!anchorNode) return;
+          if (
+            anchorNode === newPressPanelEmailHeaderEditor ||
+            newPressPanelEmailHeaderEditor.contains(anchorNode)
+          ) {
+            updateShipmentEmailToolbarState();
+          }
+        });
+
+        if (shipmentEmailEditorToolbar) {
+          const runShipmentToolbarAction = (trigger) => {
+            if (!trigger) return;
+            const command = String(trigger.dataset.editorCommand || "").trim();
+            const fontSize = String(
+              trigger.dataset.editorFontSize || "",
+            ).trim();
+            newPressPanelEmailHeaderEditor.focus({ preventScroll: true });
+
+            if (command) {
+              document.execCommand(command, false, null);
+              newPressPanelEmailHeaderEditor.dispatchEvent(new Event("input"));
+              updateShipmentEmailToolbarState();
+              return;
+            }
+
+            if (fontSize) {
+              applyShipmentEmailInlineFontSize(fontSize);
+              newPressPanelEmailHeaderEditor.dispatchEvent(new Event("input"));
+              autoSizeShipmentEmailTextarea();
+              updateShipmentEmailToolbarState();
+            }
+          };
+
+          shipmentEmailEditorToolbar.addEventListener("mousedown", (event) => {
+            const trigger = event.target?.closest?.(
+              "[data-editor-command], [data-editor-font-size]",
+            );
+            if (!trigger) return;
+            event.preventDefault();
+            runShipmentToolbarAction(trigger);
+          });
+
+          shipmentEmailEditorToolbar.addEventListener("click", (event) => {
+            const trigger = event.target?.closest?.(
+              "[data-editor-command], [data-editor-font-size]",
+            );
+            if (!trigger) return;
+            if (event.detail !== 0) return;
+            event.preventDefault();
+            runShipmentToolbarAction(trigger);
+          });
+        }
+
+        if (shipmentEmailEditorColorInput) {
+          const handleColorInput = () => {
+            applyShipmentEmailInlineTextColor(
+              shipmentEmailEditorColorInput.value,
+            );
+            newPressPanelEmailHeaderEditor.dispatchEvent(new Event("input"));
+            autoSizeShipmentEmailTextarea();
+            updateShipmentEmailToolbarState();
+          };
+          shipmentEmailEditorColorInput.addEventListener(
+            "input",
+            handleColorInput,
+          );
+          shipmentEmailEditorColorInput.addEventListener(
+            "change",
+            handleColorInput,
+          );
+        }
+
         autoSizeShipmentEmailTextarea();
+        updateShipmentEmailToolbarState();
       }
 
       if (newPressPanelTextarea) {
@@ -10513,12 +11278,18 @@
 
       if (shipmentPressSelect) {
         shipmentPressSelect.addEventListener("change", () => {
+          if (shipmentAppendComunicatoCheckbox?.checked) {
+            appendSelectedComunicatoToShipmentEmailEditor();
+          }
           updateShipmentPressLinksState();
         });
       }
 
       if (shipmentAppendComunicatoCheckbox) {
         shipmentAppendComunicatoCheckbox.addEventListener("change", () => {
+          if (shipmentAppendComunicatoCheckbox.checked) {
+            appendSelectedComunicatoToShipmentEmailEditor();
+          }
           updateShipmentSelectedComunicatoReadonly();
         });
       }
@@ -16531,7 +17302,8 @@
         };
       }
 
-      const CARD_PAGE_SIZE = 50;
+      const CARD_PAGE_SIZE = 20;
+      const SHIPMENT_LOADER_YIELD_THRESHOLD = 80;
       let visibleJournalistLimit = CARD_PAGE_SIZE;
       let visibleTestateLimit = CARD_PAGE_SIZE;
       let lastCardsQueryKey = "";
@@ -16541,8 +17313,15 @@
       let lastRenderedJournalistCount = 0;
       let lastRenderedTestateCount = 0;
       let renderCardsJobId = 0;
+      let hasLoggedFirstRenderCards = false;
 
       function renderCards() {
+        if (!hasLoggedFirstRenderCards) {
+          hasLoggedFirstRenderCards = true;
+          logDevPerf("first-renderCards-enter", {
+            view: String(appState.view || ""),
+          });
+        }
         const grid = document.getElementById("cardsGrid");
         const cardsLoader = document.getElementById("cardsLoader");
         const loadMoreWrap = document.getElementById("cardsLoadMoreWrap");
@@ -16602,6 +17381,13 @@
 
         const isMailingListView = appState.view === "mailing-list";
         const isSpedisciListaView = appState.view === "spedisci-lista";
+        const shipmentPerfEnabled = DEV_PERF_ENABLED && isSpedisciListaView;
+        const shipmentPerfStart = shipmentPerfEnabled ? performance.now() : 0;
+        const logShipmentPerf = (stage, extra = {}) => {
+          if (!shipmentPerfEnabled) return;
+          const elapsed = (performance.now() - shipmentPerfStart).toFixed(1);
+          console.info(`[perf][spedizione] ${stage} ${elapsed}ms`, extra);
+        };
         const cardsHost =
           isSpedisciListaView && shipmentCardsColumn
             ? shipmentCardsColumn
@@ -16627,6 +17413,24 @@
           !wasSpedisciListaView &&
           shipmentSelectedRecipientJournalistIds.size === 0
         ) {
+          const activeShipmentIdx = getActiveSpedizioneIndex();
+          if (activeShipmentIdx !== -1 && Array.isArray(appState.spedizioni)) {
+            const shipment = appState.spedizioni[activeShipmentIdx];
+            const persistedManualRecipientIds = Array.isArray(
+              shipment?.journalistIds,
+            )
+              ? shipment.journalistIds
+              : [];
+            if (persistedManualRecipientIds.length) {
+              applyShipmentSelectedRecipientJournalistIds(
+                persistedManualRecipientIds,
+                {
+                  syncDropdown: false,
+                },
+              );
+            }
+          }
+
           const seedId = String(
             appState.activeSpedizioneSourceListId || "",
           ).trim();
@@ -16762,6 +17566,17 @@
           lastRenderedTestateCount = 0;
         }
 
+        const estimatedRenderWorkCount = (() => {
+          if (isSpedisciListaView || isMailingListView) {
+            return Array.isArray(listForView?.journalistIds)
+              ? listForView.journalistIds.length
+              : 0;
+          }
+          return Array.isArray(journalists) ? journalists.length : 0;
+        })();
+        const shouldYieldToLoader =
+          estimatedRenderWorkCount > SHIPMENT_LOADER_YIELD_THRESHOLD;
+
         const resetCardsGridScaffold = () => {
           if (!grid) return;
           if (isSpedisciListaView && shipmentCardsColumn) {
@@ -16822,12 +17637,14 @@
           }
         };
 
-        if (shouldClearGrid && grid && cardsLoader) {
+        if (shouldClearGrid && grid && cardsLoader && shouldYieldToLoader) {
           const qkNow = String(lastCardsQueryKey || "");
           if (qkNow && lastLoaderYieldKey !== qkNow) {
             lastLoaderYieldKey = qkNow;
+            if (cardsHost && cardsLoader.parentElement !== cardsHost) {
+              cardsHost.appendChild(cardsLoader);
+            }
             cardsLoader.style.display = "block";
-            resetCardsGridScaffold();
             scheduleRender();
             return;
           }
@@ -16914,6 +17731,9 @@
             const nextTo = Math.min(safeEnd, from + batchSize);
             appendRange(from, nextTo);
             if (nextTo >= safeEnd) {
+              logShipmentPerf("render-complete", {
+                rendered: safeEnd - safeStart,
+              });
               if (typeof onDone === "function") onDone();
               return;
             }
@@ -16922,6 +17742,10 @@
 
           const firstTo = Math.min(safeEnd, safeStart + firstBatchSize);
           appendRange(safeStart, firstTo);
+          logShipmentPerf("first-batch", {
+            firstBatch: firstTo - safeStart,
+            requested: safeEnd - safeStart,
+          });
           if (cardsLoader) {
             cardsLoader.style.display = "none";
           }
@@ -17247,11 +18071,31 @@
         }
 
         if (isSpedisciListaView) {
-          refreshShipmentRecipientsJournalistsDropdownOptions();
+          const journalistsSource = Array.isArray(journalists)
+            ? journalists
+            : [];
+          if (
+            journalistsSource !== lastShipmentJournalistsSourceRef ||
+            journalistsSource.length !== lastShipmentJournalistsSourceLen
+          ) {
+            shipmentJournalistsDropdownNeedsRefresh = true;
+          }
+
+          const shouldRefreshShipmentJournalistsDropdown =
+            shipmentJournalistsDropdownNeedsRefresh &&
+            (shipmentRecipientsJournalistsDropdown?.isOpen ||
+              document.activeElement === shipmentRecipientsJournalistsInput);
+
+          if (shouldRefreshShipmentJournalistsDropdown) {
+            ensureShipmentRecipientsJournalistsDropdownFresh({
+              syncSelection: false,
+            });
+          }
+
           applyShipmentSelectedRecipientJournalistIds(
             Array.from(shipmentSelectedRecipientJournalistIds),
             {
-              syncDropdown: true,
+              syncDropdown: shouldRefreshShipmentJournalistsDropdown,
             },
           );
 
@@ -17293,6 +18137,10 @@
           }
 
           renderShipmentSelectedListsChips();
+          logShipmentPerf("after-recipient-sync", {
+            manualRecipients: shipmentSelectedRecipientJournalistIds.size,
+            selectedLists: shipmentSelectedRecipientListIds.size,
+          });
         } else {
           if (shipmentRecipientsListsDropdown?.isOpen) {
             shipmentRecipientsListsDropdown.close();
@@ -17309,8 +18157,19 @@
           if (!(isMailingListView || isSpedisciListaView) || !listForView) {
             return journalists;
           }
-          const allowed = new Set(listForView.journalistIds || []);
-          return journalists.filter((j) => allowed.has(getJournalistId(j)));
+          const out = [];
+          const seen = new Set();
+          const ids = Array.isArray(listForView.journalistIds)
+            ? listForView.journalistIds
+            : [];
+          for (const rawId of ids) {
+            const id = String(rawId || "").trim();
+            if (!id || seen.has(id)) continue;
+            seen.add(id);
+            const journalist = journalistById.get(id);
+            if (journalist) out.push(journalist);
+          }
+          return out;
         })();
 
         const mailingAllowedJids =
@@ -18464,7 +19323,17 @@
 
       updateHelpLinkVisibility();
 
-      scheduleRender();
+      const initialViewAlreadySchedulesRender =
+        initialView === "filtra" ||
+        initialView === "mailing-list" ||
+        initialView === "spedisci-lista";
+      logDevPerf("before-initial-scheduleRender", {
+        initialView: String(initialView || ""),
+        skipped: initialViewAlreadySchedulesRender,
+      });
+      if (!initialViewAlreadySchedulesRender) {
+        scheduleRender();
+      }
     </script>
   </body>
 </html>
