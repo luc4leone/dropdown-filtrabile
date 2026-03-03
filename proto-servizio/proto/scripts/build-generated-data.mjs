@@ -63,7 +63,34 @@ function topCounts(map, n) {
 
 async function readJson(filePath) {
   const raw = await fs.readFile(filePath, "utf8");
-  return JSON.parse(raw);
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    const msg = err && err.message ? String(err.message) : String(err);
+    const m = msg.match(/position\s+(\d+)/i);
+    const pos = m ? Number(m[1]) : null;
+
+    let lineCol = "";
+    if (Number.isFinite(pos) && pos >= 0) {
+      const pre = raw.slice(0, pos);
+      const lines = pre.split("\n");
+      const line = lines.length;
+      const col = (lines[lines.length - 1] || "").length + 1;
+      lineCol = ` (line ${line} col ${col})`;
+    }
+
+    let ctx = "";
+    if (Number.isFinite(pos) && pos >= 0) {
+      const start = Math.max(0, pos - 120);
+      const end = Math.min(raw.length, pos + 120);
+      ctx = raw.slice(start, end);
+    }
+
+    const extra = ctx ? `\nContext:\n${ctx.replace(/\n/g, "\\n")}` : "";
+    throw new Error(
+      `Failed to parse JSON file: ${filePath}\n${msg}${lineCol}${extra}`,
+    );
+  }
 }
 
 async function listJsonFiles(dir) {

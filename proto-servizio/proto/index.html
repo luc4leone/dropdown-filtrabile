@@ -9384,9 +9384,9 @@
           const start = match.index;
           const end = start + match[0].length;
           out += escapeHtml(raw.slice(lastIndex, start));
-          out += `<span class="highlight">${escapeHtml(
+          out += `<mark class="highlight">${escapeHtml(
             raw.slice(start, end),
-          )}</span>`;
+          )}</mark>`;
           lastIndex = end;
           if (match[0].length === 0) break;
         }
@@ -9420,9 +9420,9 @@
           const start = match.index;
           const end = start + match[0].length;
           out += escapeHtml(raw.slice(lastIndex, start));
-          out += `<span class="highlight">${escapeHtml(
+          out += `<mark class="highlight">${escapeHtml(
             raw.slice(start, end),
-          )}</span>`;
+          )}</mark>`;
           lastIndex = end;
           if (match[0].length === 0) break;
         }
@@ -9438,13 +9438,13 @@
       }
 
       function getHighlightTextTerms() {
-        const current = String(textFilterInput?.value || "").trim();
-        return current ? [current] : [];
+        return getActiveTextTerms();
       }
 
       function findBestMatchTerm(haystack, terms) {
         const h = String(haystack || "").toLowerCase();
         let best = null;
+        let bestLen = -1;
         let bestIdx = Infinity;
         for (const t of terms || []) {
           const q = String(t || "")
@@ -9452,9 +9452,16 @@
             .toLowerCase();
           if (!q) continue;
           const idx = h.indexOf(q);
-          if (idx >= 0 && idx < bestIdx) {
-            bestIdx = idx;
+          if (idx < 0) continue;
+          const len = q.length;
+          if (
+            best == null ||
+            len > bestLen ||
+            (len === bestLen && idx < bestIdx)
+          ) {
             best = t;
+            bestLen = len;
+            bestIdx = idx;
           }
         }
         return best;
@@ -17536,6 +17543,7 @@
             String(appState.activeMailingListId || ""),
             mailingListKey,
             String(effectiveSortMode || ""),
+            safeJoin(activeTextTerms),
             String(currentTextQuery || ""),
             safeJoin(selectedServices),
             safeJoin(selectedRoles),
@@ -17637,10 +17645,13 @@
           }
         };
 
+        const myJobId = ++renderCardsJobId;
+
         if (shouldClearGrid && grid && cardsLoader && shouldYieldToLoader) {
           const qkNow = String(lastCardsQueryKey || "");
           if (qkNow && lastLoaderYieldKey !== qkNow) {
             lastLoaderYieldKey = qkNow;
+            resetCardsGridScaffold();
             if (cardsHost && cardsLoader.parentElement !== cardsHost) {
               cardsHost.appendChild(cardsLoader);
             }
@@ -17697,8 +17708,6 @@
           grid.appendChild(shipmentEmailHeaderColumn);
         }
 
-        const myJobId = ++renderCardsJobId;
-
         const renderIncremental = ({
           items,
           startIndex,
@@ -17715,6 +17724,7 @@
 
           const appendRange = (from, to) => {
             for (let i = from; i < to; i++) {
+              if (myJobId !== renderCardsJobId) return;
               const item = items[i];
               if (!item) continue;
               const el = createElement(item);
