@@ -20,8 +20,9 @@
   --blue-800: hsl(219 39% 24%);
   --red-600: #c62828;
   --yellow-200: #fff79c;
+  --green-500: #22c55e;
 
-  --white-alpha-12: rgba(255, 255, 255, 0.12);
+  --white-alpha-12: rgba(99, 54, 54, 0.12);
   --white-alpha-22: rgba(255, 255, 255, 0.22);
 
   --black-alpha-15: rgba(0, 0, 0, 0.15);
@@ -504,6 +505,28 @@ body:not([data-active-view]) .app-view[data-view="filtra"] {
 
 .shipment-press-indented {
   margin-left: 30px;
+}
+
+.shipment-sender-validated-email-input {
+  position: relative;
+}
+
+.shipment-sender-validated-email-input::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  background: var(--green-500);
+  -webkit-mask: url("icons/check_small.svg") no-repeat center / contain;
+  mask: url("icons/check_small.svg") no-repeat center / contain;
+  pointer-events: none;
+}
+
+.shipment-sender-validated-email-input .chip-text-input {
+  padding-left: 38px;
 }
 
 .shipment-press-select {
@@ -3741,6 +3764,30 @@ body.is-shipment-email-spotlight #newPressPanelEmailHeaderTextarea {
 .new-press-panel .selected-panel-title-row {
   justify-content: flex-start;
   gap: 8px;
+}
+
+.new-press-panel-save-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--grey-650);
+  opacity: 0;
+  transform: translateY(-1px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.new-press-panel-save-status.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.new-press-panel-save-status.is-saved {
+  color: var(--grey-750);
 }
 
 .selected-panel-title-row-left {

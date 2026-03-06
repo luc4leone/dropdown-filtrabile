@@ -370,6 +370,52 @@
                     >istruzioni</a
                   >
                 </div>
+
+                <hr class="sidebar-separator" />
+
+                <div class="sidebar-section-title" style="margin-top: 18px">
+                  Mittente
+                </div>
+
+                <div class="dropdown-container" style="margin-bottom: 16px">
+                  <div class="dropdown-input">
+                    <input
+                      type="text"
+                      class="chip-text-input"
+                      id="shipmentSenderNameInput"
+                      placeholder="mittente"
+                      autocomplete="off"
+                    />
+                  </div>
+                  <div class="filter-help-text">
+                    Il nome che leggeranno i destinatari
+                  </div>
+                </div>
+
+                <div
+                  class="dropdown-container"
+                  id="shipmentSenderValidatedEmailWrap"
+                  style="display: none; margin-bottom: 10px"
+                >
+                  <div
+                    class="dropdown-input shipment-sender-validated-email-input"
+                  >
+                    <select
+                      class="chip-text-input"
+                      id="shipmentSenderValidatedEmailSelect"
+                    ></select>
+                  </div>
+                </div>
+
+                <a
+                  href="#"
+                  class="c-link c-link--action"
+                  id="shipmentSenderValidateEmailLink"
+                  >Valida un indirizzo email</a
+                >
+                <div class="filter-help-text" style="margin-bottom: 10px">
+                  per spedire è necessario verificare l'indirizzo
+                </div>
               </div>
 
               <div class="dropdown-container" style="margin-bottom: 18px">
@@ -1770,6 +1816,49 @@
     </div>
 
     <div
+      class="notes-modal-overlay"
+      id="shipmentSenderValidateEmailModalOverlay"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="notes-modal"
+      id="shipmentSenderValidateEmailModal"
+      aria-hidden="true"
+    >
+      <div class="notes-modal-header">
+        <p class="notes-modal-title">valida indirizzo email</p>
+        <button
+          type="button"
+          class="notes-modal-close"
+          id="shipmentSenderValidateEmailModalClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="notes-modal-body">
+        <label class="field-label" for="shipmentSenderValidateEmailInput"
+          >Email</label
+        >
+        <div class="dropdown-input">
+          <input
+            type="email"
+            class="chip-text-input"
+            id="shipmentSenderValidateEmailInput"
+            placeholder="email"
+            autocomplete="off"
+          />
+        </div>
+        <a
+          href="#"
+          class="c-link c-link--action"
+          id="shipmentSenderValidateEmailConfirm"
+          >conferma</a
+        >
+      </div>
+    </div>
+
+    <div
       class="shipment-email-spotlight"
       id="shipmentEmailSpotlight"
       aria-hidden="true"
@@ -1970,6 +2059,12 @@
               class="new-press-panel-journalist-tag"
               id="newPressPanelJournalistTag"
               style="display: none"
+            ></span>
+            <span
+              class="new-press-panel-save-status"
+              id="newPressPanelSaveStatus"
+              role="status"
+              aria-live="polite"
             ></span>
           </div>
         </div>
@@ -6301,6 +6396,35 @@
         "shipmentPressNewLink",
       );
 
+      const shipmentSenderNameInput = document.getElementById(
+        "shipmentSenderNameInput",
+      );
+      const shipmentSenderValidatedEmailWrap = document.getElementById(
+        "shipmentSenderValidatedEmailWrap",
+      );
+      const shipmentSenderValidatedEmailSelect = document.getElementById(
+        "shipmentSenderValidatedEmailSelect",
+      );
+      const shipmentSenderValidateEmailLink = document.getElementById(
+        "shipmentSenderValidateEmailLink",
+      );
+
+      const shipmentSenderValidateEmailModalOverlay = document.getElementById(
+        "shipmentSenderValidateEmailModalOverlay",
+      );
+      const shipmentSenderValidateEmailModal = document.getElementById(
+        "shipmentSenderValidateEmailModal",
+      );
+      const shipmentSenderValidateEmailModalClose = document.getElementById(
+        "shipmentSenderValidateEmailModalClose",
+      );
+      const shipmentSenderValidateEmailInput = document.getElementById(
+        "shipmentSenderValidateEmailInput",
+      );
+      const shipmentSenderValidateEmailConfirm = document.getElementById(
+        "shipmentSenderValidateEmailConfirm",
+      );
+
       const shipmentPressEmailModalOverlay = document.getElementById(
         "shipmentPressEmailModalOverlay",
       );
@@ -6717,7 +6841,15 @@
         newPressPanelTitle.style.display = "";
 
         if (commit && targetId && draft) {
-          if (renameComunicatoById(targetId, draft)) return;
+          if (newPressPanelTitleAutosaveTimeout) {
+            window.clearTimeout(newPressPanelTitleAutosaveTimeout);
+            newPressPanelTitleAutosaveTimeout = null;
+          }
+          setNewPressPanelSaveStatusSaving();
+          if (renameComunicatoById(targetId, draft)) {
+            setNewPressPanelSaveStatusSaved();
+            return;
+          }
         }
 
         setNewPressPanelTitle(fallbackName);
@@ -7221,6 +7353,49 @@
             (x) => String(x?.name || "") === k,
           ) || null
         );
+      }
+
+      function getActiveSpedizioneRecord() {
+        const idx = getActiveSpedizioneIndex();
+        if (idx === -1) return null;
+        if (!Array.isArray(appState.spedizioni)) return null;
+        const shipment = appState.spedizioni[idx];
+        if (!shipment || typeof shipment !== "object") return null;
+        return shipment;
+      }
+
+      function renderShipmentSenderSection() {
+        if (appState.view !== "spedisci-lista") return;
+        const shipment = getActiveSpedizioneRecord();
+        const senderName = String(shipment?.senderName || "");
+        if (
+          shipmentSenderNameInput &&
+          document.activeElement !== shipmentSenderNameInput &&
+          String(shipmentSenderNameInput.value || "") !== senderName
+        ) {
+          shipmentSenderNameInput.value = senderName;
+        }
+
+        const validated = String(shipment?.senderValidatedEmail || "").trim();
+        const emails = validated ? [validated] : [];
+
+        if (shipmentSenderValidatedEmailSelect) {
+          shipmentSenderValidatedEmailSelect.innerHTML = "";
+          for (const email of emails) {
+            const opt = document.createElement("option");
+            opt.value = email;
+            opt.textContent = email;
+            shipmentSenderValidatedEmailSelect.appendChild(opt);
+          }
+          if (validated) {
+            shipmentSenderValidatedEmailSelect.value = validated;
+          }
+        }
+        if (shipmentSenderValidatedEmailWrap) {
+          shipmentSenderValidatedEmailWrap.style.display = emails.length
+            ? "block"
+            : "none";
+        }
       }
 
       const SHIPMENT_HEADER_MAX_CHARS = 40;
@@ -8433,6 +8608,68 @@
         shipmentPressEmailModal.classList.add("show");
         shipmentPressEmailModalOverlay.setAttribute("aria-hidden", "false");
         shipmentPressEmailModal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeShipmentSenderValidateEmailModal() {
+        if (
+          !shipmentSenderValidateEmailModal ||
+          !shipmentSenderValidateEmailModalOverlay
+        )
+          return;
+        shipmentSenderValidateEmailModalOverlay.classList.remove("show");
+        shipmentSenderValidateEmailModal.classList.remove("show");
+        shipmentSenderValidateEmailModalOverlay.setAttribute(
+          "aria-hidden",
+          "true",
+        );
+        shipmentSenderValidateEmailModal.setAttribute("aria-hidden", "true");
+      }
+
+      function openShipmentSenderValidateEmailModal() {
+        if (
+          !shipmentSenderValidateEmailModal ||
+          !shipmentSenderValidateEmailModalOverlay
+        )
+          return;
+
+        const shipment = getActiveSpedizioneRecord();
+        const current = String(shipment?.senderValidatedEmail || "").trim();
+        if (shipmentSenderValidateEmailInput) {
+          shipmentSenderValidateEmailInput.value = current;
+        }
+
+        shipmentSenderValidateEmailModalOverlay.classList.add("show");
+        shipmentSenderValidateEmailModal.classList.add("show");
+        shipmentSenderValidateEmailModalOverlay.setAttribute(
+          "aria-hidden",
+          "false",
+        );
+        shipmentSenderValidateEmailModal.setAttribute("aria-hidden", "false");
+
+        if (shipmentSenderValidateEmailInput) {
+          shipmentSenderValidateEmailInput.focus();
+          try {
+            shipmentSenderValidateEmailInput.setSelectionRange(
+              0,
+              String(shipmentSenderValidateEmailInput.value || "").length,
+            );
+          } catch (_) {}
+        }
+      }
+
+      function commitShipmentSenderValidatedEmail(rawEmail) {
+        const email = String(rawEmail || "").trim();
+        if (!email) return false;
+        const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!isValid) return false;
+
+        const shipment = getActiveSpedizioneRecord();
+        if (!shipment) return false;
+
+        shipment.senderValidatedEmail = email;
+        saveAppState(appState);
+        renderShipmentSenderSection();
+        return true;
       }
 
       function renderShipmentPressOptions() {
@@ -10179,6 +10416,9 @@
       const newPressPanelJournalistTag = document.getElementById(
         "newPressPanelJournalistTag",
       );
+      const newPressPanelSaveStatus = document.getElementById(
+        "newPressPanelSaveStatus",
+      );
       const newPressPanelEmailHeaderEditorShell = document.getElementById(
         "newPressPanelEmailHeaderEditorShell",
       );
@@ -10228,6 +10468,73 @@
         helpPanel.classList.remove("show");
         helpPanel.setAttribute("aria-hidden", "true");
         document.body.classList.remove("help-panel-open");
+      }
+
+      let newPressPanelSaveStatusDotsInterval = null;
+      let newPressPanelSaveStatusHideTimeout = null;
+      let newPressPanelTitleAutosaveTimeout = null;
+      let newPressPanelTextareaAutosaveTimeout = null;
+      let newPressPanelSaveStatusDotsCount = 0;
+
+      function setNewPressPanelSaveStatusHidden() {
+        if (!newPressPanelSaveStatus) return;
+        if (newPressPanelSaveStatusDotsInterval) {
+          window.clearInterval(newPressPanelSaveStatusDotsInterval);
+          newPressPanelSaveStatusDotsInterval = null;
+        }
+        if (newPressPanelSaveStatusHideTimeout) {
+          window.clearTimeout(newPressPanelSaveStatusHideTimeout);
+          newPressPanelSaveStatusHideTimeout = null;
+        }
+        newPressPanelSaveStatusDotsCount = 0;
+        newPressPanelSaveStatus.classList.remove(
+          "is-visible",
+          "is-saving",
+          "is-saved",
+        );
+        newPressPanelSaveStatus.textContent = "";
+      }
+
+      function setNewPressPanelSaveStatusSaving() {
+        if (!newPressPanelSaveStatus) return;
+        if (newPressPanelSaveStatusHideTimeout) {
+          window.clearTimeout(newPressPanelSaveStatusHideTimeout);
+          newPressPanelSaveStatusHideTimeout = null;
+        }
+        newPressPanelSaveStatus.classList.add("is-visible", "is-saving");
+        newPressPanelSaveStatus.classList.remove("is-saved");
+
+        const base = "sto salvando";
+        newPressPanelSaveStatusDotsCount =
+          (newPressPanelSaveStatusDotsCount + 1) % 4;
+        newPressPanelSaveStatus.textContent = `${base}${".".repeat(newPressPanelSaveStatusDotsCount)}`;
+
+        if (newPressPanelSaveStatusDotsInterval) return;
+        newPressPanelSaveStatusDotsInterval = window.setInterval(() => {
+          if (!newPressPanelSaveStatus) return;
+          newPressPanelSaveStatusDotsCount =
+            (newPressPanelSaveStatusDotsCount + 1) % 4;
+          newPressPanelSaveStatus.textContent = `${base}${".".repeat(newPressPanelSaveStatusDotsCount)}`;
+        }, 350);
+      }
+
+      function setNewPressPanelSaveStatusSaved() {
+        if (!newPressPanelSaveStatus) return;
+        if (newPressPanelSaveStatusDotsInterval) {
+          window.clearInterval(newPressPanelSaveStatusDotsInterval);
+          newPressPanelSaveStatusDotsInterval = null;
+        }
+        if (newPressPanelSaveStatusHideTimeout) {
+          window.clearTimeout(newPressPanelSaveStatusHideTimeout);
+          newPressPanelSaveStatusHideTimeout = null;
+        }
+        newPressPanelSaveStatusDotsCount = 0;
+        newPressPanelSaveStatus.classList.add("is-visible", "is-saved");
+        newPressPanelSaveStatus.classList.remove("is-saving");
+        newPressPanelSaveStatus.textContent = "salvato.";
+        newPressPanelSaveStatusHideTimeout = window.setTimeout(() => {
+          setNewPressPanelSaveStatusHidden();
+        }, 1400);
       }
 
       function escapeShipmentEmailHtml(raw) {
@@ -10834,8 +11141,19 @@
           if (newPressPanelOpenContext === "card") return;
           const record = ensureComunicatoRecord(activeComunicatoId);
           if (!record) return;
-          record.bodyText = String(newPressPanelTextarea.value || "");
-          saveAppState(appState);
+          setNewPressPanelSaveStatusSaving();
+          if (newPressPanelTextareaAutosaveTimeout) {
+            window.clearTimeout(newPressPanelTextareaAutosaveTimeout);
+          }
+          newPressPanelTextareaAutosaveTimeout = window.setTimeout(() => {
+            if (newPressPanelOpenContext === "card") return;
+            const currentRecord = ensureComunicatoRecord(activeComunicatoId);
+            if (!currentRecord) return;
+            currentRecord.bodyText = String(newPressPanelTextarea.value || "");
+            saveAppState(appState);
+            setNewPressPanelSaveStatusSaved();
+            updateShipmentSelectedComunicatoReadonly();
+          }, 450);
           updateShipmentSelectedComunicatoReadonly();
         });
       }
@@ -10849,18 +11167,52 @@
       }
 
       if (newPressPanelTitleInput) {
+        newPressPanelTitleInput.addEventListener("input", () => {
+          if (!isNewPressPanelTitleEditing) return;
+          const targetId = getActiveComunicatoTargetId();
+          const draft = String(newPressPanelTitleInput.value || "").trim();
+          if (!targetId || !draft) return;
+
+          setNewPressPanelSaveStatusSaving();
+          if (newPressPanelTitleAutosaveTimeout) {
+            window.clearTimeout(newPressPanelTitleAutosaveTimeout);
+          }
+          newPressPanelTitleAutosaveTimeout = window.setTimeout(() => {
+            if (!isNewPressPanelTitleEditing) return;
+            const nextDraft = String(
+              newPressPanelTitleInput.value || "",
+            ).trim();
+            if (!nextDraft) return;
+            if (renameComunicatoById(targetId, nextDraft)) {
+              setNewPressPanelSaveStatusSaved();
+            }
+          }, 650);
+        });
         newPressPanelTitleInput.addEventListener("blur", () => {
+          if (newPressPanelTitleAutosaveTimeout) {
+            window.clearTimeout(newPressPanelTitleAutosaveTimeout);
+            newPressPanelTitleAutosaveTimeout = null;
+          }
           closeNewPressPanelTitleInlineEditor({ commit: true });
         });
         newPressPanelTitleInput.addEventListener("keydown", (e) => {
           if (e.key === "Enter") {
             e.preventDefault();
+            if (newPressPanelTitleAutosaveTimeout) {
+              window.clearTimeout(newPressPanelTitleAutosaveTimeout);
+              newPressPanelTitleAutosaveTimeout = null;
+            }
             closeNewPressPanelTitleInlineEditor({ commit: true });
             return;
           }
           if (e.key === "Escape") {
             e.preventDefault();
+            if (newPressPanelTitleAutosaveTimeout) {
+              window.clearTimeout(newPressPanelTitleAutosaveTimeout);
+              newPressPanelTitleAutosaveTimeout = null;
+            }
             closeNewPressPanelTitleInlineEditor({ commit: false });
+            setNewPressPanelSaveStatusHidden();
           }
         });
       }
@@ -11246,6 +11598,68 @@
         shipmentPressEmailModalOverlay.addEventListener("click", (e) => {
           e.preventDefault();
           closeShipmentPressEmailModal();
+        });
+      }
+
+      if (shipmentSenderValidateEmailLink) {
+        shipmentSenderValidateEmailLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openShipmentSenderValidateEmailModal();
+        });
+      }
+
+      if (shipmentSenderValidateEmailModalClose) {
+        shipmentSenderValidateEmailModalClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeShipmentSenderValidateEmailModal();
+        });
+      }
+
+      if (shipmentSenderValidateEmailModalOverlay) {
+        shipmentSenderValidateEmailModalOverlay.addEventListener(
+          "click",
+          (e) => {
+            e.preventDefault();
+            closeShipmentSenderValidateEmailModal();
+          },
+        );
+      }
+
+      if (shipmentSenderValidateEmailConfirm) {
+        shipmentSenderValidateEmailConfirm.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const ok = commitShipmentSenderValidatedEmail(
+            shipmentSenderValidateEmailInput?.value,
+          );
+          if (!ok) return;
+          closeShipmentSenderValidateEmailModal();
+        });
+      }
+
+      if (shipmentSenderNameInput) {
+        shipmentSenderNameInput.addEventListener("input", () => {
+          if (appState.view !== "spedisci-lista") return;
+          const shipment = getActiveSpedizioneRecord();
+          if (!shipment) return;
+          shipment.senderName = String(shipmentSenderNameInput.value || "");
+          saveAppState(appState);
+        });
+      }
+
+      if (shipmentSenderValidatedEmailSelect) {
+        shipmentSenderValidatedEmailSelect.addEventListener("change", () => {
+          if (appState.view !== "spedisci-lista") return;
+          const shipment = getActiveSpedizioneRecord();
+          if (!shipment) return;
+          const v = String(
+            shipmentSenderValidatedEmailSelect.value || "",
+          ).trim();
+          if (!v) return;
+          shipment.senderValidatedEmail = v;
+          saveAppState(appState);
         });
       }
 
@@ -16950,6 +17364,12 @@
             closeShipmentPressEmailModal();
             return;
           }
+          if (shipmentSenderValidateEmailModal?.classList?.contains("show")) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeShipmentSenderValidateEmailModal();
+            return;
+          }
           if (newPressPanel?.classList?.contains("show")) {
             e.preventDefault();
             e.stopPropagation();
@@ -17407,6 +17827,7 @@
 
         renderShipmentPressOptions();
         updateShipmentPressModeUI();
+        renderShipmentSenderSection();
 
         const activeList =
           isMailingListView || isSpedisciListaView
