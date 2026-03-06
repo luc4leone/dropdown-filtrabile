@@ -18,7 +18,7 @@
 - potrebbe essere utile aiuto AI in personalizzazione
 
 
-## Selezione mittente
+## Selezione mittente
 - [x] L’utente deve scegliere email mittente dalla lista dei mittenti validati
 
 
@@ -26,7 +26,7 @@
 - [ ] L’utente deve aver la possibilità di aggiungere degli allegati all’email
 
 
-## Dare la possibilità all’utente di verificare la spedizione:
+## Dare la possibilità all’utente di verificare la spedizione:
 - [x] Preview dell’email ( presentata nell’applicazione )
 - [x] Spedizione di prova al proprio indirizzo dell’email
 
