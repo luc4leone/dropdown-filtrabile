@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>M__</title>
+    <link rel="icon" href="icons/favicon.svg" type="image/svg+xml" />
     <script>
       window.__APP_EARLY_BOOT_MS = performance.now();
       (function applyPreBootViewClass() {
@@ -1778,18 +1779,20 @@
               >
                 <h1 class="main-title">Crea lista (futuro)</h1>
 
-                <label class="field-label" for="creaListaFuturoApiKey"
-                  >OpenAI API key</label
-                >
-                <div class="dropdown-input">
-                  <input
-                    class="chip-text-input"
-                    id="creaListaFuturoApiKey"
-                    type="password"
-                    autocomplete="off"
-                    placeholder="sk-..."
-                  />
-                </div>
+                <form autocomplete="off">
+                  <label class="field-label" for="creaListaFuturoApiKey"
+                    >OpenAI API key</label
+                  >
+                  <div class="dropdown-input">
+                    <input
+                      class="chip-text-input"
+                      id="creaListaFuturoApiKey"
+                      type="password"
+                      autocomplete="off"
+                      placeholder="sk-..."
+                    />
+                  </div>
+                </form>
 
                 <label class="field-label" for="creaListaFuturoComunicatoSelect"
                   >Comunicati Stampa</label
@@ -2546,14 +2549,9 @@
 
       const appState = loadAppState();
       const DEV_PERF_ENABLED = (() => {
-        const host = String(window.location.hostname || "").toLowerCase();
         const params = new URLSearchParams(window.location.search || "");
         if (params.get("perf") === "1") return true;
-        return (
-          window.location.protocol === "file:" ||
-          host === "localhost" ||
-          host === "127.0.0.1"
-        );
+        return false;
       })();
       const APP_BOOT_START_MS = performance.now();
       const logDevPerf = (label, extra = {}) => {
@@ -7399,6 +7397,24 @@
         }
       }
 
+      let shipmentRecipientsSaveTimeout = null;
+      function scheduleSaveShipmentRecipients() {
+        if (shipmentRecipientsSaveTimeout) {
+          window.clearTimeout(shipmentRecipientsSaveTimeout);
+          shipmentRecipientsSaveTimeout = null;
+        }
+        shipmentRecipientsSaveTimeout = window.setTimeout(() => {
+          shipmentRecipientsSaveTimeout = null;
+          applyShipmentSelectedRecipientJournalistIds(
+            Array.from(shipmentSelectedRecipientJournalistIds),
+            {
+              syncDropdown: false,
+              save: true,
+            },
+          );
+        }, 250);
+      }
+
       function renderShipmentSelectedListsChips() {
         if (!shipmentSelectedListsChips) return;
         shipmentSelectedListsChips.innerHTML = "";
@@ -7425,6 +7441,7 @@
               shipmentActiveRecipientListIds.add(listId);
             }
             renderShipmentSelectedListsChips();
+            syncShipmentRecipientCardsDisabledUI();
             scheduleRender();
           };
 
@@ -7442,6 +7459,50 @@
 
           shipmentSelectedListsChips.appendChild(chip);
         });
+      }
+
+      function syncShipmentRecipientCardsDisabledUI() {
+        if (appState.view !== "spedisci-lista") return;
+
+        const selectedShipmentLists = getShipmentSelectedRecipientLists();
+        const activeShipmentLists = getShipmentActiveRecipientLists();
+
+        const shipmentRecipientJournalistIds = new Set();
+        const shipmentActiveCardsJournalistIds = new Set();
+
+        selectedShipmentLists.forEach((list) => {
+          (list?.journalistIds || []).forEach((jid) => {
+            const safeId = String(jid || "").trim();
+            if (safeId) shipmentRecipientJournalistIds.add(safeId);
+          });
+        });
+        activeShipmentLists.forEach((list) => {
+          (list?.journalistIds || []).forEach((jid) => {
+            const safeId = String(jid || "").trim();
+            if (safeId) shipmentActiveCardsJournalistIds.add(safeId);
+          });
+        });
+        Array.from(shipmentSelectedRecipientJournalistIds).forEach((jid) => {
+          const safeId = String(jid || "").trim();
+          if (safeId) shipmentRecipientJournalistIds.add(safeId);
+        });
+
+        const disabledIds = new Set();
+        Array.from(shipmentRecipientJournalistIds).forEach((jid) => {
+          if (shipmentSelectedRecipientJournalistIds.has(jid)) return;
+          if (shipmentActiveCardsJournalistIds.has(jid)) return;
+          disabledIds.add(jid);
+        });
+        shipmentRecipientCardDisabledIds = disabledIds;
+
+        const scope = document.getElementById("cardsGrid") || document;
+        for (const card of scope.querySelectorAll(".card[data-jid]")) {
+          const jid = String(card.getAttribute("data-jid") || "").trim();
+          if (!jid) continue;
+          const isDisabled = shipmentRecipientCardDisabledIds.has(jid);
+          card.classList.toggle("is-disabled", isDisabled);
+          card.setAttribute("aria-disabled", isDisabled ? "true" : "false");
+        }
       }
 
       function getSpedizioneByName(name) {
@@ -7733,14 +7794,18 @@
 
         const selected = Array.isArray(selectedOptions) ? selectedOptions : [];
         let ids = selected
-          .map((option) => shipmentJournalistOptionToId.get(String(option || "")))
+          .map((option) =>
+            shipmentJournalistOptionToId.get(String(option || "")),
+          )
           .filter(Boolean);
         if (ids.length !== selected.length) {
           ensureShipmentRecipientsJournalistsDropdownFresh({
             syncSelection: false,
           });
           ids = selected
-            .map((option) => shipmentJournalistOptionToId.get(String(option || "")))
+            .map((option) =>
+              shipmentJournalistOptionToId.get(String(option || "")),
+            )
             .filter(Boolean);
         }
 
@@ -10145,7 +10210,6 @@
           return out;
         })();
 
-        const jid = getJournalistId(j);
         card.dataset.jid = jid;
         const isSelected = selectedJournalistIds.has(jid);
         if (isSelected) {
@@ -19905,90 +19969,6 @@
       if (!initialViewAlreadySchedulesRender) {
         scheduleRender();
       }
-    </script>
-  </body>
-</html>
-    </script>
-  </body>
-</html>
-            scheduleUpdateSelectedNameLayouts();
-          });
-          selectedPanelResizeObserver.observe(selectedPanel);
-        }
-
-        window.addEventListener("load", () => {
-          scheduleUpdateSelectedNameLayouts();
-        });
-
-        if (document.fonts && document.fonts.ready) {
-          document.fonts.ready.then(() => {
-            scheduleUpdateSelectedNameLayouts();
-          });
-        }
-      }
-
-      const navSidebar = document.querySelector(".nav-sidebar");
-      if (navSidebar) {
-        navSidebar.addEventListener("click", (e) => {
-          const link = e.target?.closest?.("a[data-view]");
-          if (!link) return;
-
-          e.preventDefault();
-          e.stopPropagation();
-
-          const viewId = link.getAttribute("data-view");
-          const v = normalizeViewId(viewId);
-          if (!v) return;
-
-          window.location.hash = `#${v}`;
-        });
-      }
-
-      window.addEventListener("hashchange", () => {
-        const requested = getViewFromHash();
-        if (requested && !ENABLED_VIEWS.has(requested)) {
-          window.location.hash = "#filtra";
-          return;
-        }
-
-        setActiveView(requested, { save: true });
-      });
-
-      const initialFromHash = getViewFromHash();
-      if (initialFromHash && !ENABLED_VIEWS.has(initialFromHash)) {
-        window.location.hash = "#filtra";
-      }
-      const initialView = initialFromHash || appState.view || "filtra";
-      setActiveView(initialView, { save: true });
-
-      updateHelpLinkVisibility();
-
-      const initialViewAlreadySchedulesRender =
-        initialView === "filtra" ||
-        initialView === "mailing-list" ||
-        initialView === "spedisci-lista";
-      logDevPerf("before-initial-scheduleRender", {
-        initialView: String(initialView || ""),
-        skipped: initialViewAlreadySchedulesRender,
-      });
-      if (!initialViewAlreadySchedulesRender) {
-        scheduleRender();
-      }
-    </script>
-  </body>
-</html>
-    </script>
-  </body>
-</html>
-        initialView: String(initialView || ""),
-        skipped: initialViewAlreadySchedulesRender,
-      });
-      if (!initialViewAlreadySchedulesRender) {
-        scheduleRender();
-      }
-    </script>
-  </body>
-</html>
     </script>
   </body>
 </html>
