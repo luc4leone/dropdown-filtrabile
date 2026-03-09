@@ -1,6 +1,6 @@
 # UX / UI Design M\_\_
 
-## _todo_
+## _TRIAGE_
 - [ ] *suggerimenti AI*
 - [ ] *disegnare Account*
 - [ ] *scheda giornalista da "ok" a "aggiungi"*
@@ -9,33 +9,26 @@
 - [ ] *feedback test: con autosave testo non ho feedback se il cs è stato salvato*
 - [ ] *feedback test: table view gradita come opzione a card view*
 
-## _in progress_
+## _IN PROGRESS_
 - [ ] *nuove statistiche proposte per dashboard*
 - [ ] *filtro sede giornalista*
+- [ ] applicare stessa logica di troncatura nome giornalista in selezionati e scheda
 
-## 23 febbraio 2026
+
+## _DONE_
 - [x] in proto-servizio/proto/index.html#crea-lista-futuro ho creato proof of concept del futuro  "crea lista"
 - [x] spedizione
 - [x] comunicato
-
-## 10-22 febbraio 2026
 - [x] completa scheda testata
-
-## 9 febbraio 2026
-- [ ] applicare stessa logica di troncatura nome giornalista in selezionati e scheda
 - [x] fix larghezza cards
   - le cards devono occupare sempre tutto lo spazio della riga
 - [x] fix regola troncatura nome e cognome in card
-
-## 30 gennaio 2026
  - [x] disegnato prima bozza dark mode
- - [] completata scheda giornalista
+ - [x] completata scheda giornalista
    - sezione mailing lists aggiunto filtra e ordina
    - sezione spedizioni aggiunto filtra e ordina
    - note:
      - sezione articoli: manca rassegna
-
-## 29 gennaio 2026
 - [x] **completato 90% scheda giornalista**
   - adeguamento a UI in https://luc4leone.github.io/mediaddress-grafica/examples/index.html
   - non ovvio: cmd/enter -> ok, esc -> cancel in editor note e in input servizio
@@ -43,13 +36,7 @@
     - il link "aggiungi redazione" è mockato
     - le spedizioni sono mockate
     - ruolo è unico, non ancora per redazione
-
-## 27 gennaio 2026
-
 - [x] **aumentato padding verticale tra i link in nav sidebar**
-
-## 24 gennaio 2026
-
 - [x] **reso il layout più fluido**
   - ora all'allargarsi dello screen le cards per riga non si allargano più a dismisura, si allargano finchè c'è spazio per aggiungere un'altra card
 - [x] **modificato nome "filtra banca dati" in nav bar**
@@ -69,9 +56,6 @@
   - aggiunta ombreggiatura a cards
 - [x] **migliorato dettaglio di interaction**
   - chevron ruota su controllo "ordina" in main, e split button in panel selezionati
-
-## 23 gennaio 2026
-
 - [x] **allineata grafica a landing page marketing**
   - sostituito type
   - modificato radius filtri e chips
@@ -79,35 +63,22 @@
   - modificato color active link nav sidebar
   - sostituito logo
   - modificato il blue dei link
-
-## 21 gennaio 2026
-
 - [x] **aggiunto funzionalità "condividi mailing list"**
   - ho aggiunto l'autore della mailing list, nel proto è una valore statico perché non ho sviluppato il concetto di user del programma, quindi tutte le mailing list sono create da @ugo
 - [x] **aggiunto funzionalità "elimina mailing list in mailing list"**
   - così lo user può eliminare una mailing list sia dalla lista delle mailing list che dalla mailing list stessa
-
-
-## 20 gennaio 2026
-
 - [x] **aggiunto funzionalità "rimuovi selezionati da mailing list"** -> in mailing list, seleziona giornalista -> vedi riga 2 dall'alto nel panel selezionati
   - questa riga viene mostrata solo in lista, non cross viste (non per es in filtra)
 - [x] **aggiunto action link "rimuovi da lista"** in card in lista
 - [x] **rinominate le opzioni del menu dello split button** (potremmo chiamarlo "split link" 😉). ora sono logiche (@fabio 💪), vediamo se nei test di usabilità sono comprensibili
 - [x] **tolto action link "deseleziona tutti"** da main, era ridondante e forse fuorviante (@fabio 💪)
 - [x] **rinominato action link "rimuovi selezionati"** in "svuota selezione" in panel selezionati per evitare confusione con action link riga sopra "rimuovi da lista"
-
----
-
-facendo riferimento al punto 3 del 19 gennaio:
-
+- facendo riferimento al punto 3 del 19 gennaio:
 - [x] aggiunto split button
   - [x] modificato la creazione di una nuova spedizione rispetto a sketch in Excalidraw: ora è un'opzione esplicita nella tenda dello split button
     - il titolo della dialog "aggiungi a nuova spedizione" è dinamico: contiene la var "numero di selezionati"
     - "salva lista" e le altre azioni sono link sottolineati by design, e hanno hover state by design
   - [x] modificato patter per la creazione di una nuova spedizione
-
-## 19 gennaio 2026
 
 > 1. ordinamento: preferiamo una tendina, i problemi della soluzione proposta sono:
 >    •⁠ ⁠non scala su schermi piccoli

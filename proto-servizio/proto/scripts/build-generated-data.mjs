@@ -18,6 +18,23 @@ function normalizeText(v) {
   return String(v ?? "").trim();
 }
 
+function stableHash32(str) {
+  const s = String(str ?? "");
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function pickFrom(arr, seed) {
+  const a = asArray(arr);
+  if (a.length === 0) return "";
+  const idx = seed % a.length;
+  return a[idx];
+}
+
 function pickFirstContact(contactDetails, type) {
   const items = asArray(contactDetails);
   for (const it of items) {
@@ -120,7 +137,55 @@ function outletToTestata(outlet) {
   const telefono = pickFirstContact(outlet?.contact_details, "phone");
   const email = pickFirstContact(outlet?.contact_details, "email");
 
-  const tipoMedia = { parent: "Web", child: "On-Line / News" };
+  const TESTATA_MEDIA_BY_PARENT = {
+    Radio: ["Emittenti"],
+    TV: ["Emittenti", "Produzioni"],
+    "Carta Stampata": [
+      "Quotidiani",
+      "Periodici al Pubblico",
+      "Periodici di Categoria",
+      "Supplementi",
+    ],
+    Web: ["On-Line / News", "Blog"],
+  };
+
+  const FREQUENZA_PUBBLICAZIONE_OPTIONS = [
+    "Aperiodico",
+    "Quotidiano",
+    "Settimanale",
+    "Mensile",
+    "Bimestrale",
+    "Trimestrale",
+    "Semestrale",
+    "Annuale",
+  ];
+
+  const DIFFUSIONE_OPTIONS = [
+    "Internazionale",
+    "Nazionale",
+    "Regionale",
+    "Locale",
+  ];
+
+  const seedBase = stableHash32(id || nome || note);
+  const parents = Object.keys(TESTATA_MEDIA_BY_PARENT);
+  const parent = pickFrom(parents, seedBase);
+  const children = TESTATA_MEDIA_BY_PARENT[parent] || [];
+  const child = pickFrom(children, stableHash32(`${seedBase}|child`));
+  const tipoMedia = {
+    parent: parent || "Web",
+    child: child || "On-Line / News",
+  };
+
+  const frequenzaPubblicazione =
+    pickFrom(
+      FREQUENZA_PUBBLICAZIONE_OPTIONS,
+      stableHash32(`${seedBase}|freq`),
+    ) || "Aperiodico";
+
+  const diffusione =
+    pickFrom(DIFFUSIONE_OPTIONS, stableHash32(`${seedBase}|diff`)) ||
+    "Nazionale";
 
   return {
     id,
@@ -129,8 +194,8 @@ function outletToTestata(outlet) {
     direttore: "n/d",
     editore: "n/d",
     tipoMedia,
-    frequenzaPubblicazione: "Aperiodico",
-    diffusione: "Nazionale",
+    frequenzaPubblicazione,
+    diffusione,
     tiratura: "n/d",
     datiPubblicitari: "n/d",
     redazione: {

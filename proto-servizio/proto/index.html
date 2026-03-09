@@ -2441,7 +2441,20 @@
       </div>
     </div>
 
-    <script src="./generated/data.js"></script>
+    <script>
+      (function loadProtoDataScript() {
+        const params = new URLSearchParams(window.location.search || "");
+        const useBig = params.get("big") === "1";
+        const primarySrc = useBig
+          ? "./generated/data.js"
+          : "./generated/data.small.js";
+        document.write(`<script src="${primarySrc}"><\/script>`);
+        if (useBig) return;
+        document.write(
+          '<script>if(!window.__PROTO_DATA__){document.write("<script src=\\"./generated/data.js\\"><\\/script>");}<\/script>',
+        );
+      })();
+    </script>
     <script>
       const APP_STORAGE_KEY = "proto-servizio-app-state-v1";
 
@@ -2631,6 +2644,10 @@
           .toLowerCase();
         if (v === "dark") return "dark";
         return "light";
+      }
+
+      function normalizeId(value) {
+        return String(value || "").trim();
       }
 
       if (typeof appState.ui.theme !== "string") {
@@ -4741,6 +4758,13 @@
           .replace(/\s+/g, " ");
       }
 
+      function normalizeFilterValue(value) {
+        return String(value ?? "")
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, " ");
+      }
+
       function inferTestataArgomento(nome) {
         const n = String(nome || "")
           .trim()
@@ -5890,6 +5914,34 @@
         for (const j of __generated.journalists) {
           journalists.push(j);
         }
+
+        (function sanitizePersistedMailingLists() {
+          if (!Array.isArray(appState?.mailingLists) || !journalists.length) {
+            return;
+          }
+          const allowed = new Set(
+            (journalists || [])
+              .map((j) => normalizeId(getJournalistId(j)))
+              .filter(Boolean),
+          );
+
+          for (const list of appState.mailingLists) {
+            if (!list || typeof list !== "object") continue;
+            if (!Array.isArray(list.journalistIds)) continue;
+            const next = [];
+            const seen = new Set();
+            for (const raw of list.journalistIds) {
+              const jid = normalizeId(raw);
+              if (!jid) continue;
+              if (!allowed.has(jid)) continue;
+              if (seen.has(jid)) continue;
+              seen.add(jid);
+              next.push(jid);
+            }
+            list.journalistIds = next;
+          }
+          saveAppState(appState);
+        })();
 
         __initFiltersDataForBootstrap()
           .then(() => {
@@ -7317,10 +7369,17 @@
         const prevSelected = new Set(shipmentSelectedRecipientListIds);
         const next = new Set(
           (Array.isArray(ids) ? ids : [])
-            .map((id) => String(id || "").trim())
+            .map((id) => normalizeId(id))
             .filter((id) => !!getMailingListById(id)),
         );
         shipmentSelectedRecipientListIds = next;
+
+        if (shipmentRecipientsListsDropdown?.container) {
+          shipmentRecipientsListsDropdown.container.classList.toggle(
+            "has-active-filter",
+            next.size > 0,
+          );
+        }
 
         const nextActive = new Set();
         Array.from(next).forEach((id) => {
@@ -7358,7 +7417,7 @@
         const { syncDropdown = true, save = false } = options;
         const next = new Set(
           (Array.isArray(ids) ? ids : [])
-            .map((id) => String(id || "").trim())
+            .map((id) => normalizeId(id))
             .filter(Boolean),
         );
         shipmentSelectedRecipientJournalistIds = next;
@@ -7421,7 +7480,7 @@
 
         const selectedLists = getShipmentSelectedRecipientLists();
         selectedLists.forEach((list) => {
-          const listId = String(list?.id || "").trim();
+          const listId = normalizeId(list?.id);
           const isActive = shipmentActiveRecipientListIds.has(listId);
           const chip = document.createElement("span");
           chip.className = `chip shipment-list-chip${isActive ? "" : " is-off"}`;
@@ -7472,18 +7531,18 @@
 
         selectedShipmentLists.forEach((list) => {
           (list?.journalistIds || []).forEach((jid) => {
-            const safeId = String(jid || "").trim();
+            const safeId = normalizeId(jid);
             if (safeId) shipmentRecipientJournalistIds.add(safeId);
           });
         });
         activeShipmentLists.forEach((list) => {
           (list?.journalistIds || []).forEach((jid) => {
-            const safeId = String(jid || "").trim();
+            const safeId = normalizeId(jid);
             if (safeId) shipmentActiveCardsJournalistIds.add(safeId);
           });
         });
         Array.from(shipmentSelectedRecipientJournalistIds).forEach((jid) => {
-          const safeId = String(jid || "").trim();
+          const safeId = normalizeId(jid);
           if (safeId) shipmentRecipientJournalistIds.add(safeId);
         });
 
@@ -7497,7 +7556,7 @@
 
         const scope = document.getElementById("cardsGrid") || document;
         for (const card of scope.querySelectorAll(".card[data-jid]")) {
-          const jid = String(card.getAttribute("data-jid") || "").trim();
+          const jid = normalizeId(card.getAttribute("data-jid"));
           if (!jid) continue;
           const isDisabled = shipmentRecipientCardDisabledIds.has(jid);
           card.classList.toggle("is-disabled", isDisabled);
@@ -9168,9 +9227,7 @@
         const uniqueName = computeUniqueSpedizioneName(baseName);
         const shipment = {
           name: uniqueName,
-          journalistIds: Array.isArray(list.journalistIds)
-            ? Array.from(list.journalistIds)
-            : [],
+          journalistIds: [],
           createdAt: Date.now(),
           sourceMailingListId: String(list.id || "").trim(),
         };
@@ -9267,6 +9324,16 @@
         activeSpedizioneRef = created || null;
         appState.activeSpedizioneSourceListId = String(list.id || "");
         appState.activeSpedizioneName = String(created?.name || "");
+
+        applyShipmentSelectedRecipientJournalistIds([], {
+          syncDropdown: true,
+          save: false,
+        });
+        applyShipmentSelectedRecipientListIds([String(list.id || "").trim()], {
+          save: false,
+          syncDropdown: true,
+        });
+
         saveAppState(appState);
         renderDashboardSpedizioni();
         window.location.hash = "#spedisci-lista";
@@ -10032,7 +10099,7 @@
         card.dataset.servizio = j.servizio;
         card.dataset.ruolo = j.ruolo;
 
-        const jid = String(getJournalistId(j) || "").trim();
+        const jid = normalizeId(getJournalistId(j));
         if (
           jid &&
           appState.view === "spedisci-lista" &&
@@ -18821,6 +18888,19 @@
           return h.includes(q);
         };
 
+        const selectedTestataArgomentiNorm = new Set(
+          selectedTestataArgomenti.map((x) => normalizeFilterValue(x)),
+        );
+        const selectedTestataTipoMediaNorm = new Set(
+          selectedTestataTipoMedia.map((x) => normalizeFilterValue(x)),
+        );
+        const selectedTestataFrequenzeNorm = new Set(
+          selectedTestataFrequenze.map((x) => normalizeFilterValue(x)),
+        );
+        const selectedTestataDiffusioniNorm = new Set(
+          selectedTestataDiffusioni.map((x) => normalizeFilterValue(x)),
+        );
+
         const matchesJournalist = (j) => {
           const serviceOk =
             !servicesActive || selectedServices.includes(j.servizio);
@@ -18836,26 +18916,40 @@
           const testataArgomentoOk =
             !testataArgomentoActive ||
             testateObjs.some((t) =>
-              selectedTestataArgomenti.includes(String(t?.argomento || "")),
+              selectedTestataArgomentiNorm.has(
+                normalizeFilterValue(String(t?.argomento || "")),
+              ),
             );
           const testataTipoMediaOk =
             !testataTipoMediaActive ||
             testateObjs.some((t) =>
-              selectedTestataTipoMedia.includes(
-                String(t?.tipoMedia?.child || ""),
-              ),
+              (() => {
+                const child = normalizeFilterValue(
+                  String(t?.tipoMedia?.child || ""),
+                );
+                const parent = normalizeFilterValue(
+                  String(t?.tipoMedia?.parent || ""),
+                );
+                if (child && selectedTestataTipoMediaNorm.has(child))
+                  return true;
+                if (parent && selectedTestataTipoMediaNorm.has(parent))
+                  return true;
+                return false;
+              })(),
             );
           const testataFrequenzaOk =
             !testataFrequenzaActive ||
             testateObjs.some((t) =>
-              selectedTestataFrequenze.includes(
-                String(t?.frequenzaPubblicazione || ""),
+              selectedTestataFrequenzeNorm.has(
+                normalizeFilterValue(String(t?.frequenzaPubblicazione || "")),
               ),
             );
           const testataDiffusioneOk =
             !testataDiffusioneActive ||
             testateObjs.some((t) =>
-              selectedTestataDiffusioni.includes(String(t?.diffusione || "")),
+              selectedTestataDiffusioniNorm.has(
+                normalizeFilterValue(String(t?.diffusione || "")),
+              ),
             );
 
           const fullName = `${j.nome} ${j.cognome}`.toLowerCase();
@@ -19969,6 +20063,192 @@
       if (!initialViewAlreadySchedulesRender) {
         scheduleRender();
       }
+
+      function initDevSmokePanel() {
+        const params = new URLSearchParams(window.location.search || "");
+        if (params.get("dev") !== "1") return;
+
+        const panel = document.createElement("div");
+        panel.id = "devSmokePanel";
+        panel.style.cssText =
+          "position:fixed;right:12px;bottom:12px;z-index:99999;background:rgba(20,20,20,.92);color:#fff;padding:10px 10px;border-radius:10px;font:12px/1.3 system-ui;min-width:220px;box-shadow:0 10px 30px rgba(0,0,0,.35);";
+
+        const title = document.createElement("div");
+        title.textContent = "Dev smoke";
+        title.style.cssText = "font-weight:600;margin-bottom:8px;";
+        panel.appendChild(title);
+
+        const out = document.createElement("pre");
+        out.style.cssText =
+          "white-space:pre-wrap;margin:8px 0 0 0;max-height:180px;overflow:auto;opacity:.9;";
+
+        const logLine = (s) => {
+          out.textContent = `${s}\n${out.textContent || ""}`;
+        };
+
+        const waitFor = (predicate, timeoutMs = 2000) => {
+          const start = performance.now();
+          return new Promise((resolve) => {
+            const tick = () => {
+              let ok = false;
+              try {
+                ok = !!predicate();
+              } catch (_) {
+                ok = false;
+              }
+              if (ok) return resolve(true);
+              if (performance.now() - start > timeoutMs) return resolve(false);
+              requestAnimationFrame(tick);
+            };
+            tick();
+          });
+        };
+
+        const runCheck = async (name, fn) => {
+          logLine(`> ${name}`);
+          try {
+            const res = await fn();
+            logLine(res ? `OK ${name}` : `WARN ${name}`);
+          } catch (e) {
+            logLine(`FAIL ${name}: ${String(e)}`);
+          }
+        };
+
+        const makeBtn = (label, onClick) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.textContent = label;
+          b.style.cssText =
+            "display:block;width:100%;margin:6px 0;padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;text-align:left;";
+          b.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick();
+          });
+          return b;
+        };
+
+        panel.appendChild(
+          makeBtn("boot", () =>
+            runCheck("boot", async () => {
+              const okData =
+                Array.isArray(journalists) && journalists.length > 0;
+              const okView = !!normalizeViewId(appState?.view);
+              return okData && okView;
+            }),
+          ),
+        );
+
+        panel.appendChild(
+          makeBtn("filtra", () =>
+            runCheck("filtra", async () => {
+              setActiveView("filtra", { save: false });
+              const ok = await waitFor(
+                () => document.querySelectorAll(".card[data-jid]").length > 0,
+                2500,
+              );
+              return ok;
+            }),
+          ),
+        );
+
+        panel.appendChild(
+          makeBtn("filtra: testata filters", () =>
+            runCheck("filtra: testata filters", async () => {
+              setActiveView("filtra", { save: false });
+              setMainMode("giornalisti");
+              handleModeSwitch("giornalisti");
+              clearAllFilters();
+
+              if (
+                testataDiffusioneDropdown?.originalOptions?.includes(
+                  "Nazionale",
+                )
+              ) {
+                testataDiffusioneDropdown.toggleOption("Nazionale");
+              }
+
+              const ok = await waitFor(
+                () => document.querySelectorAll(".card[data-jid]").length > 0,
+                2500,
+              );
+              return ok;
+            }),
+          ),
+        );
+
+        panel.appendChild(
+          makeBtn("spedisci-lista", () =>
+            runCheck("spedisci-lista", async () => {
+              setActiveView("spedisci-lista", { save: false });
+              const ok = await waitFor(
+                () =>
+                  document.body.classList.contains("is-spedisci-lista-view"),
+                800,
+              );
+              return ok;
+            }),
+          ),
+        );
+
+        panel.appendChild(
+          makeBtn("spedisci-lista: from list", () =>
+            runCheck("spedisci-lista: from list", async () => {
+              const source = Array.isArray(journalists) ? journalists : [];
+              if (source.length < 2) return false;
+
+              const a = source[0];
+              const b = source[1];
+              const jidA = getJournalistId(a);
+              const jidB = getJournalistId(b);
+              if (!jidA || !jidB) return false;
+
+              const listId = `__dev-list-${Date.now()}-${Math.floor(
+                Math.random() * 1_000_000,
+              )}`;
+              const listName = `__dev list ${listId}`;
+
+              if (!Array.isArray(appState.mailingLists)) {
+                appState.mailingLists = [];
+              }
+              appState.mailingLists.unshift({
+                id: listId,
+                name: listName,
+                journalistIds: [jidA, jidB],
+                createdAt: Date.now(),
+              });
+              appState.activeMailingListId = listId;
+              saveAppState(appState);
+
+              openSpedisciListaView();
+
+              const okCards = await waitFor(
+                () => document.querySelectorAll(".card[data-jid]").length > 0,
+                2500,
+              );
+              if (!okCards) return false;
+
+              const listFilterOk =
+                shipmentRecipientsListsDropdown?.container?.classList?.contains(
+                  "has-active-filter",
+                ) && shipmentSelectedRecipientListIds.has(listId);
+
+              const journalistFilterOk =
+                !shipmentRecipientsJournalistsDropdown?.container?.classList?.contains(
+                  "has-active-filter",
+                ) && shipmentSelectedRecipientJournalistIds.size === 0;
+
+              return !!listFilterOk && !!journalistFilterOk;
+            }),
+          ),
+        );
+
+        panel.appendChild(out);
+        document.body.appendChild(panel);
+        logLine("ready (?dev=1)");
+      }
+
+      initDevSmokePanel();
     </script>
   </body>
 </html>
