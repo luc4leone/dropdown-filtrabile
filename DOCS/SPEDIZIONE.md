@@ -12,14 +12,14 @@
 ## Done
 Alcune sono state disegnare `solo in excalidraw`
 
-- [x] Togliere distinzione testate/giornalisti
+- [x] Togliere distinzione testate / giornalisti
 - [x] Aggiungere possibilità di filtrare per appartenenza a mailing list
-- [x] Manca il bottone per effettuare la spedizione `in excalidraw`
+- [x] Manca il bottone per effettuare la spedizione `solo in excalidraw`
 - [x] non è possibile capire se un destinatario ha email personalizzata `solo in excalidraw`
 - [x] L’utente deve scegliere email mittente dalla lista dei mittenti validati
 - [x] L’utente deve aver la possibilità di aggiungere degli allegati all’email `solo in excalidraw`
-- [x] Preview dell’email (presentata nell’applicazione)
-- [x] Manca la possibilità di scegliere (filtrare?) se includere nella lista anche i giornalisti senza email diretta `solo in excalidraw`
+- [x] Preview dell’email
+- [x] Manca la possibilità di filtrare i destinatari senza email diretta `solo in excalidraw`
 
 ## Per ora NO
 - Lista dei destinatari in stile Gmail sopra al testo da inviare, ma solo per fornire la call-to-action che apre/mostra un sistema per cerca/filtrare i giornalisti in modo analogo alle ricerche nelle mailing-list:
