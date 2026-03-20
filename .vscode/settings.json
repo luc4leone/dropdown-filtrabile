@@ -1,0 +1,25 @@
+{
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/proto-servizio/proto/generated/**": true,
+    "**/proto-servizio/proto/persons-data/**": true,
+    "**/proto-servizio/proto/outlets-data/**": true
+  },
+  "search.exclude": {
+    "**/proto-servizio/proto/generated/**": true,
+    "**/proto-servizio/proto/persons-data/**": true,
+    "**/proto-servizio/proto/outlets-data/**": true
+  },
+  "files.exclude": {
+    "**/proto-servizio/proto/generated/**": true,
+    "**/proto-servizio/proto/persons-data/**": true,
+    "**/proto-servizio/proto/outlets-data/**": true
+  },
+  "windsurf.searchMaxWorkspaceFileCount": 1,
+  "windsurf.useIndexingV2": true,
+  "windsurf.completionMode": "off",
+  "windsurf.lifeguard.enabled": false,
+  "windsurf.acp.enabled": false
+
+ 
+}

@@ -1,0 +1,8 @@
+proto-servizio/proto/generated/
+proto-servizio/proto/persons-data/
+proto-servizio/proto/outlets-data/
+.git/
+**/proto-servizio/proto/generated/**
+**/proto-servizio/proto/persons-data/**
+**/proto-servizio/proto/outlets-data/**
+**/.git/**
