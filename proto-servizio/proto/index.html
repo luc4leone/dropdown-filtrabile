@@ -182,6 +182,7 @@
             <div class="sidebar-filters-scroll">
               <div id="shipmentRecipientsSection" style="display: none">
                 <div class="sidebar-section-title-row">
+                  <span class="c-step-badge is-done" aria-hidden="true">1</span>
                   <div class="sidebar-section-title">Destinatari</div>
                   <span class="pill" id="shipmentRecipientsCountPill">0</span>
                 </div>
@@ -298,16 +299,23 @@
                   </div>
                 </div>
 
-                <a
-                  href="#"
-                  class="c-link c-link--action"
-                  id="shipmentAiSuggestionsLink"
-                  >suggerimenti</a
+                <div
+                  class="shipment-ai-suggestions-row"
+                  id="shipmentAiSuggestionsRow"
                 >
+                  <span class="c-step-badge is-warn" aria-hidden="true">5</span>
+                  <a
+                    href="#"
+                    class="c-link c-link--action"
+                    id="shipmentAiSuggestionsLink"
+                    >suggerimenti</a
+                  >
+                </div>
 
                 <hr class="sidebar-separator" />
 
                 <div class="sidebar-section-title-row">
+                  <span class="c-step-badge is-done" aria-hidden="true">2</span>
                   <div class="sidebar-section-title">Comunicato stampa</div>
                   <a
                     href="#"
@@ -374,8 +382,12 @@
 
                 <hr class="sidebar-separator" />
 
-                <div class="sidebar-section-title" style="margin-top: 18px">
-                  Mittente
+                <div
+                  class="sidebar-section-title sidebar-section-title-with-step"
+                  style="margin-top: 18px"
+                >
+                  <span class="c-step-badge is-done" aria-hidden="true">3</span>
+                  <span>Mittente</span>
                 </div>
 
                 <div class="dropdown-container" style="margin-bottom: 16px">
@@ -420,8 +432,12 @@
 
                 <hr class="sidebar-separator" />
 
-                <div class="sidebar-section-title" style="margin-top: 18px">
-                  Spedisci
+                <div
+                  class="sidebar-section-title sidebar-section-title-with-step"
+                  style="margin-top: 18px"
+                >
+                  <span class="c-step-badge" aria-hidden="true">6</span>
+                  <span>Spedisci</span>
                 </div>
 
                 <div class="dropdown-container" style="margin-bottom: 14px">
@@ -922,7 +938,129 @@
           </aside>
 
           <main class="main">
-            <div class="main-header">
+            <div class="top-steps-bar" id="shipmentTopStepsBar">
+              <div class="top-steps-bar__group">
+                <div class="top-steps-bar__title">obbligatori</div>
+                <ol class="top-steps-bar__list">
+                  <li class="top-steps-bar__item">
+                    <span class="top-steps-bar__dot is-done" aria-hidden="true"
+                      >1</span
+                    >
+                    <span class="top-steps-bar__label"
+                      >aggiungi destinatari</span
+                    >
+                  </li>
+                  <li class="top-steps-bar__item">
+                    <span class="top-steps-bar__dot is-done" aria-hidden="true"
+                      >2</span
+                    >
+                    <span class="top-steps-bar__label"
+                      >aggiungi comunicato</span
+                    >
+                  </li>
+                  <li class="top-steps-bar__item">
+                    <span class="top-steps-bar__dot is-done" aria-hidden="true"
+                      >3</span
+                    >
+                    <span class="top-steps-bar__label">aggiungi mittente</span>
+                  </li>
+                </ol>
+              </div>
+
+              <div class="top-steps-bar__group">
+                <div class="top-steps-bar__title">opzionali (consigliati)</div>
+                <ol class="top-steps-bar__list">
+                  <li class="top-steps-bar__item">
+                    <span class="top-steps-bar__dot is-warn" aria-hidden="true"
+                      >4</span
+                    >
+                    <span class="top-steps-bar__label">ottimizza oggetto</span>
+                  </li>
+                  <li class="top-steps-bar__item">
+                    <span class="top-steps-bar__dot is-warn" aria-hidden="true"
+                      >5</span
+                    >
+                    <span class="top-steps-bar__label"
+                      >ottimizza destinatari</span
+                    >
+                  </li>
+                </ol>
+              </div>
+
+              <div class="top-steps-bar__group top-steps-bar__group--end">
+                <div class="top-steps-bar__title">&nbsp;</div>
+                <ol class="top-steps-bar__list">
+                  <li class="top-steps-bar__item">
+                    <span class="top-steps-bar__dot" aria-hidden="true">6</span>
+                    <span class="top-steps-bar__label">spedisci</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <div
+              class="shipment-optimize-recipients"
+              id="shipmentOptimizeRecipients"
+            >
+              <span class="c-step-badge is-warn" aria-hidden="true">5</span>
+              <div class="shipment-optimize-recipients__box">
+                <span
+                  class="shipment-optimize-recipients__icon"
+                  aria-hidden="true"
+                  >!</span
+                >
+                <div class="shipment-optimize-recipients__text">
+                  Hai aggiunto più di 2 destinatari per alcune redazioni. Riduci
+                  per evitare spam e migliorare l'efficacia dell'invio.
+                </div>
+                <a
+                  href="#"
+                  class="shipment-optimize-recipients__action"
+                  id="shipmentOptimizeRecipientsLink"
+                  >ottimizza</a
+                >
+                <button
+                  type="button"
+                  class="shipment-optimize-recipients__close"
+                  id="shipmentOptimizeRecipientsClose"
+                  aria-label="Chiudi"
+                >
+                  ×
+                </button>
+                <div
+                  class="shipment-optimize-recipients__counter"
+                  aria-label="Numero warning"
+                >
+                  <span
+                    class="shipment-optimize-recipients__counter-value"
+                    id="shipmentOptimizeRecipientsCounterValue"
+                    >3</span
+                  >
+                  <div class="shipment-optimize-recipients__counter-arrows">
+                    <button
+                      type="button"
+                      class="shipment-optimize-recipients__counter-btn"
+                      aria-label="warning precedente"
+                      id="shipmentOptimizeRecipientsCounterPrev"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      class="shipment-optimize-recipients__counter-btn"
+                      aria-label="warning successivo"
+                      id="shipmentOptimizeRecipientsCounterNext"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="viewFiltraMainHeaderHome"></div>
+
+            <div class="main-header" id="viewFiltraMainHeader">
               <div>
                 <div class="main-header-row">
                   <div class="main-header-left">
@@ -932,9 +1070,15 @@
                         id="mainTitleIcon"
                         aria-hidden="true"
                       ></span>
-                      <span class="sidebar-section-title shipment-title-prefix"
-                        >oggetto</span
-                      >
+                      <span class="shipment-title-prefix-wrap">
+                        <span class="c-step-badge is-warn" aria-hidden="true"
+                          >4</span
+                        >
+                        <span
+                          class="sidebar-section-title shipment-title-prefix"
+                          >oggetto</span
+                        >
+                      </span>
                       <h1
                         class="main-title shipment-title-display"
                         id="mainTitle"
@@ -2157,6 +2301,25 @@
         </button>
       </div>
       <div class="testata-panel-body" id="testataPanelBody"></div>
+    </aside>
+
+    <div class="dup-overlay" id="dupOverlay" aria-hidden="true"></div>
+    <aside class="dup-panel" id="dupPanel" aria-hidden="true">
+      <div class="dup-panel-header">
+        <div class="dup-panel-header-content">
+          <p class="dup-panel-title" id="dupPanelTitle">Possibile duplicato</p>
+          <span class="dup-panel-subtitle" id="dupPanelSubtitle"></span>
+        </div>
+        <button
+          type="button"
+          class="dup-panel-close"
+          id="dupPanelClose"
+          aria-label="Chiudi"
+        >
+          ×
+        </button>
+      </div>
+      <div class="dup-panel-body" id="dupPanelBody"></div>
     </aside>
 
     <div
@@ -4641,6 +4804,16 @@
           testata: "Gambero Rosso",
           note: "Vendemmia e territorio.",
         },
+        {
+          nome: "Luca",
+          cognome: "Rinaldi",
+          ruolo: "Redattore",
+          servizio: "Agricoltura e filiera",
+          telefono: "+39 333 120 4451",
+          email: "l.rinaldi@ilgiorno.it",
+          testata: "Il Giorno",
+          note: "Inserito da utente — possibile duplicato.",
+        },
       ];
 
       function normalizeRole(value) {
@@ -5915,6 +6088,32 @@
           journalists.push(j);
         }
 
+        journalists.push(
+          {
+            id: "mock_lrinaldi_1",
+            nome: "Luca",
+            cognome: "Rinaldi",
+            ruolo: "Capo redattore",
+            servizio: "Politica agraria",
+            telefono: "+39 333 120 4451",
+            email: "l.rinaldi@ilgiorno.it",
+            testate: ["Il Giorno", "ANSA"],
+            testata: "Il Giorno",
+            note: "Segue ministeri e politiche del territorio. Tiene i contatti con associazioni e consorzi, copre dossier su PAC, fondi e misure di sostegno; monitora anche crisi di settore e tavoli tecnici con aggiornamenti frequenti.",
+          },
+          {
+            id: "mock_lrinaldi_2",
+            nome: "Luca",
+            cognome: "Rinaldi",
+            ruolo: "Redattore",
+            servizio: "Agricoltura e filiera",
+            telefono: "+39 333 120 4451",
+            email: "l.rinaldi@ilgiorno.it",
+            testata: "Il Giorno",
+            note: "Inserito da utente — possibile duplicato.",
+          },
+        );
+
         (function sanitizePersistedMailingLists() {
           if (!Array.isArray(appState?.mailingLists) || !journalists.length) {
             return;
@@ -6441,6 +6640,15 @@
       );
       const shipmentSelectedListsChips = document.getElementById(
         "shipmentSelectedListsChips",
+      );
+      const viewFiltraMainHeader = document.getElementById(
+        "viewFiltraMainHeader",
+      );
+      const viewFiltraMainHeaderHome = document.getElementById(
+        "viewFiltraMainHeaderHome",
+      );
+      const shipmentOptimizeRecipients = document.getElementById(
+        "shipmentOptimizeRecipients",
       );
       const shipmentCardsColumn = document.getElementById(
         "shipmentCardsColumn",
@@ -10595,6 +10803,13 @@
       const testataPanelBody = document.getElementById("testataPanelBody");
       const testataPanelClose = document.getElementById("testataPanelClose");
 
+      const dupOverlay = document.getElementById("dupOverlay");
+      const dupPanel = document.getElementById("dupPanel");
+      const dupPanelTitle = document.getElementById("dupPanelTitle");
+      const dupPanelSubtitle = document.getElementById("dupPanelSubtitle");
+      const dupPanelBody = document.getElementById("dupPanelBody");
+      const dupPanelClose = document.getElementById("dupPanelClose");
+
       const chooseDatabaseLink = document.getElementById("chooseDatabaseLink");
 
       const selectAllLink = document.getElementById("selectAllLink");
@@ -13174,6 +13389,226 @@
         testataPanel.setAttribute("aria-hidden", "false");
       }
 
+      /* ===== Duplicate detection ===== */
+
+      var dismissedDuplicates = new Set();
+      var duplicatePanelCurrentJid = "";
+
+      function getMockDuplicates(jid) {
+        const j = (journalists || []).find((x) => getJournalistId(x) === jid);
+        if (!j) return [];
+
+        const firstName = String(j?.nome || "").trim().toLowerCase();
+        const lastName = String(j?.cognome || "").trim().toLowerCase();
+        const email = String(j?.email || "").trim().toLowerCase();
+        const tel = String(j?.tel || "").trim();
+
+        const candidates = (journalists || []).filter((x) => {
+          const xId = getJournalistId(x);
+          if (xId === jid) return false;
+          const xFirst = String(x?.nome || "").trim().toLowerCase();
+          const xLast = String(x?.cognome || "").trim().toLowerCase();
+          const xEmail = String(x?.email || "").trim().toLowerCase();
+          const xTel = String(x?.tel || "").trim();
+
+          if (email && xEmail && email === xEmail) return true;
+          if (firstName && lastName && xFirst === firstName && xLast === lastName)
+            return true;
+          if (tel && xTel && tel === xTel) return true;
+          return false;
+        });
+
+        return candidates.slice(0, 3).map((x) => {
+          const xId = getJournalistId(x);
+          const reasons = [];
+          if (
+            email &&
+            String(x?.email || "").trim().toLowerCase() === email
+          )
+            reasons.push("stessa e-mail");
+          if (
+            firstName &&
+            lastName &&
+            String(x?.nome || "").trim().toLowerCase() === firstName &&
+            String(x?.cognome || "").trim().toLowerCase() === lastName
+          )
+            reasons.push("stesso nome e cognome");
+          if (tel && String(x?.tel || "").trim() === tel)
+            reasons.push("stesso telefono");
+          return { journalist: x, id: xId, reasons };
+        });
+      }
+
+      function getActiveDuplicates(jid) {
+        const all = getMockDuplicates(jid);
+        return all.filter((d) => !dismissedDuplicates.has(jid + "::" + d.id));
+      }
+
+      function closeDupPanel() {
+        if (!dupPanel || !dupOverlay) return;
+        dupPanel.classList.remove("show");
+        dupOverlay.classList.remove("show");
+        dupPanel.setAttribute("aria-hidden", "true");
+        dupOverlay.setAttribute("aria-hidden", "true");
+        duplicatePanelCurrentJid = "";
+      }
+
+      function openDupPanel(duplicateEntry) {
+        if (!dupPanel || !dupOverlay || !duplicateEntry) return;
+        const dj = duplicateEntry.journalist;
+        const dId = duplicateEntry.id;
+
+        duplicatePanelCurrentJid = dId;
+
+        if (dupPanelTitle)
+          dupPanelTitle.textContent = "Possibile duplicato";
+        if (dupPanelSubtitle)
+          dupPanelSubtitle.textContent = duplicateEntry.reasons.join(", ");
+
+        dupPanelBody.innerHTML = "";
+
+        const card = document.createElement("div");
+        card.className = "dup-card";
+
+        const name = document.createElement("p");
+        name.className = "dup-card__name";
+        name.textContent = `${dj?.nome || ""} ${dj?.cognome || ""}`.trim();
+        card.appendChild(name);
+
+        const reason = document.createElement("div");
+        reason.className = "dup-card__match-reason";
+        reason.textContent = `Corrispondenza: ${duplicateEntry.reasons.join(", ")}`;
+        card.appendChild(reason);
+
+        const fields = [
+          { label: "E-mail", value: dj?.email },
+          { label: "Telefono", value: dj?.tel },
+          { label: "Testata", value: Array.isArray(dj?.testate) ? dj.testate.join(", ") : dj?.testata },
+          { label: "Ruolo", value: dj?.ruolo },
+          { label: "Servizio", value: dj?.servizio },
+        ];
+
+        for (const f of fields) {
+          const val = String(f.value || "").trim();
+          if (!val) continue;
+          const field = document.createElement("div");
+          field.className = "dup-card__field";
+          const lbl = document.createElement("span");
+          lbl.className = "dup-card__field-label";
+          lbl.textContent = f.label;
+          const vlu = document.createElement("span");
+          vlu.className = "dup-card__field-value";
+          vlu.textContent = val;
+          field.appendChild(lbl);
+          field.appendChild(vlu);
+          card.appendChild(field);
+        }
+
+        dupPanelBody.appendChild(card);
+
+        dupOverlay.classList.add("show");
+        dupPanel.classList.add("show");
+        dupOverlay.setAttribute("aria-hidden", "false");
+        dupPanel.setAttribute("aria-hidden", "false");
+      }
+
+      function createDuplicateBanner(jid) {
+        const duplicates = getActiveDuplicates(jid);
+        if (!duplicates.length) return null;
+
+        const banner = document.createElement("div");
+        banner.className = "dup-banner";
+        banner.setAttribute("data-dup-banner", "");
+
+        const main = document.createElement("div");
+        main.className = "dup-banner__main";
+
+        const icon = document.createElement("span");
+        icon.className = "dup-banner__icon";
+        icon.textContent = "!";
+        icon.setAttribute("aria-hidden", "true");
+
+        const text = document.createElement("span");
+        text.className = "dup-banner__text";
+        const count = duplicates.length;
+        text.innerHTML =
+          count === 1
+            ? "<strong>Possibile duplicato:</strong> questa scheda sembra corrispondere a una scheda già in banca dati."
+            : `<strong>Possibile duplicato:</strong> questa scheda sembra corrispondere a ${count} schede già in banca dati.`;
+
+        const seeLink = document.createElement("a");
+        seeLink.href = "#";
+        seeLink.className = "c-link c-link--action dup-banner__link";
+        seeLink.textContent = "vedi scheda";
+
+        seeLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openDupPanel(duplicates[0]);
+          banner.classList.add("is-expanded");
+        });
+
+        main.appendChild(icon);
+        main.appendChild(text);
+        main.appendChild(seeLink);
+        banner.appendChild(main);
+
+        const actions = document.createElement("div");
+        actions.className = "dup-banner__actions";
+
+        const mergeLink = document.createElement("a");
+        mergeLink.href = "#";
+        mergeLink.className = "c-link c-link--action dup-banner__action";
+        mergeLink.textContent = "unisci";
+        mergeLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          banner.classList.add("is-dismissed");
+          closeDupPanel();
+        });
+
+        const notDupLink = document.createElement("a");
+        notDupLink.href = "#";
+        notDupLink.className = "c-link c-link--action dup-banner__action";
+        notDupLink.textContent = "non è un duplicato";
+        notDupLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          for (const d of duplicates) {
+            dismissedDuplicates.add(jid + "::" + d.id);
+          }
+          banner.classList.add("is-dismissed");
+          closeDupPanel();
+        });
+
+        actions.appendChild(mergeLink);
+        actions.appendChild(notDupLink);
+        banner.appendChild(actions);
+
+        const helpText = document.createElement("p");
+        helpText.className = "dup-banner__help-text";
+        helpText.textContent =
+          "Criteri di unione schede: lorem ipsum.";
+        banner.appendChild(helpText);
+
+        return banner;
+      }
+
+      if (dupPanelClose) {
+        dupPanelClose.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeDupPanel();
+        });
+      }
+
+      if (dupOverlay) {
+        dupOverlay.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeDupPanel();
+        });
+      }
+
       function openJournalistPanel(journalistName) {
         if (testataPanelTitle) testataPanelTitle.textContent = "Giornalista";
         testataPanelBody.innerHTML = "";
@@ -15124,6 +15559,9 @@
 
           grid.appendChild(mainCol);
 
+          const dupBanner = createDuplicateBanner(jid);
+          if (dupBanner) sheet.appendChild(dupBanner);
+
           sheet.appendChild(grid);
 
           testataPanelBody.appendChild(sheet);
@@ -15164,6 +15602,7 @@
         testataPanel.classList.remove("show");
         testataOverlay.setAttribute("aria-hidden", "true");
         testataPanel.setAttribute("aria-hidden", "true");
+        closeDupPanel();
       }
 
       function openNotesModal(jid) {
@@ -17647,10 +18086,39 @@
       );
 
       let _renderRaf = null;
+
+      function syncShipmentSpedisciListaLayout() {
+        if (!viewFiltraMainHeader || !viewFiltraMainHeaderHome) return;
+        const isSpedisciListaView = appState.view === "spedisci-lista";
+
+        if (isSpedisciListaView) {
+          if (
+            shipmentEmailHeaderColumn &&
+            viewFiltraMainHeader.parentElement !== shipmentEmailHeaderColumn
+          ) {
+            shipmentEmailHeaderColumn.insertBefore(
+              viewFiltraMainHeader,
+              shipmentEmailHeaderColumn.firstChild,
+            );
+          }
+          return;
+        }
+
+        const homeParent = viewFiltraMainHeaderHome.parentElement;
+        if (!homeParent) return;
+        if (viewFiltraMainHeader.parentElement !== homeParent) {
+          homeParent.insertBefore(
+            viewFiltraMainHeader,
+            viewFiltraMainHeaderHome.nextSibling,
+          );
+        }
+      }
+
       function scheduleRender() {
         if (_renderRaf) return;
         _renderRaf = requestAnimationFrame(() => {
           _renderRaf = null;
+          syncShipmentSpedisciListaLayout();
           renderCards();
         });
       }

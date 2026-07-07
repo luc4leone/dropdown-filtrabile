@@ -6,7 +6,7 @@
 Alcune sono state disegnate `solo in excalidraw`
 
 - [x] ho aggiunto alla lista dei destinatari due giornalisti che hanno lo stesso indirizzo email: devo suggerire che è il caso di personalizzare l’email se sto usando dei placeholder `solo in excalidraw`
-- [x] potrebbe essere utile aiuto AI in personalizzazione email `solo in excalidraw` `AI`
+- [x] aiuto in personalizzazione email `solo in excalidraw` `AI`
 - [x] suggerire destinatari `AI`
 - [x] dare la possibilità di rimuovere giornalisti da destinatari quando ce ne sono più di 2 per testata `solo in excalidraw`
 - [x] on click "spedisci" => dialog warning `solo in excalidraw`
