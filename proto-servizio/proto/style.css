@@ -4607,3 +4607,207 @@ body.is-spedisci-lista-view .shipment-title-prefix {
   vertical-align: baseline;
   cursor: help;
 }
+
+/* ===== Service change: banner (pattern A) ===== */
+.svc-change-banner {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: hsl(45 80% 95%);
+  border: 1px solid hsl(45 80% 80%);
+  border-radius: var(--border-radius-sm, 6px);
+  font-size: var(--fs-sm, 13px);
+}
+
+.svc-change-banner__icon {
+  font-size: 14px;
+  color: hsl(45 80% 35%);
+}
+
+.svc-change-banner__text {
+  font-weight: 600;
+  color: hsl(45 80% 25%);
+}
+
+.svc-change-banner__detail-body {
+  flex-basis: 100%;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed hsl(45 80% 80%);
+}
+
+.svc-change-banner__detail-body p {
+  margin: 0 0 4px;
+  font-size: var(--fs-sm, 13px);
+  line-height: 1.4;
+  color: var(--grey-750, #495057);
+}
+
+.svc-change-banner__detail-body p:last-of-type {
+  margin-bottom: 8px;
+}
+
+.svc-change-banner__remove {
+  font-size: var(--fs-xs, 12px);
+  padding: 4px 10px;
+}
+
+/* ===== Service change: badge (pattern B) ===== */
+.svc-change-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--fs-xxs, 11px);
+  font-weight: 700;
+  color: hsl(45 80% 30%);
+  background: hsl(45 80% 90%);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 6px;
+  cursor: pointer;
+  vertical-align: baseline;
+}
+
+.svc-change-badge__icon {
+  font-size: 12px;
+}
+
+.svc-change-badge__popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--near-black, #343a40);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  padding: 8px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.svc-change-badge__arrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--near-black, #343a40);
+}
+
+.svc-change-badge__compare {
+  font-weight: 600;
+}
+
+.svc-change-badge__remove {
+  font-size: 11px;
+  padding: 3px 8px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.svc-change-badge__remove:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ===== Service change: carousel (pattern A multi-alert) ===== */
+.svc-change-banner--carousel {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.svc-change-carousel {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.svc-change-carousel__slide {
+  display: none;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.svc-change-carousel__slide.is-active {
+  display: flex;
+}
+
+.svc-change-carousel__controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.svc-change-carousel__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid hsl(45 80% 80%);
+  border-radius: 4px;
+  background: #fff;
+  color: hsl(45 80% 35%);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: background 120ms ease, opacity 120ms ease;
+}
+
+.svc-change-carousel__btn:hover:not(:disabled) {
+  background: hsl(45 80% 90%);
+}
+
+.svc-change-carousel__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.svc-change-carousel__counter {
+  font-size: var(--fs-xxs, 11px);
+  font-weight: 700;
+  color: hsl(45 80% 30%);
+  min-width: 28px;
+  text-align: center;
+}
+
+/* ===== Service change: vertical stack (pattern C) ===== */
+.svc-change-banner--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.svc-change-stack__item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid hsl(45 80% 80%);
+}
+
+.svc-change-stack__item:last-child {
+  border-bottom: none;
+}
+
+.svc-change-stack__item .svc-change-banner__detail-body {
+  flex-basis: 100%;
+}

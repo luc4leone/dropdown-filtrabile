@@ -6112,7 +6112,80 @@
             testata: "Il Giorno",
             note: "Inserito da utente — possibile duplicato.",
           },
+          {
+            id: "mock_svcchange_1",
+            nome: "Giulia",
+            cognome: "De Santis",
+            ruolo: "Redattrice",
+            servizio: "Cultura e spettacolo",
+            originalServizio: "Economia",
+            originalTestata: "Il Sole 24 Ore",
+            telefono: "+39 349 882 1190",
+            email: "g.desantis@corriere.it",
+            testate: ["Corriere della Sera"],
+            testata: "Corriere della Sera",
+            note: "Cambio servizio: prima seguiva Economia, ora Cultura e spettacolo.",
+          },
+          {
+            id: "mock_svcchange_2",
+            nome: "Marco",
+            cognome: "Vitali",
+            ruolo: "Inviato",
+            servizio: "Sport",
+            originalServizio: "Tecnologia",
+            telefono: "+39 338 555 0044",
+            email: "m.vitali@lastampa.it",
+            testate: ["La Stampa"],
+            testata: "La Stampa",
+            note: "Cambio servizio: prima seguiva Tecnologia, ora Sport.",
+          },
+          {
+            id: "mock_svcchange_3",
+            nome: "Francesca",
+            cognome: "Moretti",
+            ruolo: "Redattrice",
+            servizio: "Esteri",
+            originalServizio: "Cronaca nera",
+            originalTestata: "Il Messaggero",
+            telefono: "+39 340 777 2211",
+            email: "f.moretti@repubblica.it",
+            testate: ["la Repubblica"],
+            testata: "la Repubblica",
+            note: "Cambio servizio e testata: prima seguiva Cronaca nera al Messaggero, ora Esteri alla Repubblica.",
+          },
         );
+
+        (function ensureDemoServiceChangeList() {
+          const DEMO_LIST_ID = "__demo-svc-change";
+          const DEMO_JIDS = [
+            "mock_svcchange_1",
+            "mock_svcchange_2",
+            "mock_svcchange_3",
+          ];
+          if (!Array.isArray(appState.mailingLists)) {
+            appState.mailingLists = [];
+          }
+          const existing = appState.mailingLists.find(
+            (ml) => String(ml?.id || "") === DEMO_LIST_ID,
+          );
+          if (!existing) {
+            appState.mailingLists.unshift({
+              id: DEMO_LIST_ID,
+              name: "Demo — Servizio cambiato",
+              journalistIds: [...DEMO_JIDS],
+              createdAt: Date.now(),
+            });
+            saveAppState(appState);
+          } else {
+            const needed = DEMO_JIDS.filter(
+              (id) => !(existing.journalistIds || []).includes(id),
+            );
+            if (needed.length) {
+              existing.journalistIds = [...(existing.journalistIds || []), ...needed];
+              saveAppState(appState);
+            }
+          }
+        })();
 
         (function sanitizePersistedMailingLists() {
           if (!Array.isArray(appState?.mailingLists) || !journalists.length) {
@@ -10596,6 +10669,124 @@
             : "";
 
         const customizeComunicatoHtml = "";
+
+        const isMailingListView = appState.view === "mailing-list";
+
+        const svcChangeAlerts = (() => {
+          if (!isMailingListView) return [];
+          const alerts = [];
+          if (
+            j.originalServizio &&
+            String(j.originalServizio || "").trim() !==
+              String(j.servizio || "").trim()
+          ) {
+            alerts.push({
+              type: "servizio",
+              title: "È cambiato il servizio giornalistico",
+              detail: `Questo giornalista è stato aggiunto alla lista quando seguiva <strong>${escapeHtml(j.originalServizio)}</strong>, ma ora segue <strong>${escapeHtml(j.servizio)}</strong>.`,
+              suggestion: "valuta se il nuovo servizio è comunque pertinente per questa lista.",
+            });
+          }
+          if (
+            j.originalTestata &&
+            String(j.originalTestata || "").trim() !==
+              String(j.testata || "").trim()
+          ) {
+            alerts.push({
+              type: "testata",
+              title: "È cambiata la testata",
+              detail: `Questo giornalista è stato aggiunto alla lista quando scriveva per <strong>${escapeHtml(j.originalTestata)}</strong>, ma ora scrive per <strong>${escapeHtml(j.testata)}</strong>.`,
+              suggestion: "valuta se la nuova testata è compatibile con gli obiettivi della lista.",
+            });
+          }
+          return alerts;
+        })();
+
+        const hasSvcChangeAlerts = svcChangeAlerts.length > 0;
+        const svcChangePatternA =
+          hasSvcChangeAlerts && jid === "mock_svcchange_1";
+        const svcChangePatternB =
+          hasSvcChangeAlerts && jid === "mock_svcchange_2";
+        const svcChangePatternC =
+          hasSvcChangeAlerts && jid === "mock_svcchange_3";
+
+        let serviceChangeBannerHtml = "";
+        if (svcChangePatternA && svcChangeAlerts.length > 1) {
+          const slides = svcChangeAlerts
+            .map(
+              (a, i) => `
+              <div class="svc-change-carousel__slide${i === 0 ? " is-active" : ""}" data-svc-slide="${i}">
+                <span class="svc-change-banner__icon" aria-hidden="true">⚠</span>
+                <span class="svc-change-banner__text">${escapeHtml(a.title)}</span>
+                <a href="#" class="c-link c-link--action svc-change-banner__details" data-svc-change-details>dettagli</a>
+                <div class="svc-change-banner__detail-body" data-svc-change-detail-body hidden>
+                  <p>${a.detail}</p>
+                  <p>Suggerimento: ${a.suggestion}</p>
+                </div>
+              </div>`,
+            )
+            .join("");
+          serviceChangeBannerHtml = `
+            <div class="svc-change-banner svc-change-banner--carousel" data-svc-change-banner>
+              <div class="svc-change-carousel" data-svc-carousel>
+                ${slides}
+              </div>
+              <div class="svc-change-carousel__controls">
+                <button type="button" class="svc-change-carousel__btn svc-change-carousel__btn--prev" data-svc-carousel-prev aria-label="alert precedente" disabled>▲</button>
+                <span class="svc-change-carousel__counter" data-svc-carousel-counter>1/${svcChangeAlerts.length}</span>
+                <button type="button" class="svc-change-carousel__btn svc-change-carousel__btn--next" data-svc-carousel-next aria-label="alert successivo">▼</button>
+              </div>
+            </div>`;
+        } else if (svcChangePatternA && svcChangeAlerts.length === 1) {
+          const a = svcChangeAlerts[0];
+          serviceChangeBannerHtml = `
+            <div class="svc-change-banner" data-svc-change-banner>
+              <span class="svc-change-banner__icon" aria-hidden="true">⚠</span>
+              <span class="svc-change-banner__text">${escapeHtml(a.title)}</span>
+              <a href="#" class="c-link c-link--action svc-change-banner__details" data-svc-change-details>dettagli</a>
+              <div class="svc-change-banner__detail-body" data-svc-change-detail-body hidden>
+                <p>${a.detail}</p>
+                <p>Suggerimento: ${a.suggestion}</p>
+              </div>
+            </div>`;
+        }
+
+        let serviceChangeStackHtml = "";
+        if (svcChangePatternC) {
+          const items = svcChangeAlerts
+            .map(
+              (a) => `
+              <div class="svc-change-stack__item">
+                <span class="svc-change-banner__icon" aria-hidden="true">⚠</span>
+                <span class="svc-change-banner__text">${escapeHtml(a.title)}</span>
+                <a href="#" class="c-link c-link--action svc-change-banner__details" data-svc-change-details>dettagli</a>
+                <div class="svc-change-banner__detail-body" data-svc-change-detail-body hidden>
+                  <p>${a.detail}</p>
+                  <p>Suggerimento: ${a.suggestion}</p>
+                </div>
+              </div>`,
+            )
+            .join("");
+          serviceChangeStackHtml = `
+            <div class="svc-change-banner svc-change-banner--stack" data-svc-change-banner>
+              ${items}
+            </div>`;
+        }
+
+        let serviceChangeBadgeHtml = "";
+        if (svcChangePatternB) {
+          serviceChangeBadgeHtml = `
+            <span class="svc-change-badge" data-svc-change-badge role="button" tabindex="0" aria-label="servizio cambiato">
+              <span class="svc-change-badge__icon" aria-hidden="true">⚠</span>
+              <span class="svc-change-badge__label">servizio cambiato</span>
+              <span class="svc-change-badge__popover" data-svc-change-popover hidden>
+                <span class="svc-change-badge__arrow" aria-hidden="true"></span>
+                <span class="svc-change-badge__compare">${escapeHtml(j.originalServizio)} → ${escapeHtml(j.servizio)}</span>
+                <button type="button" class="c-pill card-remove-from-list svc-change-badge__remove" data-remove-from-list-jid="${jid}">rimuovi</button>
+              </span>
+            </span>`;
+        }
+
         const servizioRowHtml = isSpedizioneCardView
           ? ""
           : `<div class="card-row"><div class="card-label">Servizio</div><div class="card-value">${j.servizio}</div></div>`;
@@ -10636,9 +10827,12 @@
                 <h3 class="card-name card-name--person"><span class="card-first-name">${highlightedFirstName}</span><span class="card-last-name" title="${escapeHtml(fullName)}">${highlightedLastName}</span></h3>
               </a>
               ${ruoloHtml}
+              ${serviceChangeBadgeHtml}
             </div>
             ${emailInlineHtml}
           </div>
+          ${serviceChangeBannerHtml}
+          ${serviceChangeStackHtml}
           ${servizioRowHtml}
           ${telefonoRowHtml}
           ${emailRowHtml}
@@ -20268,6 +20462,18 @@
           const removeFromListBtn = e.target?.closest?.(
             ".card-remove-from-list[data-remove-from-list-jid]",
           );
+          const svcCarouselPrev = e.target?.closest?.(
+            "[data-svc-carousel-prev]",
+          );
+          const svcCarouselNext = e.target?.closest?.(
+            "[data-svc-carousel-next]",
+          );
+          const svcChangeDetailsLink = e.target?.closest?.(
+            "[data-svc-change-details]",
+          );
+          const svcChangeBadge = e.target?.closest?.(
+            "[data-svc-change-badge]",
+          );
           const notesLink = e.target?.closest?.(".card-notes-open");
           const customizePressLink = e.target?.closest?.(
             ".card-customize-press-link",
@@ -20282,6 +20488,10 @@
           const journalistLink = e.target?.closest?.(".journalist-link");
           if (
             !removeFromListBtn &&
+            !svcCarouselPrev &&
+            !svcCarouselNext &&
+            !svcChangeDetailsLink &&
+            !svcChangeBadge &&
             !notesLink &&
             !customizePressLink &&
             !journalistsLink &&
@@ -20306,6 +20516,41 @@
 
           e.preventDefault();
           e.stopPropagation();
+
+          if (svcCarouselPrev || svcCarouselNext) {
+            const banner = (svcCarouselPrev || svcCarouselNext).closest("[data-svc-change-banner]");
+            if (!banner) return;
+            const carousel = banner.querySelector("[data-svc-carousel]");
+            if (!carousel) return;
+            const slides = [...carousel.querySelectorAll("[data-svc-slide]")];
+            if (slides.length <= 1) return;
+            const currentIdx = slides.findIndex((s) => s.classList.contains("is-active"));
+            const dir = svcCarouselNext ? 1 : -1;
+            const newIdx = Math.max(0, Math.min(slides.length - 1, currentIdx + dir));
+            if (newIdx === currentIdx) return;
+            slides[currentIdx].classList.remove("is-active");
+            slides[newIdx].classList.add("is-active");
+            const counter = banner.querySelector("[data-svc-carousel-counter]");
+            if (counter) counter.textContent = `${newIdx + 1}/${slides.length}`;
+            const prevBtn = banner.querySelector("[data-svc-carousel-prev]");
+            const nextBtn = banner.querySelector("[data-svc-carousel-next]");
+            if (prevBtn) prevBtn.disabled = newIdx === 0;
+            if (nextBtn) nextBtn.disabled = newIdx === slides.length - 1;
+            return;
+          }
+
+          if (svcChangeDetailsLink) {
+            const slide = svcChangeDetailsLink.closest("[data-svc-slide]") || svcChangeDetailsLink.closest("[data-svc-change-banner]");
+            const body = slide?.querySelector("[data-svc-change-detail-body]");
+            if (body) body.hidden = !body.hidden;
+            return;
+          }
+
+          if (svcChangeBadge) {
+            const popover = svcChangeBadge.querySelector("[data-svc-change-popover]");
+            if (popover) popover.hidden = !popover.hidden;
+            return;
+          }
 
           if (removeFromListBtn) {
             if (appState.view !== "mailing-list") return;
@@ -20393,6 +20638,20 @@
             testataLink.getAttribute("data-testata") || testataLink.textContent;
           openTestataPanel(key || testata);
         });
+
+        cardsGrid.addEventListener("mouseenter", (e) => {
+          const badge = e.target?.closest?.("[data-svc-change-badge]");
+          if (!badge) return;
+          const popover = badge.querySelector("[data-svc-change-popover]");
+          if (popover) popover.hidden = false;
+        }, true);
+
+        cardsGrid.addEventListener("mouseleave", (e) => {
+          const badge = e.target?.closest?.("[data-svc-change-badge]");
+          if (!badge) return;
+          const popover = badge.querySelector("[data-svc-change-popover]");
+          if (popover) popover.hidden = true;
+        }, true);
 
         cardsGrid.addEventListener("change", (e) => {
           const checkbox = e.target?.closest?.(".card-select[data-jid]");
