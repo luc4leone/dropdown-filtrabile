@@ -4612,6 +4612,7 @@ body.is-spedisci-lista-view .shipment-title-prefix {
 .svc-change-banner {
   display: flex;
   flex-direction: column;
+  flex-flow: column-reverse;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
